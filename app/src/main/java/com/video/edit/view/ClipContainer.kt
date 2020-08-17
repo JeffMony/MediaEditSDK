@@ -12,8 +12,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import com.video.edit.util.Config.Companion.maxSelection
-import com.video.edit.util.Config.Companion.minSelection
+import com.video.edit.ext.SdkConfig
 import com.video.library.decodeFile
 import kotlinx.android.synthetic.main.activity_video_clip.view.*
 
@@ -69,7 +68,7 @@ class ClipContainer : FrameLayout {
     var framebarImageWidth = 42
 
     private var minDistance = 120f
-    var millSecInFrame = maxSelection
+    var millSecInFrame = SdkConfig.maxSelection
 
     var callback: Callback? = null
 
@@ -172,7 +171,7 @@ class ClipContainer : FrameLayout {
 
         var previewMillSec = (previewPosition - getFrameFixLeftX()) * 1f / frameWidth * millSecInFrame
 
-        if (mediaDutaion > maxSelection) {
+        if (mediaDutaion > SdkConfig.maxSelection) {
 
             val (position, itemLeft, scrollX) = recyclerView.getScollXDistance()
 
@@ -322,12 +321,12 @@ class ClipContainer : FrameLayout {
         itemWidth = (frameWidth * 1f / itemCountInFrame).toInt()
         totalItemsWidth = itemCount * itemWidth
 
-        val selection = Math.min(maxSelection, mediaDutaion)
+        val selection = Math.min(SdkConfig.maxSelection, mediaDutaion)
 
-        minDistance = frameWidth * (minSelection * 1f / selection)
+        minDistance = frameWidth * (SdkConfig.minSelection * 1f / selection)
 
-        millSecInFrame = if (mediaDutaion > maxSelection) {
-            maxSelection
+        millSecInFrame = if (mediaDutaion > SdkConfig.maxSelection) {
+            SdkConfig.maxSelection
         } else {
             mediaDutaion
         }
@@ -336,7 +335,7 @@ class ClipContainer : FrameLayout {
 
         adjustProgressBar(playProgressBar, playProgressBar.translationX)
 
-        if (mediaDutaion > maxSelection) {
+        if (mediaDutaion > SdkConfig.maxSelection) {
 
             rightShadowStart = (rightFrameLeft + framebarImageWidth).toInt() - SHADOW_DELTA
             rightShadowEnd = getFrameFixLeftX() + totalItemsWidth
@@ -376,7 +375,7 @@ class ClipContainer : FrameLayout {
 
     fun setProgress(currentPosition: Long, frozonTime:Long) {
 //        Log.d(TAG, "setProgress: currentPosition:$currentPosition")
-        if (mediaDutaion <= maxSelection) {
+        if (mediaDutaion <= SdkConfig.maxSelection) {
             val ratio = currentPosition * 1f / mediaDutaion
             progressStart = (getFrameFixLeftX() + ratio * frameWidth).toInt()
         } else {
@@ -384,10 +383,10 @@ class ClipContainer : FrameLayout {
             if (millsecs < 0) {
                 millsecs = 0f
             }
-            if (millsecs > maxSelection) {
-                millsecs = maxSelection.toFloat()
+            if (millsecs > SdkConfig.maxSelection) {
+                millsecs = SdkConfig.maxSelection.toFloat()
             }
-            val ratio = millsecs * 1f / maxSelection
+            val ratio = millsecs * 1f / SdkConfig.maxSelection
 //            Log.d(TAG, "setProgress: millsecs:$millsecs, ratio:$ratio")
             progressStart = (getCutLeftX() + ratio * frameWidth).toInt()
         }
@@ -412,7 +411,7 @@ class ClipContainer : FrameLayout {
         startMillSec = (getCutLeftX() - getFrameFixLeftX()) * 1f / frameWidth * millSecInFrame
         endMillSec = (getCutRightX() - getFrameFixLeftX()) * 1f / frameWidth * millSecInFrame
 
-        if (mediaDutaion <= maxSelection) {
+        if (mediaDutaion <= SdkConfig.maxSelection) {
 
             leftShadowStart = getFrameFixLeftX()
             if (leftShadowStart < 0) {

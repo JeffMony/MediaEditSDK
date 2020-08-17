@@ -11,8 +11,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import com.video.edit.util.ThumnaiAdapter
-import com.video.edit.view.BottomDialogFragment
 import kotlinx.android.synthetic.main.activity_video_edit.*
 
 import com.video.egl.GlFilterPeriod
@@ -21,6 +19,8 @@ import com.video.egl.VideoProcessConfig
 
 import com.video.edit.demo.R
 import com.video.edit.ext.*
+import com.video.edit.view.BaseThumbnailAdapter
+import com.video.edit.view.BottomDialogFragment
 import com.video.edit.view.getScollXDistance
 import com.video.library.getVideoDuration
 import com.video.library.toTime
@@ -42,7 +42,7 @@ class VideoEditActivity : AppCompatActivity() {
     var list: MutableList<String?> = mutableListOf()
     var itemWidth = 100
     var mIsTouching = false
-    var adapter: ThumnaiAdapter? = null
+    var adapter: BaseThumbnailAdapter? = null
 
     var effectTouching = false
     var effectStartTime = 0L
@@ -130,7 +130,7 @@ class VideoEditActivity : AppCompatActivity() {
         var screenW = resources.displayMetrics.widthPixels
         itemWidth = screenW / 12
 
-        adapter = ThumnaiAdapter(list, itemWidth)
+        adapter = BaseThumbnailAdapter(list, itemWidth)
         recyclerview.adapter = adapter
         var layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this).apply {
             orientation = androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
@@ -211,8 +211,8 @@ class VideoEditActivity : AppCompatActivity() {
 
 
     private fun beginOneEffect(option: BottomDialogFragment.Option) {
-        val filter = EffectConfigs.getEffectFilterByName(option.optionName, applicationContext)
-        Log.d(TAG, "beginOneEffect option:${option.optionName}  effectStartTime:$effectStartTime, filter:$filter")
+        val filter = EffectConfigs.getEffectFilterByName(option.mOptionName, applicationContext)
+        Log.d(TAG, "beginOneEffect option:${option.mOptionName}  effectStartTime:$effectStartTime, filter:$filter")
 
         effectFilterPeriod = player_view_mp.addFiler(effectStartTime, mediaDuration, filter)
 //        effectFliter = filter
@@ -246,10 +246,10 @@ class VideoEditActivity : AppCompatActivity() {
 
         options.forEachIndexed { index, option ->
             val itemView = LayoutInflater.from(this).inflate(R.layout.item_record_beauty, null)
-            itemView.findViewById<ImageView>(R.id.iv_beauty_image).setImageResource(option.iconResId)
-            itemView.findViewById<TextView>(R.id.tv_beauty_text).text = option.optionName
+            itemView.findViewById<ImageView>(R.id.iv_beauty_image).setImageResource(option.mIconResId)
+            itemView.findViewById<TextView>(R.id.tv_beauty_text).text = option.mOptionName
             itemView.tag = option
-            option.index = index
+            option.mIndex = index
             ll_container.addView(itemView)
 
             itemView.setOnTouchListener(effectTouchListener)
@@ -277,8 +277,8 @@ class VideoEditActivity : AppCompatActivity() {
     private fun showFilterDialog() {
         var dialogFragment = BottomDialogFragment.getInstance(0, getSelection(),
                 "选择滤镜", FilterConfigs.createFilterOptions())
-        dialogFragment.setSelectionCallBack { selection, option ->
-            val filter = FilterConfigs.getFilterByName(option.optionName, applicationContext)
+        dialogFragment.setSelectionCallback() { selection, option ->
+            val filter = FilterConfigs.getFilterByName(option.mOptionName, applicationContext)
             Log.d(TAG, "selection:$selection, filter:$filter")
             player_view_mp.setFiler(0, mediaDuration, filter)
 //            glFilterList.putGlFilter(GlFilterPeriod(0, mediaDuration, filter))

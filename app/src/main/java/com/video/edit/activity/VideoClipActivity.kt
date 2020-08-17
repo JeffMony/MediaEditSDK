@@ -17,15 +17,6 @@ import com.video.mp4compose.composer.Mp4Composer
 import com.video.egl.GlFilterList
 import com.video.egl.GlFilterPeriod
 import com.video.library.log
-import com.video.edit.util.Config
-import com.video.edit.util.Config.Companion.DEFAULT_FRAME_COUNT
-import com.video.edit.util.Config.Companion.DEFAULT_TEMP_VIDEO_LOCATION
-import com.video.edit.util.Config.Companion.MAX_FRAME_INTERVAL_MS
-import com.video.edit.util.Config.Companion.MSG_UPDATE
-import com.video.edit.util.Config.Companion.SPEED_RANGE
-import com.video.edit.util.Config.Companion.USE_EXOPLAYER
-import com.video.edit.util.Config.Companion.maxSelection
-import com.video.edit.util.Config.Companion.minSelection
 import com.video.library.player.VideoPlayTimeController
 import com.video.library.player.VideoPlayer
 import com.video.library.player.VideoPlayerOfExoPlayer
@@ -38,6 +29,7 @@ import java.text.DecimalFormat
 
 import com.video.edit.view.ClipContainer
 import com.video.edit.demo.R
+import com.video.edit.ext.SdkConfig
 
 /**
  * 请根据手机中视频文件的地址更新下面的videoPlayUrl变量
@@ -46,7 +38,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
     companion object {
         val TAG = "VideoClipActivity"
-        val videoPlayUrl = DEFAULT_TEMP_VIDEO_LOCATION
+        val videoPlayUrl = SdkConfig.DEFAULT_TEMP_VIDEO_LOCATION
     }
 
 
@@ -81,7 +73,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
         initPlayer()
 
 
-        play_spped_seakbar.max = SPEED_RANGE
+        play_spped_seakbar.max = SdkConfig.SPEED_RANGE
         var normalSpeed = play_spped_seakbar.max / 2
         play_spped_seakbar.progress = normalSpeed
 
@@ -122,8 +114,8 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
             Log.d(TAG, "startMillSec:$startMillSec,  endMillSec:$endMillSec,  mediaDuration:$mediaDuration")
             if (mediaDuration > 0 && endMillSec <= mediaDuration
                     && startMillSec >= 0
-                    && endMillSec <= startMillSec + maxSelection
-                    && endMillSec >= startMillSec + minSelection) {
+                    && endMillSec <= startMillSec + SdkConfig.maxSelection
+                    && endMillSec >= startMillSec + SdkConfig.minSelection) {
                 doClip()
             } else {
                 showToast("裁剪选择时间段不正确哟")
@@ -200,18 +192,18 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
         mediaDuration = getVideoDuration(this, finalVideoPath)
         Log.d(TAG, "onProcessCompleted mediaDuration:$mediaDuration")
-        endMillSec = if (mediaDuration > maxSelection) {
-            maxSelection
+        endMillSec = if (mediaDuration > SdkConfig.maxSelection) {
+            SdkConfig.maxSelection
         } else {
             mediaDuration
         }
 
-        thumbnailCount = if (mediaDuration > maxSelection) {
-            millsecPerThumbnail = MAX_FRAME_INTERVAL_MS
+        thumbnailCount = if (mediaDuration > SdkConfig.maxSelection) {
+            millsecPerThumbnail = SdkConfig.MAX_FRAME_INTERVAL_MS
             Math.ceil(((mediaDuration * 1f / millsecPerThumbnail).toDouble())).toInt()
         } else {
-            millsecPerThumbnail = (mediaDuration / DEFAULT_FRAME_COUNT).toInt()
-            DEFAULT_FRAME_COUNT
+            millsecPerThumbnail = (mediaDuration / SdkConfig.DEFAULT_FRAME_COUNT).toInt()
+            SdkConfig.DEFAULT_FRAME_COUNT
         }
 
         clipContainer.initRecyclerList(thumbnailCount)
@@ -259,9 +251,9 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
             startPlayer()
         }
 
-        handler.removeMessages(MSG_UPDATE)
+        handler.removeMessages(SdkConfig.MSG_UPDATE)
         if (finished) {
-            handler.sendEmptyMessageDelayed(MSG_UPDATE, 20)
+            handler.sendEmptyMessageDelayed(SdkConfig.MSG_UPDATE, 20)
         }
     }
 
@@ -281,9 +273,9 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
         toast_msg_tv.text = "已截取${secFormat.format(selSec)}s, [$startMillSec - $endMillSec]"
         toast_msg_tv.visibility = View.VISIBLE
 
-        handler.removeMessages(MSG_UPDATE)
+        handler.removeMessages(SdkConfig.MSG_UPDATE)
         if (finished) {
-            handler.sendEmptyMessageDelayed(MSG_UPDATE, 20)
+            handler.sendEmptyMessageDelayed(SdkConfig.MSG_UPDATE, 20)
         }
 
         if (!finished) {
@@ -307,10 +299,10 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
             startMillSec = 0
         }
 
-        if (startMillSec + Config.minSelection > endMillSec && endMillSec < mediaDuration) {
-            endMillSec = Math.min(startMillSec + Config.minSelection, mediaDuration)
-            if (startMillSec + Config.minSelection > endMillSec && startMillSec > 0) {
-                startMillSec = Math.max(0, endMillSec - Config.minSelection)
+        if (startMillSec + SdkConfig.minSelection > endMillSec && endMillSec < mediaDuration) {
+            endMillSec = Math.min(startMillSec + SdkConfig.minSelection, mediaDuration)
+            if (startMillSec + SdkConfig.minSelection > endMillSec && startMillSec > 0) {
+                startMillSec = Math.max(0, endMillSec - SdkConfig.minSelection)
             }
         }
     }
@@ -337,8 +329,8 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
             clipContainer.setProgress(currentPosition.toLong(), frozontime)
         }
 
-        handler.removeMessages(MSG_UPDATE)
-        handler.sendEmptyMessageDelayed(MSG_UPDATE, 20)
+        handler.removeMessages(SdkConfig.MSG_UPDATE)
+        handler.sendEmptyMessageDelayed(SdkConfig.MSG_UPDATE, 20)
     }
 
     private fun startPlayer() {
@@ -370,7 +362,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
     }
 
     private fun initPlayer() {
-        if (USE_EXOPLAYER) {
+        if (SdkConfig.USE_EXOPLAYER) {
             player_view_mp.visibility = View.GONE
             player_view_exo.visibility = View.VISIBLE
             videoPlayer = VideoPlayerOfExoPlayer(player_view_exo)
