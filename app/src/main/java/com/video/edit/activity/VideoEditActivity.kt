@@ -287,7 +287,7 @@ class VideoEditActivity : AppCompatActivity() {
         dialogFragment.show(supportFragmentManager, "filter_dialog")
     }
 
-    private fun getSelection() = getInt(this, "filter_selection", 0)
+    private fun getSelection() = PreferenceUtils.getInt(this, "filter_selection", 0)
 
 
 }

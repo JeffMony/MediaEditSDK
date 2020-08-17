@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit
 import com.video.edit.demo.R;
 import com.video.edit.activity.VideoEditActivity
 import com.video.edit.ext.FilterConfigs
+import com.video.edit.ext.PreferenceUtils
 
 /**
  * 这份代码很简陋, 是在谷歌camera2示例代码基础上修改的
@@ -219,7 +220,7 @@ class Camera2BasicFragment : androidx.fragment.app.Fragment(), ActivityCompat.On
         dialogFragment.show(childFragmentManager, "filter_dialog")
     }
 
-    private fun getSelection() = getInt(requireContext(), "filter_selection", 0)
+    private fun getSelection() = PreferenceUtils.getInt(requireContext(), "filter_selection", 0)
 
     override fun onRenderCreated(surfaceTexture: SurfaceTexture, width:Int, height:Int) {
         Log.d(TAG, "onRenderCreated ... $surfaceTexture")

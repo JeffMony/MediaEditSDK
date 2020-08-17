@@ -9,8 +9,8 @@ import android.view.Window
 import android.widget.ImageView
 import android.widget.TextView
 import com.video.edit.demo.R
+import com.video.edit.ext.PreferenceUtils
 import com.video.edit.ext.initBottomSettings
-import com.video.edit.ext.putInt
 import kotlinx.android.synthetic.main.bottom_dialog_fragment_layout.*
 import java.io.Serializable
 import java.util.*
@@ -103,8 +103,7 @@ class BottomDialogFragment : androidx.fragment.app.DialogFragment() {
                 findViewById<ImageView>(R.id.iv_beauty_circle).visibility = View.VISIBLE
                 var option = tag as Option
                 var selection = option.index
-                putInt(context, "filter_selection", selection)
-
+                PreferenceUtils.putInt(context, "filter_selection", selection);
 
                 var childCount = ll_container.childCount
                 var name: String = ""
