@@ -25,5 +25,3 @@
 * [grafika](https://github.com/google/grafika)
 * [libstagefright](https://android.googlesource.com/platform/frameworks/av/+/lollipop-release/media/libstagefright)
 
-## 一篇相关文章, 也算是视频工作的阶段总结
-https://www.jianshu.com/p/cbebba28b12c
