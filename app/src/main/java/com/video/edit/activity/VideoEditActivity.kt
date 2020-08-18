@@ -24,6 +24,7 @@ import com.video.edit.view.BottomDialogFragment
 import com.video.edit.view.getScollXDistance
 import com.video.library.getVideoDuration
 import com.video.library.toTime
+import java.io.File
 
 class VideoEditActivity : AppCompatActivity() {
 
@@ -34,6 +35,9 @@ class VideoEditActivity : AppCompatActivity() {
         const val STATE_FILTER = 1
         const val STATE_EFFECT = 2
     }
+
+    var outputPath: String = ""
+    var saveDir: String = ""
 
     lateinit var mediaPath: String
     var mediaDuration: Long = 0
@@ -85,7 +89,7 @@ class VideoEditActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        saveDir = SdkConfig.getVideoDir(this).absolutePath
         setContentView(R.layout.activity_video_edit)
 
         mediaPath = intent.getStringExtra("video_path")
@@ -98,8 +102,8 @@ class VideoEditActivity : AppCompatActivity() {
         tv_next.setOnClickListener { generateVideo() }
 
         initEditInfo()
-
-        videoProcessConfig = VideoProcessConfig(mediaPath, VideoClipActivity.videoPlayUrl)
+        outputPath = saveDir + File.separator + System.currentTimeMillis() + ".mp4"
+        videoProcessConfig = VideoProcessConfig(mediaPath, outputPath)
         filterConfigList = videoProcessConfig.filterConfigList
     }
 

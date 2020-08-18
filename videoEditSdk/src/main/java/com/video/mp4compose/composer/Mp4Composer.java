@@ -10,11 +10,11 @@ import com.video.egl.GlFilterList;
 import com.video.mp4compose.FillModeCustomItem;
 import com.video.egl.Resolution;
 import com.video.mp4compose.Rotation;
+import com.video.mp4compose.VideoCustomException;
 import com.video.mp4compose.filter.IResolutionFilter;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +36,7 @@ public class Mp4Composer {
     private int frameRate = 30;
     private boolean mute = false;
     private Rotation rotation = Rotation.NORMAL;
-    private Listener listener;
+    private VideoComposeListener mComposeListener;
     private FillMode fillMode = FillMode.PRESERVE_ASPECT_FIT;
     private FillModeCustomItem fillModeCustomItem;
     private int timeScale = 1;
@@ -117,8 +117,8 @@ public class Mp4Composer {
     }
 
 
-    public Mp4Composer listener(@NonNull Listener listener) {
-        this.listener = listener;
+    public Mp4Composer listener(@NonNull VideoComposeListener listener) {
+        this.mComposeListener = listener;
         return this;
     }
 
@@ -141,13 +141,24 @@ public class Mp4Composer {
             public void run() {
                 Mp4ComposerEngine engine = new Mp4ComposerEngine();
 
-                engine.setProgressCallback(new Mp4ComposerEngine.ProgressCallback() {
+                engine.setProgressCallback(new Mp4ComposerEngine.ComposeProgressCallback() {
                     @Override
                     public void onProgress(final double progress) {
-                        if (listener != null) {
-                            listener.onProgress(progress);
+                        if (mComposeListener != null) {
+                            mComposeListener.onProgress(progress);
                         }
                     }
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onFailed(Exception e) {
+
+                    }
+
                 });
 
                 File outFile = new File(destPath);
@@ -159,10 +170,10 @@ public class Mp4Composer {
                 final FileInputStream fileInputStream;
                 try {
                     fileInputStream = new FileInputStream(srcFile);
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                    if (listener != null) {
-                        listener.onFailed(e);
+                    if (mComposeListener != null) {
+                        mComposeListener.onFailed(e);
                     }
                     return;
                 }
@@ -171,8 +182,8 @@ public class Mp4Composer {
                     engine.setDataSource(fileInputStream.getFD());
                 } catch (IOException e) {
                     e.printStackTrace();
-                    if (listener != null) {
-                        listener.onFailed(e);
+                    if (mComposeListener != null) {
+                        mComposeListener.onFailed(e);
                     }
                     return;
                 }
@@ -242,17 +253,17 @@ public class Mp4Composer {
                             clipEndMs
                     );
 
-                } catch (Exception e) {
+                } catch (VideoCustomException e) {
                     e.printStackTrace();
-                    if (listener != null) {
-                        listener.onFailed(e);
+                    if (mComposeListener != null) {
+                        mComposeListener.onFailed(e);
                     }
                     executorService.shutdown();
                     return;
                 }
 
-                if (listener != null) {
-                    listener.onCompleted();
+                if (mComposeListener != null) {
+                    mComposeListener.onCompleted();
                 }
                 executorService.shutdown();
             }
@@ -266,24 +277,11 @@ public class Mp4Composer {
     }
 
 
-    public interface Listener {
-        /**
-         * Called to notify progress.
-         *
-         * @param progress Progress in [0.0, 1.0] range, or negative value if progress is unknown.
-         */
+    public interface VideoComposeListener {
+
         void onProgress(double progress);
 
-        /**
-         * Called when transcode completed.
-         */
         void onCompleted();
-
-        /**
-         * Called when transcode canceled.
-         */
-        void onCanceled();
-
 
         void onFailed(Exception exception);
     }

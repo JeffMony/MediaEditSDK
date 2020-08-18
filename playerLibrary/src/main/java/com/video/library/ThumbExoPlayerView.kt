@@ -78,11 +78,9 @@ class ThumbExoPlayerView(context: Context?, attrs: AttributeSet?) : PlayerView(c
         }
 
         val timeMs = thumbnailMillSecList.get(0)
-//        Log.d(TAG, "startPlayAndCapture()  current position:${exoPlayer!!.currentPosition}, want timems:$timeMs")
         if (exoPlayer!!.currentPosition > timeMs) {
             exoPlayer?.playWhenReady = false
             val bitmap = textureView.bitmap
-//            Log.d(TAG, "startPlayAndCapture()  bitmap:$bitmap")
             bitmap?.run {
                 var fileName = context.externalCacheDir.absolutePath+"thumbnail_" + bitmapIndex
                 writeToFile(bitmap, fileName)

@@ -13,6 +13,7 @@ import com.video.mp4compose.FillMode;
 import com.video.mp4compose.FillModeCustomItem;
 import com.video.egl.Resolution;
 import com.video.mp4compose.Rotation;
+import com.video.mp4compose.VideoCustomException;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -22,178 +23,161 @@ import java.io.IOException;
 /**
  * Internal engine, do not use this directly.
  */
-class Mp4ComposerEngine {
-    private static final String TAG = "Mp4ComposerEngine";
+public class Mp4ComposerEngine {
+    private static final String TAG = Mp4ComposerEngine.class.getSimpleName();
     private static final double PROGRESS_UNKNOWN = -1.0;
     private static final long SLEEP_TO_WAIT_TRACK_TRANSCODERS = 10;
     private static final long PROGRESS_INTERVAL_STEPS = 10;
-    private FileDescriptor inputFileDescriptor;
-    private VideoComposer videoComposer;
-    private IAudioComposer audioComposer;
-    private MediaExtractor mediaExtractor;
-    private MediaMuxer mediaMuxer;
-    private ProgressCallback progressCallback;
-    private long durationUs;
+    private ComposeProgressCallback mProgressCallback;
+    private FileDescriptor mInputFd;
+    private VideoComposer mVideoComposer;
+    private IAudioComposer mAudioComposer;
+    private MediaExtractor mMediaExtractor;
+    private MediaMuxer mMediaMuxer;
+    private long mComposeDuration;
 
-
-    void setDataSource(FileDescriptor fileDescriptor) {
-        inputFileDescriptor = fileDescriptor;
+    public void setDataSource(FileDescriptor fd) {
+        mInputFd = fd;
     }
 
-    void setProgressCallback(ProgressCallback progressCallback) {
-        this.progressCallback = progressCallback;
+    public void setProgressCallback(ComposeProgressCallback progressCallback) {
+        mProgressCallback = progressCallback;
     }
 
-
-    void compose(
-            final String destPath,
-            final Resolution outputResolution,
-            final GlFilter filter,
-            final GlFilterList filterList,
-            final int bitrate,
-            final int frameRate,
-            final boolean mute,
-            final Rotation rotation,
-            final Resolution inputResolution,
-            final FillMode fillMode,
-            final FillModeCustomItem fillModeCustomItem,
-            final int timeScale,
-            final boolean flipVertical,
-            final boolean flipHorizontal,
-            final long startTimeMs,
-            final long endTimeMs
-    ) throws IOException {
-
-
+    public void compose(
+            String destPath,
+            Resolution outputResolution,
+            GlFilter filter,
+            GlFilterList filterList,
+            int bitrate,
+            int frameRate,
+            boolean mute,
+            Rotation rotation,
+            Resolution inputResolution,
+            FillMode fillMode,
+            FillModeCustomItem fillModeCustomItem,
+            int timeScale,
+            boolean flipVertical,
+            boolean flipHorizontal,
+            long startTimeMs,
+            long endTimeMs
+    ) throws VideoCustomException {
+        MediaMetadataRetriever mediaRetriever = new MediaMetadataRetriever();
+        mediaRetriever.setDataSource(mInputFd);
+        long duration = Long.parseLong(mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        if (startTimeMs <= 0) {
+            startTimeMs = 0;
+        } else if (endTimeMs < startTimeMs) {
+            throw new VideoCustomException(VideoCustomException.CLIP_VIDEO_TIMERANGE_ERROR, new Throwable());
+        } else if (duration < (endTimeMs - startTimeMs)) {
+            endTimeMs = duration;
+            if (endTimeMs < startTimeMs) {
+                throw new VideoCustomException(VideoCustomException.CLIP_VIDEO_OUT_OF_RANGE, new Throwable());
+            }
+        } else {
+            mComposeDuration = endTimeMs - startTimeMs;
+        }
+        mMediaExtractor = new MediaExtractor();
         try {
-            mediaExtractor = new MediaExtractor();
-            mediaExtractor.setDataSource(inputFileDescriptor);
-            mediaMuxer = new MediaMuxer(destPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-            mediaMetadataRetriever.setDataSource(inputFileDescriptor);
-            if (startTimeMs >= 0 && endTimeMs > startTimeMs) {
-                durationUs = endTimeMs - startTimeMs;
-            } else {
-                try {
-                    durationUs = Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)) * 1000;
-                } catch (NumberFormatException e) {
-                    durationUs = -1;
-                }
-            }
+            mMediaExtractor.setDataSource(mInputFd);
+        } catch (Exception e) {
+            throw new VideoCustomException(VideoCustomException.MEDIA_EXTRACTOR_DATASOURCE_FAILED, e);
+        }
+        try {
+            mMediaMuxer = new MediaMuxer(destPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+        } catch (Exception e) {
+            throw new VideoCustomException(VideoCustomException.MEDIA_MUXER_INSTANCE_FAILED, e);
+        }
+        MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", outputResolution.width(), outputResolution.height());
+        videoOutputFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
+        videoOutputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
+        videoOutputFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
+        videoOutputFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
 
-            Log.d(TAG, "Duration (us): " + durationUs);
+        //获取音视频的轨道
+        int videoTrackIndex = -1;
+        int audioTrackIndex = -1;
 
-            MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", outputResolution.width(), outputResolution.height());
-
-            videoOutputFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
-            videoOutputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
-            videoOutputFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
-            videoOutputFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-
-
-            MuxRender muxRender = new MuxRender(mediaMuxer);
-
-            // identify track indices
-            MediaFormat format = mediaExtractor.getTrackFormat(0);
+        int trackCount = mMediaExtractor.getTrackCount();
+        for (int i = 0; i < trackCount; i++) {
+            MediaFormat format = mMediaExtractor.getTrackFormat(i);
             String mime = format.getString(MediaFormat.KEY_MIME);
-
-            final int videoTrackIndex;
-            final int audioTrackIndex;
-
-            if (mime.startsWith("video/")) {
-                videoTrackIndex = 0;
-                audioTrackIndex = 1;
-            } else {
-                videoTrackIndex = 1;
-                audioTrackIndex = 0;
-            }
-
-            // setup video composer
-            videoComposer = new VideoComposer(mediaExtractor, videoTrackIndex, videoOutputFormat, muxRender, timeScale);
-            videoComposer.setUp(filter, filterList, rotation, outputResolution, inputResolution, fillMode, fillModeCustomItem, flipVertical, flipHorizontal);
-            mediaExtractor.selectTrack(videoTrackIndex);
-
-            if (startTimeMs >= 0 && endTimeMs > startTimeMs) {
-                videoComposer.setClipRange(startTimeMs, endTimeMs);
-            }
-
-
-            // setup audio if present and not muted
-            if (mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO) != null && !mute) {
-                // has Audio video
-
-                if (timeScale < 2) {
-                    audioComposer = new AudioComposer(mediaExtractor, audioTrackIndex, muxRender);
-                    if (startTimeMs >= 0 && endTimeMs > startTimeMs) {
-                        ((AudioComposer) audioComposer).setClipRange(startTimeMs, endTimeMs);
-                    }
-                } else {
-                    audioComposer = new RemixAudioComposer(mediaExtractor, audioTrackIndex, mediaExtractor.getTrackFormat(audioTrackIndex), muxRender, timeScale);
-                }
-
-
-                audioComposer.setup();
-
-                mediaExtractor.selectTrack(audioTrackIndex);
-
-                runPipelines();
-            } else {
-                // no audio video
-                runPipelinesNoAudio();
-            }
-
-
-            mediaMuxer.stop();
-        } finally {
-            try {
-                if (videoComposer != null) {
-                    videoComposer.release();
-                    videoComposer = null;
-                }
-                if (audioComposer != null) {
-                    audioComposer.release();
-                    audioComposer = null;
-                }
-                if (mediaExtractor != null) {
-                    mediaExtractor.release();
-                    mediaExtractor = null;
-                }
-            } catch (RuntimeException e) {
-                // Too fatal to make alive the app, because it may leak native resources.
-                //noinspection ThrowFromFinallyBlock
-                throw new Error("Could not shutdown mediaExtractor, codecs and mediaMuxer pipeline.", e);
-            }
-            try {
-                if (mediaMuxer != null) {
-                    mediaMuxer.release();
-                    mediaMuxer = null;
-                }
-            } catch (RuntimeException e) {
-                Log.e(TAG, "Failed to release mediaMuxer.", e);
+            if(mime.startsWith("video/")) {
+                videoTrackIndex = i;
+            } else if (mime.startsWith("audio/")) {
+                audioTrackIndex = i;
             }
         }
 
+        if (videoTrackIndex == -1) {
+            throw new VideoCustomException(VideoCustomException.MEDIA_HAS_NO_VIDEO, new Throwable());
+        }
+        MuxRender muxRender = new MuxRender(mMediaMuxer);
+        mVideoComposer = new VideoComposer(mMediaExtractor, videoTrackIndex, videoOutputFormat, muxRender, timeScale);
+        mVideoComposer.setUp(filter, filterList, rotation, outputResolution, inputResolution, fillMode, fillModeCustomItem, flipVertical, flipHorizontal);
+        mMediaExtractor.selectTrack(videoTrackIndex);
+        mVideoComposer.setClipRange(startTimeMs, endTimeMs);
 
+        if (audioTrackIndex != -1 && !mute) {
+            if (timeScale < 2) {
+                mAudioComposer = new AudioComposer(mMediaExtractor, audioTrackIndex, muxRender);
+                if (startTimeMs >= 0 && endTimeMs > startTimeMs) {
+                    ((AudioComposer) mAudioComposer).setClipRange(startTimeMs, endTimeMs);
+                }
+            } else {
+                mAudioComposer = new RemixAudioComposer(mMediaExtractor, audioTrackIndex, mMediaExtractor.getTrackFormat(audioTrackIndex), muxRender, timeScale);
+            }
+            mAudioComposer.setup();
+            mMediaExtractor.selectTrack(audioTrackIndex);
+            runPipelines();
+        } else {
+            runPipelinesNoAudio();
+        }
+        mMediaMuxer.stop();
+        try {
+            if (mVideoComposer != null) {
+                mVideoComposer.release();
+                mVideoComposer = null;
+            }
+            if (mAudioComposer != null) {
+                mAudioComposer.release();
+                mAudioComposer = null;
+            }
+            if (mMediaExtractor != null) {
+                mMediaExtractor.release();
+                mMediaExtractor = null;
+            }
+        } catch (RuntimeException e) {
+            throw new Error("Could not shutdown mediaExtractor, codecs and mediaMuxer pipeline.", e);
+        }
+        try {
+            if (mMediaMuxer != null) {
+                mMediaMuxer.release();
+                mMediaMuxer = null;
+            }
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Failed to release mediaMuxer.", e);
+        }
     }
 
 
     private void runPipelines() {
         long loopCount = 0;
-        if (durationUs <= 0) {
-            if (progressCallback != null) {
-                progressCallback.onProgress(PROGRESS_UNKNOWN);
+        if (mComposeDuration <= 0) {
+            if (mProgressCallback != null) {
+                mProgressCallback.onProgress(PROGRESS_UNKNOWN);
             }// unknown
         }
-        while (!(videoComposer.isFinished() && audioComposer.isFinished())) {
-            boolean stepped = videoComposer.stepPipeline()
-                    || audioComposer.stepPipeline();
+        while (!(mVideoComposer.isFinished() && mAudioComposer.isFinished())) {
+            boolean stepped = mVideoComposer.stepPipeline()
+                    || mAudioComposer.stepPipeline();
             loopCount++;
-            if (durationUs > 0 && loopCount % PROGRESS_INTERVAL_STEPS == 0) {
-                double videoProgress = videoComposer.isFinished() ? 1.0 : Math.min(1.0, (double) videoComposer.getWrittenPresentationTimeUs() / durationUs);
-                double audioProgress = audioComposer.isFinished() ? 1.0 : Math.min(1.0, (double) audioComposer.getWrittenPresentationTimeUs() / durationUs);
+            if (mComposeDuration > 0 && loopCount % PROGRESS_INTERVAL_STEPS == 0) {
+                double videoProgress = mVideoComposer.isFinished() ? 1.0 : Math.min(1.0, (double) mVideoComposer.getWrittenPresentationTimeUs() / mComposeDuration);
+                double audioProgress = mAudioComposer.isFinished() ? 1.0 : Math.min(1.0, (double) mAudioComposer.getWrittenPresentationTimeUs() / mComposeDuration);
                 double progress = (videoProgress + audioProgress) / 2.0;
-                if (progressCallback != null) {
-                    progressCallback.onProgress(progress);
+                if (mProgressCallback != null) {
+                    mProgressCallback.onProgress(progress);
                 }
             }
             if (!stepped) {
@@ -208,18 +192,18 @@ class Mp4ComposerEngine {
 
     private void runPipelinesNoAudio() {
         long loopCount = 0;
-        if (durationUs <= 0) {
-            if (progressCallback != null) {
-                progressCallback.onProgress(PROGRESS_UNKNOWN);
-            } // unknown
+        if (mComposeDuration <= 0) {
+            if (mProgressCallback != null) {
+                mProgressCallback.onProgress(PROGRESS_UNKNOWN);
+            }
         }
-        while (!videoComposer.isFinished()) {
-            boolean stepped = videoComposer.stepPipeline();
+        while (!mVideoComposer.isFinished()) {
+            boolean stepped = mVideoComposer.stepPipeline();
             loopCount++;
-            if (durationUs > 0 && loopCount % PROGRESS_INTERVAL_STEPS == 0) {
-                double videoProgress = videoComposer.isFinished() ? 1.0 : Math.min(1.0, (double) videoComposer.getWrittenPresentationTimeUs() / durationUs);
-                if (progressCallback != null) {
-                    progressCallback.onProgress(videoProgress);
+            if (mComposeDuration > 0 && loopCount % PROGRESS_INTERVAL_STEPS == 0) {
+                double videoProgress = mVideoComposer.isFinished() ? 1.0 : Math.min(1.0, (double) mVideoComposer.getWrittenPresentationTimeUs() / mComposeDuration);
+                if (mProgressCallback != null) {
+                    mProgressCallback.onProgress(videoProgress);
                 }
             }
             if (!stepped) {
@@ -235,12 +219,17 @@ class Mp4ComposerEngine {
     }
 
 
-    interface ProgressCallback {
+    interface ComposeProgressCallback {
         /**
-         * Called to notify progress. Same thread which initiated transcode is used.
-         *
-         * @param progress Progress in [0.0, 1.0] range, or negative value if progress is unknown.
+         * progress ---> range[0,1],如果为止进度为负
+         * @param progress
          */
         void onProgress(double progress);
+
+        //合成视频成功
+        void onCompleted();
+
+        //合成视频失败
+        void onFailed(Exception e);
     }
 }

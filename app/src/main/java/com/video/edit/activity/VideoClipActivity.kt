@@ -69,9 +69,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
         videoPathInput = intent.getStringExtra("video_path")
         Log.d(TAG, "onCreate videoPathInput:$videoPathInput")
 
-
         initPlayer()
-
 
         play_spped_seakbar.max = SdkConfig.SPEED_RANGE
         var normalSpeed = play_spped_seakbar.max / 2
@@ -138,7 +136,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
         outputPath = saveDir + File.separator + System.currentTimeMillis() + ".mp4";
         var mp4Composer = Mp4Composer(videoPathInput, outputPath)
                 .frameRate(5)
-                .listener(object : Mp4Composer.Listener {
+                .listener(object : Mp4Composer.VideoComposeListener {
                     override fun onProgress(progress: Double) {
                         runOnUiThread { pb_progress.progress = (progress * 100).toInt() }
                     }
@@ -155,10 +153,6 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                             tv_framepreviewmode.visibility = View.INVISIBLE
                         }
 
-
-                    }
-
-                    override fun onCanceled() {
 
                     }
 
@@ -210,7 +204,6 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
         if (videoPlayer?.isPlaying() == true) {
             releasePlayer()
-//            initPlayer()
         }
 
         setupPlayer()
@@ -234,7 +227,6 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
 
     override fun onPreviewChange(startMillSec: Long, finished: Boolean) {
-//        Log.d(TAG, "onPreviewChang   startMillSec:$startMillSec")
         var selSec = startMillSec / 1000f
         toast_msg_tv.text = "预览到${secFormat.format(selSec)}s"
         toast_msg_tv.visibility = View.VISIBLE
@@ -396,7 +388,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                 .filterList(glFilterList)
                 .size(540, 960)
                 .clip(startMillSec, endMillSec)
-                .listener(object : Mp4Composer.Listener {
+                .listener(object : Mp4Composer.VideoComposeListener {
                     override fun onProgress(progress: Double) {
                         Log.d(TAG, "onProgress = $progress")
                         runOnUiThread { pb_progress.progress = (progress * 100).toInt() }
@@ -410,10 +402,6 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                             finish()
                         }
 
-
-                    }
-
-                    override fun onCanceled() {
 
                     }
 
