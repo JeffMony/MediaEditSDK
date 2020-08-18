@@ -47,7 +47,7 @@ class ClipContainer : FrameLayout {
     lateinit var leftFrameBarIv: View
     lateinit var rightFrameBarIv: View
 
-    var list: MutableList<String?> = mutableListOf()
+    var mList: MutableList<String?> = mutableListOf()
 
 
     var startMillSec: Float = 0f
@@ -70,7 +70,7 @@ class ClipContainer : FrameLayout {
     private var minDistance = 120f
     var millSecInFrame = SdkConfig.maxSelection
 
-    var callback: Callback? = null
+    var mCallback: Callback? = null
 
     lateinit var adapter: MyAdapter
 
@@ -186,8 +186,8 @@ class ClipContainer : FrameLayout {
 
 
 
-        if (callback != null) {
-            callback!!.onPreviewChang(previewMillSec.toLong(), finished)
+        if (mCallback != null) {
+            mCallback!!.onPreviewChange(previewMillSec.toLong(), finished)
         }
         invalidate()
         return
@@ -214,8 +214,8 @@ class ClipContainer : FrameLayout {
 
 
     interface Callback {
-        fun onSelectionChang(totalCount: Int, startMillSec: Long, endMillSec: Long, finished: Boolean)
-        fun onPreviewChang(startMillSec: Long, finished: Boolean)
+        fun onSelectionChange(totalCount: Int, startMillSec: Long, endMillSec: Long, finished: Boolean)
+        fun onPreviewChange(startMillSec: Long, finished: Boolean)
     }
 
 
@@ -297,7 +297,7 @@ class ClipContainer : FrameLayout {
             override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                 Log.d(TAG, "onScrolled  dx:$dx, dy:$dy")
                 if (dx != 0) {
-                    clipContainer.updateSelection()
+                    updateSelection()
                 }
 
             }
@@ -418,7 +418,6 @@ class ClipContainer : FrameLayout {
                 leftShadowStart = 0
             }
             leftShadowEnd = leftFrameLeft.toInt() + framebarPadding + SHADOW_DELTA
-//            Log.d(TAG, "onFrameMoved: leftShadowStart:$leftShadowStart, leftShadowEnd:$leftShadowEnd")
 
             rightShadowStart = (rightFrameLeft + framebarImageWidth).toInt() - +SHADOW_DELTA
             rightShadowEnd = getFrameFixLeftX() + totalItemsWidth
@@ -428,8 +427,8 @@ class ClipContainer : FrameLayout {
             updateFramebarBg()
             Log.d(TAG, "onFrameMoved: rightShadowStart:$rightShadowStart, rightShadowEnd:$rightShadowEnd")
 
-            if (callback != null) {
-                callback!!.onSelectionChang(itemCount, startMillSec.toLong(), endMillSec.toLong(), finished)
+            if (mCallback != null) {
+                mCallback!!.onSelectionChange(itemCount, startMillSec.toLong(), endMillSec.toLong(), finished)
             }
             invalidate()
             return
@@ -467,8 +466,8 @@ class ClipContainer : FrameLayout {
         endMillSec += scrollMillSec
 //        Log.e(TAG, "onFrameMoved: final startMillSec:$startMillSec, endMillSec:$endMillSec, range:${endMillSec - startMillSec}")
 
-        if (callback != null) {
-            callback!!.onSelectionChang(itemCount, startMillSec.toLong(), endMillSec.toLong(), finished)
+        if (mCallback != null) {
+            mCallback!!.onSelectionChange(itemCount, startMillSec.toLong(), endMillSec.toLong(), finished)
         }
         invalidate()
         return
@@ -519,20 +518,19 @@ class ClipContainer : FrameLayout {
 
 
     fun updateBitmapList(toList: List<String>) {
-        list.clear()
-        list.addAll(toList)
+        mList.clear()
+        mList.addAll(toList)
         adapter?.notifyDataSetChanged()
     }
 
     fun addThumbnail(index: Int, bitmapPath: String) {
-        list.set(index, bitmapPath)
-//        Log.d(TAG, "addThumbnail  $index  size:${list.size}  bitmap.size:${bitmap.byteCount}, width:${bitmap.width}, height:${bitmap.height}")
+        mList.set(index, bitmapPath)
         adapter.notifyDataSetChanged()
     }
 
     fun initRecyclerList(count: Int) {
         for (i in 0 until count) {
-            list.add(null)
+            mList.add(null)
         }
     }
 
@@ -557,15 +555,15 @@ class ClipContainer : FrameLayout {
             return VH(v)
         }
 
-        override fun getItemCount() = list.size
+        override fun getItemCount() = mList.size
 
         override fun onBindViewHolder(viewholder: VH, position: Int) {
             val layoutParams = viewholder.itemView.layoutParams
             layoutParams.width = itemWidth
             viewholder.itemView.layoutParams = layoutParams
 //            viewholder.title.setText("$position")
-            if (list[position] != null) {
-                viewholder.image.setImageBitmap(decodeFile(list[position]!!))
+            if (mList[position] != null) {
+                viewholder.image.setImageBitmap(decodeFile(mList[position]!!))
             } else {
                 viewholder.image.setImageResource(R.drawable.ic_launcher_background)
             }

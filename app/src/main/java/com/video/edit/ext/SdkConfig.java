@@ -1,5 +1,9 @@
 package com.video.edit.ext;
 
+import android.content.Context;
+
+import java.io.File;
+
 public class SdkConfig {
     public static final int SPEED_RANGE = 30;
     public static final String DEFAULT_TEMP_VIDEO_LOCATION = "/storage/emulated/0/movies/process.mp4";
@@ -18,4 +22,8 @@ public class SdkConfig {
 
     // 裁剪最长时间为30s
     public static long maxSelection = 30000; // 最长30s
+
+    public static File getVideoDir(Context context) {
+        return new File(context.getExternalFilesDir("Video"), "EditDir");
+    }
 }

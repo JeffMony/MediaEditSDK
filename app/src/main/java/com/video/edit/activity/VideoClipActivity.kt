@@ -38,9 +38,9 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
     companion object {
         val TAG = "VideoClipActivity"
-        val videoPlayUrl = SdkConfig.DEFAULT_TEMP_VIDEO_LOCATION
     }
-
+    var outputPath: String = ""
+    var saveDir: String = ""
 
     lateinit var videoPathInput: String
     lateinit var finalVideoPath: String
@@ -65,7 +65,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_clip)
-
+        saveDir = SdkConfig.getVideoDir(this).absolutePath
         videoPathInput = intent.getStringExtra("video_path")
         Log.d(TAG, "onCreate videoPathInput:$videoPathInput")
 
@@ -135,12 +135,11 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
 
     private fun startProcess() {
-
-        var mp4Composer = Mp4Composer(videoPathInput, videoPlayUrl)
+        outputPath = saveDir + File.separator + System.currentTimeMillis() + ".mp4";
+        var mp4Composer = Mp4Composer(videoPathInput, outputPath)
                 .frameRate(5)
                 .listener(object : Mp4Composer.Listener {
                     override fun onProgress(progress: Double) {
-//                        Log.d(TAG, "onProgress = $progress")
                         runOnUiThread { pb_progress.progress = (progress * 100).toInt() }
                     }
 
@@ -149,7 +148,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                         runOnUiThread {
                             hideShadow()
 
-                            finalVideoPath = videoPlayUrl
+                            finalVideoPath = outputPath
                             onProcessCompleted()
 
                             videoPlayer!!.enableFramePreviewMode()
@@ -218,15 +217,15 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
         clipContainer.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                log("onGlobalLayout()  mediaDuration:$mediaDuration,  size:${clipContainer.list.size}")
-                clipContainer.updateInfo(mediaDuration, clipContainer.list.size)
+                log("onGlobalLayout()  mediaDuration:$mediaDuration,  size:${clipContainer.mList.size}")
+                clipContainer.updateInfo(mediaDuration, clipContainer.mList.size)
                 updatePlayPosition()
 
                 clipContainer.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
 
-        clipContainer.callback = (this)
+        clipContainer.mCallback = (this)
     }
 
     private fun releasePlayer() {
@@ -234,7 +233,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
     }
 
 
-    override fun onPreviewChang(startMillSec: Long, finished: Boolean) {
+    override fun onPreviewChange(startMillSec: Long, finished: Boolean) {
 //        Log.d(TAG, "onPreviewChang   startMillSec:$startMillSec")
         var selSec = startMillSec / 1000f
         toast_msg_tv.text = "预览到${secFormat.format(selSec)}s"
@@ -258,7 +257,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
     }
 
 
-    override fun onSelectionChang(totalCount: Int, _startMillSec: Long, _endMillSec: Long, finished: Boolean) {
+    override fun onSelectionChange(totalCount: Int, _startMillSec: Long, _endMillSec: Long, finished: Boolean) {
         Log.d(TAG, "onSelectionChang ...startMillSec:$_startMillSec, endMillSec:$_endMillSec")
         this.startMillSec = _startMillSec
         this.endMillSec = _endMillSec
@@ -387,19 +386,13 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
     private fun doClipUseGl() {
 
-//        var glFilterList = GlFilterList()
-//        glFilterList.putGlFilter(GlFilterPeriod(0, 3000, GlInvertFilter()))
-//        glFilterList.putGlFilter(GlFilterPeriod(3000, 6000, GLImageComplexionBeautyFilter(this)))
-//        glFilterList.putGlFilter(GlFilterPeriod(6000, 9000, GlInvertFilter()))
-
         var glFilterList = GlFilterList()
         glFilterList.putGlFilter(GlFilterPeriod(0, 2000, GlSoulOutFilter(this)))
         glFilterList.putGlFilter(GlFilterPeriod(2000, 4000, GlFlashFliter(this)))
         glFilterList.putGlFilter(GlFilterPeriod(4000, 6000, GlShakeFilter(this)))
-
-        Mp4Composer(videoPathInput, videoPlayUrl)
+        outputPath = saveDir + File.separator + System.currentTimeMillis() + ".mp4";
+        Mp4Composer(videoPathInput, outputPath)
                 .frameRate(8)
-//                .filter(GLImageComplexionBeautyFilter(this))
                 .filterList(glFilterList)
                 .size(540, 960)
                 .clip(startMillSec, endMillSec)
@@ -413,7 +406,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                         Log.d(TAG, "onCompleted()")
                         runOnUiThread {
                             hideShadow()
-                            showToast("裁剪成功!新文件已经存放在:" + videoPlayUrl)
+                            showToast("裁剪成功!新文件已经存放在:" + outputPath)
                             finish()
                         }
 
