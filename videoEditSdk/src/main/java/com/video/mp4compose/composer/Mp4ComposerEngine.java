@@ -68,10 +68,16 @@ public class Mp4ComposerEngine {
         if (startTimeMs <= 0) {
             startTimeMs = 0;
         } else if (endTimeMs < startTimeMs) {
+            if (mediaRetriever != null) {
+                mediaRetriever.release();
+            }
             throw new VideoCustomException(VideoCustomException.CLIP_VIDEO_TIMERANGE_ERROR, new Throwable());
         } else if (duration < (endTimeMs - startTimeMs)) {
             endTimeMs = duration;
             if (endTimeMs < startTimeMs) {
+                if (mediaRetriever != null) {
+                    mediaRetriever.release();
+                }
                 throw new VideoCustomException(VideoCustomException.CLIP_VIDEO_OUT_OF_RANGE, new Throwable());
             }
         } else {
@@ -81,11 +87,19 @@ public class Mp4ComposerEngine {
         try {
             mMediaExtractor.setDataSource(mInputFd);
         } catch (Exception e) {
+            if (mediaRetriever != null) {
+                mediaRetriever.release();
+            }
+            releaseMediaResources();
             throw new VideoCustomException(VideoCustomException.MEDIA_EXTRACTOR_DATASOURCE_FAILED, e);
         }
         try {
             mMediaMuxer = new MediaMuxer(destPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (Exception e) {
+            if (mediaRetriever != null) {
+                mediaRetriever.release();
+            }
+            releaseMediaResources();
             throw new VideoCustomException(VideoCustomException.MEDIA_MUXER_INSTANCE_FAILED, e);
         }
         MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", outputResolution.width(), outputResolution.height());
@@ -110,6 +124,10 @@ public class Mp4ComposerEngine {
         }
 
         if (videoTrackIndex == -1) {
+            if (mediaRetriever != null) {
+                mediaRetriever.release();
+            }
+            releaseMediaResources();
             throw new VideoCustomException(VideoCustomException.MEDIA_HAS_NO_VIDEO, new Throwable());
         }
         MuxRender muxRender = new MuxRender(mMediaMuxer);
@@ -134,29 +152,24 @@ public class Mp4ComposerEngine {
             runPipelinesNoAudio();
         }
         mMediaMuxer.stop();
-        try {
-            if (mVideoComposer != null) {
-                mVideoComposer.release();
-                mVideoComposer = null;
-            }
-            if (mAudioComposer != null) {
-                mAudioComposer.release();
-                mAudioComposer = null;
-            }
-            if (mMediaExtractor != null) {
-                mMediaExtractor.release();
-                mMediaExtractor = null;
-            }
-        } catch (RuntimeException e) {
-            throw new Error("Could not shutdown mediaExtractor, codecs and mediaMuxer pipeline.", e);
+    }
+
+    private void releaseMediaResources() {
+        if (mVideoComposer != null) {
+            mVideoComposer.release();
+            mVideoComposer = null;
         }
-        try {
-            if (mMediaMuxer != null) {
-                mMediaMuxer.release();
-                mMediaMuxer = null;
-            }
-        } catch (RuntimeException e) {
-            Log.e(TAG, "Failed to release mediaMuxer.", e);
+        if (mAudioComposer != null) {
+            mAudioComposer.release();
+            mAudioComposer = null;
+        }
+        if (mMediaExtractor != null) {
+            mMediaExtractor.release();
+            mMediaExtractor = null;
+        }
+        if (mMediaMuxer != null) {
+            mMediaMuxer.release();
+            mMediaMuxer = null;
         }
     }
 
@@ -166,7 +179,8 @@ public class Mp4ComposerEngine {
         if (mComposeDuration <= 0) {
             if (mProgressCallback != null) {
                 mProgressCallback.onProgress(PROGRESS_UNKNOWN);
-            }// unknown
+            }
+            return;
         }
         while (!(mVideoComposer.isFinished() && mAudioComposer.isFinished())) {
             boolean stepped = mVideoComposer.stepPipeline()
