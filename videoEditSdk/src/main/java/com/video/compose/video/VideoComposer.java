@@ -198,7 +198,6 @@ public class VideoComposer {
             mBufferInfo.size = 0;
         }
 
-        // added by shaopx begin
         Log.d(TAG+".drainDecoder", "drainDecoder: bufferInfo.presentationTimeUs:"+mBufferInfo.presentationTimeUs +", endTimeMs:"+ mEnd);
         if (mBufferInfo.presentationTimeUs > mEnd * 1000) {
             Log.w(TAG+".drainDecoder", "drainDecoder: reach the clip end ms! bufferInfo.offset:"+mBufferInfo.offset+", size:"+mBufferInfo.size+",presentationTimeUs:"+mBufferInfo.presentationTimeUs);
@@ -206,7 +205,6 @@ public class VideoComposer {
             mIsDecoderEOS = true;
             mBufferInfo.flags = mBufferInfo.flags | MediaCodec.BUFFER_FLAG_END_OF_STREAM;
         }
-        // added by shaopx end
 
         boolean doRender = (mBufferInfo.size > 0);
 
@@ -267,6 +265,7 @@ public class VideoComposer {
     public void setClipRange(long startTimeMs, long endTimeMs) {
         this.mStart = startTimeMs;
         this.mEnd = endTimeMs;
-        mMediaExtractor.seekTo(startTimeMs, SEEK_TO_PREVIOUS_SYNC);
+        //跳到指定的位置
+        mMediaExtractor.seekTo(mStart, SEEK_TO_PREVIOUS_SYNC);
     }
 }

@@ -2,13 +2,12 @@ package com.video.compose.video;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
-import android.util.Log;
 
+import com.video.compose.utils.LogUtils;
 import com.video.epf.EFramebufferObject;
 import com.video.epf.EglUtil;
 import com.video.epf.filter.GlFilter;
 import com.video.compose.utils.GLESUtils;
-
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,34 +17,32 @@ import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
 import static android.opengl.GLES20.GL_FRAMEBUFFER;
 
 public abstract class FrameBufferObjectOutputSurface implements SurfaceTexture.OnFrameAvailableListener {
-
-    private static final boolean VERBOSE = true;
     private static final String TAG = "FBOOutputSurface";
-    private EFramebufferObject framebufferObject;
-    private EFramebufferObject lastFrameFBO;
-    private GlFilter normalShader;
-    protected SurfaceTexture surfaceTexture;
-
     private static final int PBO_SIZE = 2;
-    private int[] pboIds = new int[PBO_SIZE];
-    private int lastPboId = -1;
+    private EFramebufferObject mFramebufferObject;
+    private EFramebufferObject mLastFrameFBO;
+    private GlFilter mNormalShader;
+    protected SurfaceTexture mSurfaceTexture;
+
+    private int[] mPboIds = new int[PBO_SIZE];
+    private int mLastPboId = -1;
     private int mWidth, mHeight;
 
-    private Map<String, Integer> extraTextureIds = new HashMap<>();
+    private Map<String, Integer> mExtraTextureIds = new HashMap<>();
 
     public final void setupAll() {
         mWidth = getOutputWidth();
         mHeight = getOutputHeight();
-        framebufferObject = new EFramebufferObject();
-        lastFrameFBO = new EFramebufferObject();
-        normalShader = new GlFilter();
-        normalShader.setup();
+        mFramebufferObject = new EFramebufferObject();
+        mLastFrameFBO = new EFramebufferObject();
+        mNormalShader = new GlFilter();
+        mNormalShader.setup();
 
-        framebufferObject.setup(mWidth, mHeight);
-        lastFrameFBO.setup(mWidth, mHeight);
-        normalShader.setFrameSize(mWidth, mHeight);
+        mFramebufferObject.setup(mWidth, mHeight);
+        mLastFrameFBO.setup(mWidth, mHeight);
+        mNormalShader.setFrameSize(mWidth, mHeight);
 
-        pboIds = EglUtil.genPbo(PBO_SIZE, mWidth, mHeight);
+        mPboIds = EglUtil.genPbo(PBO_SIZE, mWidth, mHeight);
 
         setup();
     }
@@ -62,7 +59,7 @@ public abstract class FrameBufferObjectOutputSurface implements SurfaceTexture.O
 
     @Override
     public void onFrameAvailable(SurfaceTexture st) {
-        if (VERBOSE) Log.d(TAG, "new frame available");
+        LogUtils.d(TAG + ", new frame available");
         synchronized (frameSyncObject) {
             if (frameAvailable) {
                 throw new RuntimeException("frameAvailable already set, frame could be dropped");
@@ -94,7 +91,6 @@ public abstract class FrameBufferObjectOutputSurface implements SurfaceTexture.O
                         throw new RuntimeException("Surface frame wait timed out");
                     }
                 } catch (InterruptedException ie) {
-                    // shouldn't happen
                     throw new RuntimeException(ie);
                 }
             }
@@ -105,33 +101,31 @@ public abstract class FrameBufferObjectOutputSurface implements SurfaceTexture.O
         }
         // Latch the data.
         GLESUtils.checkGlError("before updateTexImage");
-        surfaceTexture.updateTexImage();
+        mSurfaceTexture.updateTexImage();
     }
 
 
     public void drawImage(long presentationTimeUs) {
-        Log.d(TAG, "drawImage: presentationTimeUs:" + presentationTimeUs);
-        framebufferObject.enable();
-        GLES20.glViewport(0, 0, framebufferObject.getWidth(), framebufferObject.getHeight());
+        LogUtils.d(TAG + ", drawImage: presentationTimeUs:" + presentationTimeUs);
+        mFramebufferObject.enable();
+        GLES20.glViewport(0, 0, mFramebufferObject.getWidth(), mFramebufferObject.getHeight());
 
-
-        onDrawFrame(framebufferObject, presentationTimeUs, extraTextureIds);
-
+        onDrawFrame(mFramebufferObject, presentationTimeUs, mExtraTextureIds);
 
         // 在最外层, 最终把输出从屏幕输出
         GLES20.glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        GLES20.glViewport(0, 0, framebufferObject.getWidth(), framebufferObject.getHeight());
+        GLES20.glViewport(0, 0, mFramebufferObject.getWidth(), mFramebufferObject.getHeight());
         GLES20.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        normalShader.draw(framebufferObject.getTexName(), null, null);
+        mNormalShader.draw(mFramebufferObject.getTexName(), null, null);
 
         if (needLastFrame()) {
             // 先绘制到上一帧fbo中.
-            lastFrameFBO.enable();
-            GLES20.glViewport(0, 0, framebufferObject.getWidth(), framebufferObject.getHeight());
+            mLastFrameFBO.enable();
+            GLES20.glViewport(0, 0, mFramebufferObject.getWidth(), mFramebufferObject.getHeight());
             GLES20.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            normalShader.draw(framebufferObject.getTexName(), null, null);
-            int lastTexName = lastFrameFBO.getTexName();
-            extraTextureIds.put("last_frame_texture", lastTexName);
+            mNormalShader.draw(mFramebufferObject.getTexName(), null, null);
+            int lastTexName = mLastFrameFBO.getTexName();
+            mExtraTextureIds.put("last_frame_texture", lastTexName);
         }
     }
 
@@ -142,6 +136,6 @@ public abstract class FrameBufferObjectOutputSurface implements SurfaceTexture.O
     public abstract void onDrawFrame(EFramebufferObject framebufferObject, long presentationTimeUs, Map<String, Integer> extraTextureIds);
 
     public int getLastTextId(int offset) {
-        return lastPboId;
+        return mLastPboId;
     }
 }

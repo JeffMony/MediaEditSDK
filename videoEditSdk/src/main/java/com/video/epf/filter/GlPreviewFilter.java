@@ -126,5 +126,4 @@ public class GlPreviewFilter extends GlFilter {
         previewTexture.getTransformMatrix(STMatrix);
     }
 
-
 }
