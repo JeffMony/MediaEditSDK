@@ -247,7 +247,7 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
     }
 
 
-    public void setOutputResolution(VideoSize resolution) {
+    public void setOutputVideoSize(VideoSize resolution) {
         this.outputResolution = resolution;
     }
 

@@ -5,6 +5,7 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import com.video.compose.ComposeParams
 import com.video.compose.VideoCustomException
 import com.video.epf.filter.FilterType
 import com.video.egl.GlFilterList
@@ -44,42 +45,42 @@ class VideoProgressActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         var s = System.currentTimeMillis();
-        var mp4Composer = Mp4Composer(videoProcessConfig.srcMediaPath, videoProcessConfig.outMediaPath)
-                .frameRate(30)
-                .filterList(glFilterList)
-                .listener(object : Mp4Composer.VideoComposeListener {
-                    override fun onProgress(_p: Double) {
-                        Log.d(TAG, "onProgress $_p")
-                        progression = (100 * _p).toInt()
-                    }
+        var composeParams = ComposeParams(videoProcessConfig.srcMediaPath, videoProcessConfig.outMediaPath)
+        composeParams.setFrameRate(30)
+        composeParams.setFilterList(glFilterList)
+        var mp4Composer = Mp4Composer(composeParams)
+        mp4Composer.listener(object : Mp4Composer.VideoComposeListener {
+            override fun onProgress(_p: Double) {
+                Log.d(TAG, "onProgress $_p")
+                progression = (100 * _p).toInt()
+            }
 
-                    override fun onCompleted() {
-                        Log.d(TAG, "onCompleted()")
-                        runOnUiThread {
-                            var e = System.currentTimeMillis()
-                          Toast.makeText(this@VideoProgressActivity, "生成视频成功,耗时${e-s}ms, 文件放在:${videoProcessConfig.outMediaPath}", Toast.LENGTH_LONG).show()
-                        }
-                        progression = 100
-                        finish()
-                    }
+            override fun onCompleted() {
+                Log.d(TAG, "onCompleted()")
+                runOnUiThread {
+                    var e = System.currentTimeMillis()
+                    Toast.makeText(this@VideoProgressActivity, "生成视频成功,耗时${e-s}ms, 文件放在:${videoProcessConfig.outMediaPath}", Toast.LENGTH_LONG).show()
+                }
+                progression = 100
+                finish()
+            }
 
-                    override fun onCanceled() {
-                        runOnUiThread {
-                            Toast.makeText(this@VideoProgressActivity, "生成视频取消", Toast.LENGTH_LONG).show()
-                        }
+            override fun onCanceled() {
+                runOnUiThread {
+                    Toast.makeText(this@VideoProgressActivity, "生成视频取消", Toast.LENGTH_LONG).show()
+                }
 
-                    }
+            }
 
-                    override fun onFailed(exception: VideoCustomException) {
-                        Log.d(TAG, "onFailed()")
-                        runOnUiThread {
-                            Toast.makeText(this@VideoProgressActivity, "生成视频失败", Toast.LENGTH_LONG).show()
-                        }
+            override fun onFailed(exception: VideoCustomException) {
+                Log.d(TAG, "onFailed()")
+                runOnUiThread {
+                    Toast.makeText(this@VideoProgressActivity, "生成视频失败", Toast.LENGTH_LONG).show()
+                }
 
-                    }
-                })
-                .start()
-
+            }
+        })
+        mp4Composer.start()
         showProgress()
     }
 

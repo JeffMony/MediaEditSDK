@@ -8,7 +8,8 @@ import com.video.epf.filter.GlFilter;
 public class ComposeParams {
     public String mSrcPath;         //源文件路径
     public String mDestPath;        //生成文件的路径
-    public VideoSize mVideoSize;    //视频文件大小
+    public VideoSize mDestVideoSize; //生成视频文件大小
+    public VideoSize mSrcVideoSize;  //源视频文件大小
     public VideoRange mVideoRange;  //裁减的文件时间范围
     public int mBitRate;            //视频的码率
     public int mFrameRate;          //视频的帧率
@@ -27,9 +28,11 @@ public class ComposeParams {
         mDestPath = destPath;
     }
 
-    public void setSize(VideoSize size) {
-        mVideoSize = size;
+    public void setDestVideoSize(VideoSize size) {
+        mDestVideoSize = size;
     }
+
+    public void setSrcVideoSize(VideoSize size) { mSrcVideoSize = size; }
 
     public void setVideoRange(VideoRange range) {
         mVideoRange = range;
@@ -69,6 +72,7 @@ public class ComposeParams {
 
     public void setCustomFillMode(CustomFillMode mode) {
         mCustomFillMode = mode;
+        mFillMode = FillMode.CUSTOM;
     }
 
     public void setFilter(GlFilter filter) {

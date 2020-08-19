@@ -6,15 +6,11 @@ import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
 
-import com.video.compose.VideoSize;
+import com.video.compose.ComposeParams;
+import com.video.compose.VideoRange;
 import com.video.compose.audio.AudioComposer;
 import com.video.compose.audio.IAudioComposer;
 import com.video.compose.audio.RemixAudioComposer;
-import com.video.epf.filter.GlFilter;
-import com.video.egl.GlFilterList;
-import com.video.compose.FillMode;
-import com.video.compose.CustomFillMode;
-import com.video.compose.Rotation;
 import com.video.compose.VideoCustomException;
 
 import java.io.FileDescriptor;
@@ -45,45 +41,34 @@ public class Mp4ComposerEngine {
         mProgressCallback = progressCallback;
     }
 
-    public void compose(
-            String destPath,
-            VideoSize outputResolution,
-            GlFilter filter,
-            GlFilterList filterList,
-            int bitrate,
-            int frameRate,
-            boolean mute,
-            Rotation rotation,
-            VideoSize inputResolution,
-            FillMode fillMode,
-            CustomFillMode fillModeCustomItem,
-            int timeScale,
-            boolean flipVertical,
-            boolean flipHorizontal,
-            long startTimeMs,
-            long endTimeMs
-    ) throws VideoCustomException {
+    public void compose(ComposeParams composeParams) throws VideoCustomException {
         MediaMetadataRetriever mediaRetriever = new MediaMetadataRetriever();
         mediaRetriever.setDataSource(mInputFd);
         long duration = Long.parseLong(mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-        if (startTimeMs <= 0) {
-            startTimeMs = 0;
-        } else if (endTimeMs < startTimeMs) {
+        VideoRange range = composeParams.mVideoRange;
+        if (range == null) {
+            range = new VideoRange(0, duration);
+            composeParams.setVideoRange(range);
+        }
+        if (range.mStart < 0) {
+            range.mStart = 0;
+        } else if (range.mEnd < range.mStart) {
             if (mediaRetriever != null) {
                 mediaRetriever.release();
             }
             throw new VideoCustomException(VideoCustomException.CLIP_VIDEO_TIMERANGE_ERROR, new Throwable());
-        } else if (duration < (endTimeMs - startTimeMs)) {
-            endTimeMs = duration;
-            if (endTimeMs < startTimeMs) {
+        } else if (duration < (range.mEnd - range.mStart)) {
+            range.mEnd = duration;
+            if (range.mEnd < range.mStart) {
                 if (mediaRetriever != null) {
                     mediaRetriever.release();
                 }
                 throw new VideoCustomException(VideoCustomException.CLIP_VIDEO_OUT_OF_RANGE, new Throwable());
             }
-        } else {
-            mComposeDuration = endTimeMs - startTimeMs;
         }
+        composeParams.setVideoRange(range);
+        mComposeDuration = range.mEnd - range.mStart;
+
         mMediaExtractor = new MediaExtractor();
         try {
             mMediaExtractor.setDataSource(mInputFd);
@@ -95,7 +80,7 @@ public class Mp4ComposerEngine {
             throw new VideoCustomException(VideoCustomException.MEDIA_EXTRACTOR_DATASOURCE_FAILED, e);
         }
         try {
-            mMediaMuxer = new MediaMuxer(destPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+            mMediaMuxer = new MediaMuxer(composeParams.mDestPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (Exception e) {
             if (mediaRetriever != null) {
                 mediaRetriever.release();
@@ -103,9 +88,9 @@ public class Mp4ComposerEngine {
             releaseMediaResources();
             throw new VideoCustomException(VideoCustomException.MEDIA_MUXER_INSTANCE_FAILED, e);
         }
-        MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", outputResolution.mWidth, outputResolution.mHeight);
-        videoOutputFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
-        videoOutputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
+        MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", composeParams.mDestVideoSize.mWidth, composeParams.mDestVideoSize.mHeight);
+        videoOutputFormat.setInteger(MediaFormat.KEY_BIT_RATE, composeParams.mBitRate);
+        videoOutputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, composeParams.mFrameRate);
         videoOutputFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
         videoOutputFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
 
@@ -132,25 +117,23 @@ public class Mp4ComposerEngine {
             throw new VideoCustomException(VideoCustomException.MEDIA_HAS_NO_VIDEO, new Throwable());
         }
         MuxRender muxRender = new MuxRender(mMediaMuxer);
-        mVideoComposer = new VideoComposer(mMediaExtractor, videoTrackIndex, videoOutputFormat, muxRender, timeScale);
-        mVideoComposer.setUp(filter, filterList, rotation, outputResolution, inputResolution, fillMode, fillModeCustomItem, flipVertical, flipHorizontal);
+        mVideoComposer = new VideoComposer(mMediaExtractor, videoTrackIndex, videoOutputFormat, muxRender, composeParams.mTimeScale);
+        mVideoComposer.setUp(composeParams);
         mMediaExtractor.selectTrack(videoTrackIndex);
-        mVideoComposer.setClipRange(startTimeMs, endTimeMs);
+        mVideoComposer.setClipRange(composeParams.mVideoRange.mStart, composeParams.mVideoRange.mEnd);
 
-        if (audioTrackIndex != -1 && !mute) {
-            if (timeScale < 2) {
+        if (audioTrackIndex != -1 && !composeParams.mIsMute) {
+            if (composeParams.mTimeScale < 2) {
                 mAudioComposer = new AudioComposer(mMediaExtractor, audioTrackIndex, muxRender);
-                if (startTimeMs >= 0 && endTimeMs > startTimeMs) {
-                    ((AudioComposer) mAudioComposer).setClipRange(startTimeMs, endTimeMs);
-                }
+                ((AudioComposer) mAudioComposer).setClipRange(composeParams.mVideoRange.mStart, composeParams.mVideoRange.mEnd);
             } else {
-                mAudioComposer = new RemixAudioComposer(mMediaExtractor, audioTrackIndex, mMediaExtractor.getTrackFormat(audioTrackIndex), muxRender, timeScale);
+                mAudioComposer = new RemixAudioComposer(mMediaExtractor, audioTrackIndex, mMediaExtractor.getTrackFormat(audioTrackIndex), muxRender, composeParams.mTimeScale);
             }
             mAudioComposer.setup();
             mMediaExtractor.selectTrack(audioTrackIndex);
-            runPipelines();
+            runComposePipelines();
         } else {
-            runPipelinesNoAudio();
+            runComposePipelinesNoAudio();
         }
         mMediaMuxer.stop();
     }
@@ -175,7 +158,7 @@ public class Mp4ComposerEngine {
     }
 
 
-    private void runPipelines() {
+    private void runComposePipelines() {
         long loopCount = 0;
         if (mComposeDuration <= 0) {
             if (mProgressCallback != null) {
@@ -205,7 +188,7 @@ public class Mp4ComposerEngine {
         }
     }
 
-    private void runPipelinesNoAudio() {
+    private void runComposePipelinesNoAudio() {
         long loopCount = 0;
         if (mComposeDuration <= 0) {
             if (mProgressCallback != null) {

@@ -6,11 +6,7 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.util.Log;
 
-import com.video.compose.VideoSize;
-import com.video.epf.filter.GlFilter;
-import com.video.egl.GlFilterList;
-import com.video.compose.FillMode;
-import com.video.compose.CustomFillMode;
+import com.video.compose.ComposeParams;
 import com.video.compose.Rotation;
 import com.video.egl.DecoderOutputSurface;
 import com.video.egl.EncoderSurface;
@@ -57,14 +53,7 @@ public class VideoComposer {
         this.mTimeScale = timeScale;
     }
 
-    public void setUp(GlFilter filter, GlFilterList filterList,
-               Rotation rotation,
-               VideoSize outputResolution,
-               VideoSize inputResolution,
-               FillMode fillMode,
-               CustomFillMode fillModeCustomItem,
-               final boolean flipVertical,
-               final boolean flipHorizontal) {
+    public void setUp(ComposeParams composeParams) {
         mMediaExtractor.selectTrack(mTrackIndex);
         try {
             mEncoder = MediaCodec.createEncoderByType(mOutputFormat.getString(MediaFormat.KEY_MIME));
@@ -86,14 +75,14 @@ public class VideoComposer {
             inputFormat.setInteger("rotation-degrees", 0);
         }
 
-        mDecoderSurface = new DecoderOutputSurface(filter, filterList);
-        mDecoderSurface.setRotation(rotation);
-        mDecoderSurface.setOutputResolution(outputResolution);
-        mDecoderSurface.setInputResolution(inputResolution);
-        mDecoderSurface.setFillMode(fillMode);
-        mDecoderSurface.setFillModeCustomItem(fillModeCustomItem);
-        mDecoderSurface.setFlipHorizontal(flipHorizontal);
-        mDecoderSurface.setFlipVertical(flipVertical);
+        mDecoderSurface = new DecoderOutputSurface(composeParams.mFilter, composeParams.mFilterList);
+        mDecoderSurface.setRotation(Rotation.fromInt(composeParams.mRotateDegree));
+        mDecoderSurface.setOutputVideoSize(composeParams.mDestVideoSize);
+        mDecoderSurface.setInputResolution(composeParams.mSrcVideoSize);
+        mDecoderSurface.setFillMode(composeParams.mFillMode);
+        mDecoderSurface.setFillModeCustomItem(composeParams.mCustomFillMode);
+        mDecoderSurface.setFlipHorizontal(composeParams.mFlipHorizontal);
+        mDecoderSurface.setFlipVertical(composeParams.mFlipVertical);
         mDecoderSurface.setupAll();
         try {
             mDecoder = MediaCodec.createDecoderByType(inputFormat.getString(MediaFormat.KEY_MIME));
@@ -177,8 +166,8 @@ public class VideoComposer {
         boolean isKeyFrame = (mMediaExtractor.getSampleFlags() & MediaExtractor.SAMPLE_FLAG_SYNC) != 0;
 
         long sampleTime = mMediaExtractor.getSampleTime();
-        Log.d(TAG, "drainExtractor(): sampleTime:"+sampleTime +", endTimeMs:"+endTimeMs);
-        if (sampleTime > endTimeMs * 1000 && enableClip()) {
+        Log.d(TAG, "drainExtractor(): sampleTime:"+sampleTime +", endTimeMs:" + mEnd);
+        if (sampleTime > mEnd * 1000) {
             Log.e(TAG, "drainExtractor(): sampleTime:"+sampleTime+", reach the end time");
             mIsExtractorEOS = true;
             mMediaExtractor.unselectTrack(this.mTrackIndex);
@@ -210,8 +199,8 @@ public class VideoComposer {
         }
 
         // added by shaopx begin
-        Log.d(TAG+".drainDecoder", "drainDecoder: bufferInfo.presentationTimeUs:"+mBufferInfo.presentationTimeUs +", endTimeMs:"+endTimeMs);
-        if (enableClip() && mBufferInfo.presentationTimeUs > endTimeMs*1000) {
+        Log.d(TAG+".drainDecoder", "drainDecoder: bufferInfo.presentationTimeUs:"+mBufferInfo.presentationTimeUs +", endTimeMs:"+ mEnd);
+        if (mBufferInfo.presentationTimeUs > mEnd * 1000) {
             Log.w(TAG+".drainDecoder", "drainDecoder: reach the clip end ms! bufferInfo.offset:"+mBufferInfo.offset+", size:"+mBufferInfo.size+",presentationTimeUs:"+mBufferInfo.presentationTimeUs);
             mEncoder.signalEndOfInputStream();
             mIsDecoderEOS = true;
@@ -273,15 +262,11 @@ public class VideoComposer {
         return DRAIN_STATE_CONSUMED;
     }
 
-    private long startTimeMs, endTimeMs;
-
-    private boolean enableClip() {
-        return endTimeMs > startTimeMs && startTimeMs >= 0;
-    }
+    private long mStart, mEnd;
 
     public void setClipRange(long startTimeMs, long endTimeMs) {
-        this.startTimeMs = startTimeMs;
-        this.endTimeMs = endTimeMs;
+        this.mStart = startTimeMs;
+        this.mEnd = endTimeMs;
         mMediaExtractor.seekTo(startTimeMs, SEEK_TO_PREVIOUS_SYNC);
     }
 }

@@ -10,7 +10,10 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.SeekBar
 import android.widget.Toast
+import com.video.compose.ComposeParams
 import com.video.compose.VideoCustomException
+import com.video.compose.VideoRange
+import com.video.compose.VideoSize
 import com.video.epf.custfilter.GlFlashFliter
 import com.video.epf.custfilter.GlShakeFilter
 import com.video.epf.custfilter.GlSoulOutFilter
@@ -134,37 +137,37 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
 
     private fun startProcess() {
-        outputPath = saveDir + File.separator + System.currentTimeMillis() + ".mp4";
-        var mp4Composer = Mp4Composer(videoPathInput, outputPath)
-                .frameRate(5)
-                .listener(object : Mp4Composer.VideoComposeListener {
-                    override fun onProgress(progress: Double) {
-                        runOnUiThread { pb_progress.progress = (progress * 100).toInt() }
-                    }
+        outputPath = saveDir + File.separator + System.currentTimeMillis() + ".mp4"
+        var composeParams = ComposeParams(videoPathInput, outputPath)
+        composeParams.setFrameRate(5)
+        var mp4Composer = Mp4Composer(composeParams)
+        mp4Composer.listener(object : Mp4Composer.VideoComposeListener {
+            override fun onProgress(progress: Double) {
+                runOnUiThread { pb_progress.progress = (progress * 100).toInt() }
+            }
 
-                    override fun onCompleted() {
-                        Log.d(TAG, "onCompleted()")
-                        runOnUiThread {
-                            hideShadow()
+            override fun onCompleted() {
+                Log.d(TAG, "onCompleted()")
+                runOnUiThread {
+                    hideShadow()
 
-                            finalVideoPath = outputPath
-                            onProcessCompleted()
+                    finalVideoPath = outputPath
+                    onProcessCompleted()
 
-                            videoPlayer!!.enableFramePreviewMode()
-                            tv_framepreviewmode.visibility = View.INVISIBLE
-                        }
-                    }
+                    videoPlayer!!.enableFramePreviewMode()
+                    tv_framepreviewmode.visibility = View.INVISIBLE
+                }
+            }
 
-                    override fun onFailed(exception: VideoCustomException) {
-                        Log.d(TAG, "onFailed()")
-                    }
+            override fun onFailed(exception: VideoCustomException) {
+                Log.d(TAG, "onFailed()")
+            }
 
-                    override fun onCanceled() {
-                        TODO("Not yet implemented")
-                    }
-                })
-                .start()
-
+            override fun onCanceled() {
+                TODO("Not yet implemented")
+            }
+        });
+        mp4Composer.start()
     }
 
     private fun hideShadow() {
@@ -380,44 +383,44 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
     }
 
     private fun doClipUseGl() {
-
         var glFilterList = GlFilterList()
         glFilterList.putGlFilter(GlFilterPeriod(0, 2000, GlSoulOutFilter(this)))
         glFilterList.putGlFilter(GlFilterPeriod(2000, 4000, GlFlashFliter(this)))
         glFilterList.putGlFilter(GlFilterPeriod(4000, 6000, GlShakeFilter(this)))
         outputPath = saveDir + File.separator + System.currentTimeMillis() + ".mp4";
-        Mp4Composer(videoPathInput, outputPath)
-                .frameRate(8)
-                .filterList(glFilterList)
-                .size(540, 960)
-                .clip(startMillSec, endMillSec)
-                .listener(object : Mp4Composer.VideoComposeListener {
-                    override fun onProgress(progress: Double) {
-                        Log.d(TAG, "onProgress = $progress")
-                        runOnUiThread { pb_progress.progress = (progress * 100).toInt() }
-                    }
+        var composeParams = ComposeParams(videoPathInput, outputPath)
+        composeParams.setFrameRate(8)
+        composeParams.setFilterList(glFilterList)
+        composeParams.setDestVideoSize(VideoSize(540, 960))
+        composeParams.setVideoRange(VideoRange(startMillSec, endMillSec))
+        var mp4Composer = Mp4Composer(composeParams)
+        mp4Composer.listener(object : Mp4Composer.VideoComposeListener {
+            override fun onProgress(progress: Double) {
+                Log.d(TAG, "onProgress = $progress")
+                runOnUiThread { pb_progress.progress = (progress * 100).toInt() }
+            }
 
-                    override fun onCompleted() {
-                        Log.d(TAG, "onCompleted()")
-                        runOnUiThread {
-                            hideShadow()
-                            showToast("裁剪成功!新文件已经存放在:" + outputPath)
-                            finish()
-                        }
-                    }
+            override fun onCompleted() {
+                Log.d(TAG, "onCompleted()")
+                runOnUiThread {
+                    hideShadow()
+                    showToast("裁剪成功!新文件已经存放在:" + outputPath)
+                    finish()
+                }
+            }
 
-                    override fun onFailed(exception: VideoCustomException) {
-                        Log.d(TAG, "clip onFailed", exception)
-                        runOnUiThread {
-                            hideShadow()
-                            showToast("裁剪失败")
-                        }
-                    }
+            override fun onFailed(exception: VideoCustomException) {
+                Log.d(TAG, "clip onFailed", exception)
+                runOnUiThread {
+                    hideShadow()
+                    showToast("裁剪失败")
+                }
+            }
 
-                    override fun onCanceled() {
-                        TODO("Not yet implemented")
-                    }
-                })
-                .start()
+            override fun onCanceled() {
+                TODO("Not yet implemented")
+            }
+        })
+        mp4Composer.start()
     }
 }

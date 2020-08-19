@@ -157,8 +157,6 @@ public abstract class MPlayerView extends FrameLayout implements
         Log.d(TAG, "onSurfaceTextureAvailable: ...");
         surfaceWidth = width;
         surfaceHeight = height;
-//        videoRenderer = getVideoRender(surface, surfaceWidth, surfaceHeight);
-
 
         Thread th = new Thread(new Runnable() {
             @Override
@@ -166,15 +164,9 @@ public abstract class MPlayerView extends FrameLayout implements
 
                 encoderSurface = new EncoderSurface(new Surface(surface));
                 encoderSurface.makeCurrent();
-
                 decoderSurface = new DecoderOutputSurface(new GlFilter(), filterList);
-//        decoderSurface.setRotation(rotation);
-                decoderSurface.setOutputResolution(new VideoSize(surfaceWidth, surfaceHeight));
+                decoderSurface.setOutputVideoSize(new VideoSize(surfaceWidth, surfaceHeight));
                 decoderSurface.setInputResolution(new VideoSize(540, 960));
-//        decoderSurface.setFillMode(fillMode);
-//        decoderSurface.setFillModeCustomItem(fillModeCustomItem);
-//        decoderSurface.setFlipHorizontal(flipHorizontal);
-//        decoderSurface.setFlipVertical(flipVertical);
                 decoderSurface.setupAll();
                 post(new Runnable() {
                     @Override

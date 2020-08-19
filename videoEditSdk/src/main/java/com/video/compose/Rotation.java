@@ -25,8 +25,6 @@ public enum Rotation {
         for (Rotation rotation : values) {
             if (rotate == rotation.getRotation()) return rotation;
         }
-
         return NORMAL;
     }
-
 }
