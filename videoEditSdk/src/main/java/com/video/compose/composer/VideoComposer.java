@@ -57,7 +57,7 @@ public class VideoComposer {
         this.mTimeScale = timeScale;
     }
 
-    public void setUp(GlFilter filter,GlFilterList filterList,
+    public void setUp(GlFilter filter, GlFilterList filterList,
                Rotation rotation,
                Resolution outputResolution,
                Resolution inputResolution,

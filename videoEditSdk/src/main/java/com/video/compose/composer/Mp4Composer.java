@@ -1,9 +1,10 @@
 package com.video.compose.composer;
 
 import android.media.MediaMetadataRetriever;
-import androidx.annotation.NonNull;
-import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.video.compose.utils.LogUtils;
 import com.video.epf.filter.GlFilter;
 import com.video.compose.FillMode;
 import com.video.egl.GlFilterList;
@@ -47,7 +48,6 @@ public class Mp4Composer {
 
     private ExecutorService executorService;
 
-
     public Mp4Composer(@NonNull final String srcPath, @NonNull final String destPath) {
         this.srcPath = srcPath;
         this.destPath = destPath;
@@ -60,7 +60,7 @@ public class Mp4Composer {
 
     public Mp4Composer filterList(@NonNull GlFilterList filterList) {
         this.filterList = filterList;
-        Log.d(TAG, "set filterList = " + this.filterList);
+        LogUtils.d(TAG + ", set filterList = " + this.filterList);
         return this;
     }
 
@@ -116,7 +116,6 @@ public class Mp4Composer {
         return this;
     }
 
-
     public Mp4Composer listener(@NonNull VideoComposeListener listener) {
         this.mComposeListener = listener;
         return this;
@@ -139,8 +138,23 @@ public class Mp4Composer {
         getExecutorService().execute(new Runnable() {
             @Override
             public void run() {
-                Mp4ComposerEngine engine = new Mp4ComposerEngine();
+                File outputFile = new File(destPath);
+                if (outputFile.exists()) {
+                    outputFile.delete();
+                }
+                final File srcFile = new File(srcPath);
+                final FileInputStream fileInputStream;
+                try {
+                    fileInputStream = new FileInputStream(srcFile);
+                } catch (Exception e) {
+                    VideoCustomException exception = new VideoCustomException(VideoCustomException.SRC_VIDEO_FILE_ERROR, e);
+                    if (mComposeListener != null) {
+                        mComposeListener.onFailed(exception);
+                    }
+                    return;
+                }
 
+                Mp4ComposerEngine engine = new Mp4ComposerEngine();
                 engine.setProgressCallback(new Mp4ComposerEngine.ComposeProgressCallback() {
                     @Override
                     public void onProgress(final double progress) {
@@ -158,32 +172,14 @@ public class Mp4Composer {
                     public void onFailed(Exception e) {
 
                     }
-
                 });
-
-                File outFile = new File(destPath);
-                if (outFile.exists()) {
-                    outFile.delete();
-                }
-
-                final File srcFile = new File(srcPath);
-                final FileInputStream fileInputStream;
-                try {
-                    fileInputStream = new FileInputStream(srcFile);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (mComposeListener != null) {
-                        mComposeListener.onFailed(e);
-                    }
-                    return;
-                }
 
                 try {
                     engine.setDataSource(fileInputStream.getFD());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    VideoCustomException exception = new VideoCustomException(VideoCustomException.SRC_VIDEO_FILE_ERROR2, e);
                     if (mComposeListener != null) {
-                        mComposeListener.onFailed(e);
+                        mComposeListener.onFailed(exception);
                     }
                     return;
                 }
@@ -223,12 +219,12 @@ public class Mp4Composer {
                     timeScale = 1;
                 }
 
-                Log.d(TAG, "filterList = " + filterList);
-                Log.d(TAG, "rotation = " + (rotation.getRotation() + videoRotate));
-                Log.d(TAG, "inputResolution width = " + srcVideoResolution.width() + " height = " + srcVideoResolution.height());
+                LogUtils.d(TAG + ", filterList = " + filterList);
+                LogUtils.d(TAG + ", rotation = " + (rotation.getRotation() + videoRotate));
+                LogUtils.d(TAG + ", inputResolution width = " + srcVideoResolution.width() + " height = " + srcVideoResolution.height());
                 outputResolution = new Resolution((int) (outputResolution.width() * resolutionScale), (int) (outputResolution.height() * resolutionScale));
-                Log.d(TAG, "outputResolution width = " + outputResolution.width() + " height = " + outputResolution.height());
-                Log.d(TAG, "fillMode = " + fillMode);
+                LogUtils.d(TAG + ", outputResolution width = " + outputResolution.width() + " height = " + outputResolution.height());
+                LogUtils.d(TAG + ", fillMode = " + fillMode);
 
                 try {
                     if (bitrate < 0) {
@@ -283,7 +279,7 @@ public class Mp4Composer {
 
         void onCompleted();
 
-        void onFailed(Exception exception);
+        void onFailed(VideoCustomException e);
 
         void onCanceled();
     }
@@ -293,7 +289,7 @@ public class Mp4Composer {
         try {
             mediaMetadataRetriever.setDataSource(videoFilePath);
         } catch (Exception e) {
-            Log.e("MediaMetadataRetriever", "getVideoRotation error");
+            LogUtils.e(TAG + ", getVideoRotation error");
             return 0;
         }
         String orientation = mediaMetadataRetriever.extractMetadata(
@@ -303,7 +299,7 @@ public class Mp4Composer {
 
     private int calcBitRate(int width, int height) {
         final int bitrate = (int) (0.25 * 30 * width * height);
-        Log.i(TAG, "bitrate=" + bitrate);
+        LogUtils.i(TAG + ", bitrate=" + bitrate);
         return bitrate;
     }
 

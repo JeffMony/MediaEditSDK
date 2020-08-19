@@ -7,6 +7,8 @@ public class VideoCustomException extends Exception {
     public static final int MEDIA_EXTRACTOR_DATASOURCE_FAILED = 3;
     public static final int MEDIA_MUXER_INSTANCE_FAILED = 4;
     public static final int MEDIA_HAS_NO_VIDEO = 5;
+    public static final int SRC_VIDEO_FILE_ERROR = 6;
+    public static final int SRC_VIDEO_FILE_ERROR2 = 6;
 
     private int mErr;
     private Throwable mException;
