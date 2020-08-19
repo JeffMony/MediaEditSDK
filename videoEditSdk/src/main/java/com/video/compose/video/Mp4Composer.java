@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.video.compose.VideoSize;
 import com.video.compose.utils.LogUtils;
+import com.video.compose.utils.WorkThreadHandler;
 import com.video.epf.filter.GlFilter;
 import com.video.compose.FillMode;
 import com.video.egl.GlFilterList;
@@ -17,8 +18,6 @@ import com.video.compose.filter.IResolutionFilter;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Mp4Composer {
 
@@ -41,8 +40,6 @@ public class Mp4Composer {
     private long clipStartMs, clipEndMs;
     private boolean flipVertical = false;
     private boolean flipHorizontal = false;
-
-    private ExecutorService executorService;
 
     public Mp4Composer(@NonNull final String srcPath, @NonNull final String destPath) {
         this.srcPath = srcPath;
@@ -122,16 +119,8 @@ public class Mp4Composer {
         return this;
     }
 
-    private ExecutorService getExecutorService() {
-        if (executorService == null) {
-            executorService = Executors.newSingleThreadExecutor();
-        }
-        return executorService;
-    }
-
-
     public Mp4Composer start() {
-        getExecutorService().execute(new Runnable() {
+        WorkThreadHandler.submitRunnableTask(new Runnable() {
             @Override
             public void run() {
                 File outputFile = new File(destPath);
@@ -260,24 +249,17 @@ public class Mp4Composer {
                     if (mComposeListener != null) {
                         mComposeListener.onFailed(e);
                     }
-                    executorService.shutdown();
                     return;
                 }
 
                 if (mComposeListener != null) {
                     mComposeListener.onCompleted();
                 }
-                executorService.shutdown();
             }
         });
 
         return this;
     }
-
-    public void cancel() {
-        getExecutorService().shutdownNow();
-    }
-
 
     public interface VideoComposeListener {
 
