@@ -1,8 +1,11 @@
-package com.video.compose.composer;
+package com.video.compose.audio;
 
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+
+import com.video.compose.video.MediaCodecBufferCompatWrapper;
+import com.video.compose.video.MuxRender;
 
 import java.io.IOException;
 
@@ -12,7 +15,7 @@ import java.io.IOException;
  * Created by sudamasayuki2 on 2018/02/22.
  */
 
-class RemixAudioComposer implements IAudioComposer {
+public class RemixAudioComposer implements IAudioComposer {
     private static final MuxRender.SampleType SAMPLE_TYPE = MuxRender.SampleType.AUDIO;
 
     private static final int DRAIN_STATE_NONE = 0;

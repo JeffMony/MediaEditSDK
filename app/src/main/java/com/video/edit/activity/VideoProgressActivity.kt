@@ -5,10 +5,11 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import com.video.compose.VideoCustomException
 import com.video.epf.filter.FilterType
 import com.video.egl.GlFilterList
 import com.video.egl.GlFilterPeriod
-import com.video.compose.composer.Mp4Composer
+import com.video.compose.video.Mp4Composer
 import com.video.egl.VideoProcessConfig
 import kotlinx.android.synthetic.main.video_process_activity_layout.*
 
@@ -69,7 +70,7 @@ class VideoProgressActivity : AppCompatActivity() {
 
                     }
 
-                    override fun onFailed(exception: Exception) {
+                    override fun onFailed(exception: VideoCustomException) {
                         Log.d(TAG, "onFailed()")
                         runOnUiThread {
                             Toast.makeText(this@VideoProgressActivity, "生成视频失败", Toast.LENGTH_LONG).show()

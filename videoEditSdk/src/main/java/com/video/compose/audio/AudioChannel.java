@@ -1,7 +1,9 @@
-package com.video.compose.composer;
+package com.video.compose.audio;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
+
+import com.video.compose.video.MediaCodecBufferCompatWrapper;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

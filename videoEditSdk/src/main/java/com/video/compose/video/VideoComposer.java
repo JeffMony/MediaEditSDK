@@ -1,16 +1,16 @@
 
-package com.video.compose.composer;
+package com.video.compose.video;
 
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.util.Log;
 
+import com.video.compose.VideoSize;
 import com.video.epf.filter.GlFilter;
 import com.video.egl.GlFilterList;
 import com.video.compose.FillMode;
-import com.video.compose.FillModeCustomItem;
-import com.video.egl.Resolution;
+import com.video.compose.CustomFillMode;
 import com.video.compose.Rotation;
 import com.video.egl.DecoderOutputSurface;
 import com.video.egl.EncoderSurface;
@@ -59,10 +59,10 @@ public class VideoComposer {
 
     public void setUp(GlFilter filter, GlFilterList filterList,
                Rotation rotation,
-               Resolution outputResolution,
-               Resolution inputResolution,
+               VideoSize outputResolution,
+               VideoSize inputResolution,
                FillMode fillMode,
-               FillModeCustomItem fillModeCustomItem,
+               CustomFillMode fillModeCustomItem,
                final boolean flipVertical,
                final boolean flipHorizontal) {
         mMediaExtractor.selectTrack(mTrackIndex);

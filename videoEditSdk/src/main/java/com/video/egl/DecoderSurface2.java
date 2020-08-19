@@ -10,10 +10,11 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Surface;
 
+import com.video.compose.VideoSize;
 import com.video.epf.EFramebufferObject;
 import com.video.epf.filter.GlFilter;
 import com.video.compose.FillMode;
-import com.video.compose.FillModeCustomItem;
+import com.video.compose.CustomFillMode;
 import com.video.compose.Rotation;
 import com.video.compose.filter.GlComposeFilter;
 import com.video.compose.utils.GLESUtils;
@@ -42,10 +43,10 @@ public class DecoderSurface2 implements SurfaceTexture.OnFrameAvailableListener 
     private float[] STMatrix = new float[16];
 
     private Rotation rotation = Rotation.NORMAL;
-    private Resolution outputResolution;
-    private Resolution inputResolution;
+    private VideoSize outputResolution;
+    private VideoSize inputResolution;
     private FillMode fillMode = FillMode.PRESERVE_ASPECT_FIT;
-    private FillModeCustomItem fillModeCustomItem;
+    private CustomFillMode fillModeCustomItem;
     private boolean flipVertical = false;
     private boolean flipHorizontal = false;
 
@@ -173,14 +174,14 @@ public class DecoderSurface2 implements SurfaceTexture.OnFrameAvailableListener 
         float scale[];
         switch (fillMode) {
             case PRESERVE_ASPECT_FIT:
-                scale = FillMode.getScaleAspectFit(rotation.getRotation(), inputResolution.width(), inputResolution.height(), outputResolution.width(), outputResolution.height());
+                scale = FillMode.getScaleAspectFit(rotation.getRotation(), inputResolution.mWidth, inputResolution.mHeight, outputResolution.mWidth, outputResolution.mHeight);
                 Matrix.scaleM(MVPMatrix, 0, scale[0] * scaleDirectionX, scale[1] * scaleDirectionY, 1);
                 if (rotation != Rotation.NORMAL) {
                     Matrix.rotateM(MVPMatrix, 0, -rotation.getRotation(), 0.f, 0.f, 1.f);
                 }
                 break;
             case PRESERVE_ASPECT_CROP:
-                scale = FillMode.getScaleAspectCrop(rotation.getRotation(), inputResolution.width(), inputResolution.height(), outputResolution.width(), outputResolution.height());
+                scale = FillMode.getScaleAspectCrop(rotation.getRotation(), inputResolution.mWidth, inputResolution.mHeight, outputResolution.mWidth, outputResolution.mHeight);
                 Matrix.scaleM(MVPMatrix, 0, scale[0] * scaleDirectionX, scale[1] * scaleDirectionY, 1);
                 if (rotation != Rotation.NORMAL) {
                     Matrix.rotateM(MVPMatrix, 0, -rotation.getRotation(), 0.f, 0.f, 1.f);
@@ -189,7 +190,7 @@ public class DecoderSurface2 implements SurfaceTexture.OnFrameAvailableListener 
             case CUSTOM:
                 if (fillModeCustomItem != null) {
                     Matrix.translateM(MVPMatrix, 0, fillModeCustomItem.getTranslateX(), -fillModeCustomItem.getTranslateY(), 0f);
-                    scale = FillMode.getScaleAspectCrop(rotation.getRotation(), inputResolution.width(), inputResolution.height(), outputResolution.width(), outputResolution.height());
+                    scale = FillMode.getScaleAspectCrop(rotation.getRotation(), inputResolution.mWidth, inputResolution.mHeight, outputResolution.mWidth, outputResolution.mHeight);
 
                     if (fillModeCustomItem.getRotate() == 0 || fillModeCustomItem.getRotate() == 180) {
                         Matrix.scaleM(MVPMatrix,
@@ -206,13 +207,6 @@ public class DecoderSurface2 implements SurfaceTexture.OnFrameAvailableListener 
                     }
 
                     Matrix.rotateM(MVPMatrix, 0, -(rotation.getRotation() + fillModeCustomItem.getRotate()), 0.f, 0.f, 1.f);
-
-//                    Log.d(TAG, "inputResolution = " + inputResolution.width() + " height = " + inputResolution.height());
-//                    Log.d(TAG, "out = " + outputResolution.width() + " height = " + outputResolution.height());
-//                    Log.d(TAG, "rotation = " + rotation.getRotation());
-//                    Log.d(TAG, "scale[0] = " + scale[0] + " scale[1] = " + scale[1]);
-
-
                 }
             default:
                 break;
@@ -249,7 +243,7 @@ public class DecoderSurface2 implements SurfaceTexture.OnFrameAvailableListener 
     }
 
 
-    void setOutputResolution(Resolution resolution) {
+    void setOutputResolution(VideoSize resolution) {
         this.outputResolution = resolution;
     }
 
@@ -257,11 +251,11 @@ public class DecoderSurface2 implements SurfaceTexture.OnFrameAvailableListener 
         this.fillMode = fillMode;
     }
 
-    void setInputResolution(Resolution resolution) {
+    void setInputResolution(VideoSize resolution) {
         this.inputResolution = resolution;
     }
 
-    void setFillModeCustomItem(FillModeCustomItem fillModeCustomItem) {
+    void setFillModeCustomItem(CustomFillMode fillModeCustomItem) {
         this.fillModeCustomItem = fillModeCustomItem;
     }
 

@@ -6,14 +6,15 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Surface;
 
+import com.video.compose.VideoSize;
 import com.video.epf.EFramebufferObject;
 import com.video.epf.EglUtil;
 import com.video.epf.filter.GlFilter;
 import com.video.epf.filter.GlPreviewFilter;
 import com.video.compose.FillMode;
-import com.video.compose.FillModeCustomItem;
+import com.video.compose.CustomFillMode;
 import com.video.compose.Rotation;
-import com.video.compose.composer.FrameBufferObjectOutputSurface;
+import com.video.compose.video.FrameBufferObjectOutputSurface;
 
 import java.util.Map;
 
@@ -42,10 +43,10 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
 
 
     private Rotation rotation = Rotation.NORMAL;
-    private Resolution outputResolution;
-    private Resolution inputResolution;
+    private VideoSize outputResolution;
+    private VideoSize inputResolution;
     private FillMode fillMode = FillMode.PRESERVE_ASPECT_FIT;
-    private FillModeCustomItem fillModeCustomItem;
+    private CustomFillMode fillModeCustomItem;
     private boolean flipVertical = false;
     private boolean flipHorizontal = false;
     private int textureID = -12345;
@@ -73,12 +74,12 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
 
     @Override
     protected int getOutputHeight() {
-        return outputResolution.height();
+        return outputResolution.mHeight;
     }
 
     @Override
     protected int getOutputWidth() {
-        return outputResolution.width();
+        return outputResolution.mWidth;
     }
 
     /**
@@ -86,8 +87,8 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
      * with the SurfaceTexture.
      */
     public void setup() {
-        int width = outputResolution.width();
-        int height = outputResolution.height();
+        int width = outputResolution.mWidth;
+        int height = outputResolution.mHeight;
         Log.d(TAG, "setup: width:" + width + ", height:" + height);
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -102,7 +103,7 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
 
 
         glFilterFrameBuffer = new EFramebufferObject();
-        glFilterFrameBuffer.setup(outputResolution.width(), outputResolution.height());
+        glFilterFrameBuffer.setup(outputResolution.mWidth, outputResolution.mHeight);
 
         previewFilter = new GlPreviewFilter(GL_TEXTURE_EXTERNAL_OES);
         previewFilter.setup();
@@ -172,7 +173,6 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
 
         if (isNewFilter) {
             if (filterList != null) {
-//                filterList.setup();
                 filterList.setFrameSize(fbo.getWidth(), fbo.getHeight());
             }
             isNewFilter = false;
@@ -181,14 +181,14 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
         float scale[];
         switch (fillMode) {
             case PRESERVE_ASPECT_FIT:
-                scale = FillMode.getScaleAspectFit(rotation.getRotation(), inputResolution.width(), inputResolution.height(), outputResolution.width(), outputResolution.height());
+                scale = FillMode.getScaleAspectFit(rotation.getRotation(), inputResolution.mWidth, inputResolution.mHeight, outputResolution.mWidth, outputResolution.mHeight);
                 Matrix.scaleM(MVPMatrix, 0, scale[0] * scaleDirectionX, scale[1] * scaleDirectionY, 1);
                 if (rotation != Rotation.NORMAL) {
                     Matrix.rotateM(MVPMatrix, 0, -rotation.getRotation(), 0.f, 0.f, 1.f);
                 }
                 break;
             case PRESERVE_ASPECT_CROP:
-                scale = FillMode.getScaleAspectCrop(rotation.getRotation(), inputResolution.width(), inputResolution.height(), outputResolution.width(), outputResolution.height());
+                scale = FillMode.getScaleAspectCrop(rotation.getRotation(), inputResolution.mWidth, inputResolution.mHeight, outputResolution.mWidth, outputResolution.mHeight);
                 Matrix.scaleM(MVPMatrix, 0, scale[0] * scaleDirectionX, scale[1] * scaleDirectionY, 1);
                 if (rotation != Rotation.NORMAL) {
                     Matrix.rotateM(MVPMatrix, 0, -rotation.getRotation(), 0.f, 0.f, 1.f);
@@ -197,7 +197,7 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
             case CUSTOM:
                 if (fillModeCustomItem != null) {
                     Matrix.translateM(MVPMatrix, 0, fillModeCustomItem.getTranslateX(), -fillModeCustomItem.getTranslateY(), 0f);
-                    scale = FillMode.getScaleAspectCrop(rotation.getRotation(), inputResolution.width(), inputResolution.height(), outputResolution.width(), outputResolution.height());
+                    scale = FillMode.getScaleAspectCrop(rotation.getRotation(), inputResolution.mWidth, inputResolution.mHeight, outputResolution.mWidth, outputResolution.mHeight);
 
                     if (fillModeCustomItem.getRotate() == 0 || fillModeCustomItem.getRotate() == 180) {
                         Matrix.scaleM(MVPMatrix,
@@ -214,13 +214,6 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
                     }
 
                     Matrix.rotateM(MVPMatrix, 0, -(rotation.getRotation() + fillModeCustomItem.getRotate()), 0.f, 0.f, 1.f);
-
-//                    Log.d(TAG, "inputResolution = " + inputResolution.width() + " height = " + inputResolution.height());
-//                    Log.d(TAG, "out = " + outputResolution.width() + " height = " + outputResolution.height());
-//                    Log.d(TAG, "rotation = " + rotation.getRotation());
-//                    Log.d(TAG, "scale[0] = " + scale[0] + " scale[1] = " + scale[1]);
-
-
                 }
             default:
                 break;
@@ -254,7 +247,7 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
     }
 
 
-    public void setOutputResolution(Resolution resolution) {
+    public void setOutputResolution(VideoSize resolution) {
         this.outputResolution = resolution;
     }
 
@@ -262,11 +255,11 @@ public class DecoderOutputSurface extends FrameBufferObjectOutputSurface {
         this.fillMode = fillMode;
     }
 
-    public void setInputResolution(Resolution resolution) {
+    public void setInputResolution(VideoSize resolution) {
         this.inputResolution = resolution;
     }
 
-    public void setFillModeCustomItem(FillModeCustomItem fillModeCustomItem) {
+    public void setFillModeCustomItem(CustomFillMode fillModeCustomItem) {
         this.fillModeCustomItem = fillModeCustomItem;
     }
 

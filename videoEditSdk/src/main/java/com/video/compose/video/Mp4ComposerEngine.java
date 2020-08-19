@@ -1,4 +1,4 @@
-package com.video.compose.composer;
+package com.video.compose.video;
 
 import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
@@ -6,11 +6,14 @@ import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
 
+import com.video.compose.VideoSize;
+import com.video.compose.audio.AudioComposer;
+import com.video.compose.audio.IAudioComposer;
+import com.video.compose.audio.RemixAudioComposer;
 import com.video.epf.filter.GlFilter;
 import com.video.egl.GlFilterList;
 import com.video.compose.FillMode;
-import com.video.compose.FillModeCustomItem;
-import com.video.egl.Resolution;
+import com.video.compose.CustomFillMode;
 import com.video.compose.Rotation;
 import com.video.compose.VideoCustomException;
 
@@ -44,16 +47,16 @@ public class Mp4ComposerEngine {
 
     public void compose(
             String destPath,
-            Resolution outputResolution,
+            VideoSize outputResolution,
             GlFilter filter,
             GlFilterList filterList,
             int bitrate,
             int frameRate,
             boolean mute,
             Rotation rotation,
-            Resolution inputResolution,
+            VideoSize inputResolution,
             FillMode fillMode,
-            FillModeCustomItem fillModeCustomItem,
+            CustomFillMode fillModeCustomItem,
             int timeScale,
             boolean flipVertical,
             boolean flipHorizontal,
@@ -100,7 +103,7 @@ public class Mp4ComposerEngine {
             releaseMediaResources();
             throw new VideoCustomException(VideoCustomException.MEDIA_MUXER_INSTANCE_FAILED, e);
         }
-        MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", outputResolution.width(), outputResolution.height());
+        MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", outputResolution.mWidth, outputResolution.mHeight);
         videoOutputFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
         videoOutputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
         videoOutputFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
@@ -223,6 +226,9 @@ public class Mp4ComposerEngine {
                     Thread.sleep(SLEEP_TO_WAIT_TRACK_TRANSCODERS);
                 } catch (InterruptedException e) {
                     // nothing to do
+                    if (mProgressCallback != null) {
+//                        mProgressCallback.onFailed(new VideoCustomException());
+                    }
                 }
             }
         }
@@ -242,6 +248,6 @@ public class Mp4ComposerEngine {
         void onCompleted();
 
         //合成视频失败
-        void onFailed(Exception e);
+        void onFailed(VideoCustomException e);
     }
 }

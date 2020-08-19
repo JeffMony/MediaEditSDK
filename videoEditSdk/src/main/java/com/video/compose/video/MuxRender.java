@@ -1,4 +1,4 @@
-package com.video.compose.composer;
+package com.video.compose.video;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
@@ -29,7 +29,7 @@ public class MuxRender {
         sampleInfoList = new ArrayList<>();
     }
 
-    void setOutputFormat(SampleType sampleType, MediaFormat format) {
+    public void setOutputFormat(SampleType sampleType, MediaFormat format) {
         switch (sampleType) {
             case VIDEO:
                 videoFormat = format;
@@ -80,7 +80,7 @@ public class MuxRender {
 
     }
 
-    void writeSampleData(SampleType sampleType, ByteBuffer byteBuf, MediaCodec.BufferInfo bufferInfo) {
+    public void writeSampleData(SampleType sampleType, ByteBuffer byteBuf, MediaCodec.BufferInfo bufferInfo) {
         if (started) {
             muxer.writeSampleData(getTrackIndexForSampleType(sampleType), byteBuf, bufferInfo);
             return;

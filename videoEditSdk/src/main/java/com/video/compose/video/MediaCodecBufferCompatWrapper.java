@@ -1,4 +1,4 @@
-package com.video.compose.composer;
+package com.video.compose.video;
 
 
 import android.media.MediaCodec;
@@ -13,12 +13,12 @@ import java.nio.ByteBuffer;
  * in order to prevent: http://stackoverflow.com/q/30646885
  */
 
-class MediaCodecBufferCompatWrapper {
+public class MediaCodecBufferCompatWrapper {
     private final MediaCodec mediaCodec;
     private final ByteBuffer[] inputBuffers;
     private final ByteBuffer[] putputBuffers;
 
-    MediaCodecBufferCompatWrapper(MediaCodec mediaCodec) {
+    public MediaCodecBufferCompatWrapper(MediaCodec mediaCodec) {
         this.mediaCodec = mediaCodec;
 
         if (Build.VERSION.SDK_INT < 21) {
@@ -29,14 +29,14 @@ class MediaCodecBufferCompatWrapper {
         }
     }
 
-    ByteBuffer getInputBuffer(final int index) {
+    public ByteBuffer getInputBuffer(final int index) {
         if (Build.VERSION.SDK_INT >= 21) {
             return mediaCodec.getInputBuffer(index);
         }
         return inputBuffers[index];
     }
 
-    ByteBuffer getOutputBuffer(final int index) {
+    public ByteBuffer getOutputBuffer(final int index) {
         if (Build.VERSION.SDK_INT >= 21) {
             return mediaCodec.getOutputBuffer(index);
         }

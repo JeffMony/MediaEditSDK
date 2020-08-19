@@ -1,4 +1,4 @@
-package com.video.compose.composer;
+package com.video.compose.video;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;

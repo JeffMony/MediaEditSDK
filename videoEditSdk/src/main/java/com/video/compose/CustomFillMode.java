@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by sudamasayuki2 on 2018/01/08.
  */
 
-public class FillModeCustomItem implements Parcelable {
+public class CustomFillMode implements Parcelable {
     private final float scale;
     private final float rotate;
     private final float translateX;
@@ -15,7 +15,7 @@ public class FillModeCustomItem implements Parcelable {
     private final float videoWidth;
     private final float videoHeight;
 
-    public FillModeCustomItem(float scale, float rotate, float translateX, float translateY, float videoWidth, float videoHeight) {
+    public CustomFillMode(float scale, float rotate, float translateX, float translateY, float videoWidth, float videoHeight) {
         this.scale = scale;
         this.rotate = rotate;
         this.translateX = translateX;
@@ -63,7 +63,7 @@ public class FillModeCustomItem implements Parcelable {
         dest.writeFloat(this.videoHeight);
     }
 
-    protected FillModeCustomItem(Parcel in) {
+    protected CustomFillMode(Parcel in) {
         this.scale = in.readFloat();
         this.rotate = in.readFloat();
         this.translateX = in.readFloat();
@@ -72,15 +72,15 @@ public class FillModeCustomItem implements Parcelable {
         this.videoHeight = in.readFloat();
     }
 
-    public static final Parcelable.Creator<FillModeCustomItem> CREATOR = new Parcelable.Creator<FillModeCustomItem>() {
+    public static final Parcelable.Creator<CustomFillMode> CREATOR = new Parcelable.Creator<CustomFillMode>() {
         @Override
-        public FillModeCustomItem createFromParcel(Parcel source) {
-            return new FillModeCustomItem(source);
+        public CustomFillMode createFromParcel(Parcel source) {
+            return new CustomFillMode(source);
         }
 
         @Override
-        public FillModeCustomItem[] newArray(int size) {
-            return new FillModeCustomItem[size];
+        public CustomFillMode[] newArray(int size) {
+            return new CustomFillMode[size];
         }
     };
 }

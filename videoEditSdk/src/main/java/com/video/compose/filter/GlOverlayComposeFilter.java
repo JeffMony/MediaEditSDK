@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
-import com.video.egl.Resolution;
+import com.video.compose.VideoSize;
 import com.video.compose.utils.GLESUtils;
 
 /**
@@ -19,7 +19,7 @@ public abstract class GlOverlayComposeFilter extends GlComposeFilter implements 
 
     private Bitmap bitmap = null;
 
-    protected Resolution inputResolution = new Resolution(720, 1280);
+    protected VideoSize inputResolution = new VideoSize(720, 1280);
 
     public GlOverlayComposeFilter() {
         super(GLESUtils.DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER);
@@ -50,15 +50,15 @@ public abstract class GlOverlayComposeFilter extends GlComposeFilter implements 
 
 
     @Override
-    public void setResolution(Resolution resolution) {
+    public void setResolution(VideoSize resolution) {
         this.inputResolution = resolution;
     }
 
 
     private void createBitmap() {
-        if (bitmap == null || bitmap.getWidth() != inputResolution.width() || bitmap.getHeight() != inputResolution.height()) {
+        if (bitmap == null || bitmap.getWidth() != inputResolution.mWidth || bitmap.getHeight() != inputResolution.mHeight) {
             // BitmapUtil.releaseBitmap(bitmap);
-            bitmap = Bitmap.createBitmap(inputResolution.width(), inputResolution.height(), Bitmap.Config.ARGB_8888);
+            bitmap = Bitmap.createBitmap(inputResolution.mWidth, inputResolution.mHeight, Bitmap.Config.ARGB_8888);
         }
     }
 

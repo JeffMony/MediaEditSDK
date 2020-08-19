@@ -2,7 +2,7 @@ package com.video.compose.filter;
 
 import android.opengl.GLES20;
 
-import com.video.egl.Resolution;
+import com.video.compose.VideoSize;
 
 /**
  * Created by sudamasayuki on 2018/01/07.
@@ -90,9 +90,9 @@ public class GlSharpenComposeFilter extends GlComposeFilter implements IResoluti
     }
 
     @Override
-    public void setResolution(Resolution resolution) {
-        imageWidthFactor = 1f / resolution.width();
-        imageHeightFactor = 1f / resolution.height();
+    public void setResolution(VideoSize resolution) {
+        imageWidthFactor = 1f / resolution.mWidth;
+        imageHeightFactor = 1f / resolution.mHeight;
     }
 
 

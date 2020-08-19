@@ -10,10 +10,11 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.SeekBar
 import android.widget.Toast
+import com.video.compose.VideoCustomException
 import com.video.epf.custfilter.GlFlashFliter
 import com.video.epf.custfilter.GlShakeFilter
 import com.video.epf.custfilter.GlSoulOutFilter
-import com.video.compose.composer.Mp4Composer
+import com.video.compose.video.Mp4Composer
 import com.video.egl.GlFilterList
 import com.video.egl.GlFilterPeriod
 import com.video.library.log
@@ -154,7 +155,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                         }
                     }
 
-                    override fun onFailed(exception: Exception) {
+                    override fun onFailed(exception: VideoCustomException) {
                         Log.d(TAG, "onFailed()")
                     }
 
@@ -405,7 +406,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                         }
                     }
 
-                    override fun onFailed(exception: Exception) {
+                    override fun onFailed(exception: VideoCustomException) {
                         Log.d(TAG, "clip onFailed", exception)
                         runOnUiThread {
                             hideShadow()

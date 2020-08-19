@@ -13,6 +13,7 @@ import android.view.TextureView;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.video.compose.VideoSize;
 import com.video.epf.filter.GlFilter;
 import com.video.library.player.mp.TextureSurfaceRenderer2;
 
@@ -168,8 +169,8 @@ public abstract class MPlayerView extends FrameLayout implements
 
                 decoderSurface = new DecoderOutputSurface(new GlFilter(), filterList);
 //        decoderSurface.setRotation(rotation);
-                decoderSurface.setOutputResolution(new Resolution(surfaceWidth, surfaceHeight));
-                decoderSurface.setInputResolution(new Resolution(540, 960));
+                decoderSurface.setOutputResolution(new VideoSize(surfaceWidth, surfaceHeight));
+                decoderSurface.setInputResolution(new VideoSize(540, 960));
 //        decoderSurface.setFillMode(fillMode);
 //        decoderSurface.setFillModeCustomItem(fillModeCustomItem);
 //        decoderSurface.setFlipHorizontal(flipHorizontal);

@@ -1,4 +1,4 @@
-package com.video.compose.composer;
+package com.video.compose.audio;
 
 /**
  * Created by sudamasayuki2 on 2018/02/24.

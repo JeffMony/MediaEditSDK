@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
-import com.video.egl.Resolution;
+import com.video.compose.VideoSize;
 
 /**
  * Created by sudamasayuki on 2017/05/18.
@@ -18,7 +18,7 @@ public abstract class GlOverlayFilter extends GlFilter {
 
     private Bitmap bitmap = null;
 
-    protected Resolution inputResolution = new Resolution(1280, 720);
+    protected VideoSize inputResolution = new VideoSize(1280, 720);
 
     public GlOverlayFilter() {
         super(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER);
@@ -36,19 +36,19 @@ public abstract class GlOverlayFilter extends GlFilter {
                     "   gl_FragColor = mix(textureColor, textureColor2, textureColor2.a);\n" +
                     "}\n";
 
-    public void setResolution(Resolution resolution) {
+    public void setResolution(VideoSize resolution) {
         this.inputResolution = resolution;
     }
 
     @Override
     public void setFrameSize(int width, int height) {
         super.setFrameSize(width, height);
-        setResolution(new Resolution(width, height));
+        setResolution(new VideoSize(width, height));
     }
 
     private void createBitmap() {
         releaseBitmap(bitmap);
-        bitmap = Bitmap.createBitmap(inputResolution.width(), inputResolution.height(), Bitmap.Config.ARGB_8888);
+        bitmap = Bitmap.createBitmap(inputResolution.mWidth, inputResolution.mHeight, Bitmap.Config.ARGB_8888);
     }
 
     @Override
@@ -70,7 +70,7 @@ public abstract class GlOverlayFilter extends GlFilter {
         if (bitmap == null) {
             createBitmap();
         }
-        if (bitmap.getWidth() != inputResolution.width() || bitmap.getHeight() != inputResolution.height()) {
+        if (bitmap.getWidth() != inputResolution.mWidth || bitmap.getHeight() != inputResolution.mHeight) {
             createBitmap();
         }
 

@@ -1,9 +1,11 @@
-package com.video.compose.composer;
+package com.video.compose.audio;
 
 import android.annotation.SuppressLint;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+
+import com.video.compose.video.MuxRender;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -24,7 +26,7 @@ public class AudioComposer implements IAudioComposer {
     private MediaFormat actualOutputFormat;
     private long writtenPresentationTimeUs;
 
-    AudioComposer(MediaExtractor mediaExtractor, int trackIndex,
+    public AudioComposer(MediaExtractor mediaExtractor, int trackIndex,
                   MuxRender muxRender) {
         this.mediaExtractor = mediaExtractor;
         this.trackIndex = trackIndex;
