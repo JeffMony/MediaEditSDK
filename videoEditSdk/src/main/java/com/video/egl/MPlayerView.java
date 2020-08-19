@@ -4,27 +4,30 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.video.compose.VideoSize;
+import com.video.compose.utils.LogUtils;
+import com.video.compose.utils.ScreenUtils;
+import com.video.compose.utils.WorkThreadHandler;
 import com.video.epf.filter.GlFilter;
 import com.video.library.player.mp.TextureSurfaceRenderer2;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import static android.media.MediaPlayer.SEEK_CLOSEST;
 
-/**
- * by shaopx 2018.11.5
- * textureview and egl entry
- */
 public abstract class MPlayerView extends FrameLayout implements
         TextureView.SurfaceTextureListener,
         MediaPlayer.OnPreparedListener {
@@ -35,15 +38,13 @@ public abstract class MPlayerView extends FrameLayout implements
     protected MediaPlayer mMediaPlayer;
     private String mUrl;
 
-    //    private TextureSurfaceRenderer2 videoRenderer;
     private int surfaceWidth, surfaceHeight;
     private EncoderSurface encoderSurface;
     private DecoderOutputSurface decoderSurface;
     private GlFilterList filterList = null;
 
     protected long currentPostion = 0L;
-
-//    private Handler uiHandler = new Handler();
+    protected VideoSize mVideoSize;
 
     public MPlayerView(Context context) {
         this(context, null);
@@ -63,7 +64,6 @@ public abstract class MPlayerView extends FrameLayout implements
         this.addView(mContainer, params);
 
         filterList = new GlFilterList();
-//        filterList.setup();
     }
 
     public GlFilterList getFilterList() {
@@ -83,8 +83,24 @@ public abstract class MPlayerView extends FrameLayout implements
         return period;
     }
 
-    public void setDataSource(String url) {
+    public void setDataSource(final String url) throws ExecutionException, InterruptedException {
         mUrl = url;
+        mVideoSize = (VideoSize) WorkThreadHandler.submitCallbackTask(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                MediaMetadataRetriever retriever =  new MediaMetadataRetriever();
+                retriever.setDataSource(url);
+                int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                VideoSize videoSize = new VideoSize(width, height);
+                return videoSize;
+            }
+        }).get();
+        int screenWidth = ScreenUtils.getScreenWidth(getContext());
+        surfaceWidth = screenWidth;
+        surfaceHeight = (int)(mVideoSize.mHeight * surfaceWidth * 1.0f / mVideoSize.mWidth);
+        LogUtils.w(TAG + ", videoWidth = " + mVideoSize.mWidth + ", videoHeight = " + mVideoSize.mHeight);
+        LogUtils.w(TAG + ", surfaceWidth = " + surfaceWidth + ", surfaceHeight = " + surfaceHeight);
     }
 
     public void start() {
@@ -103,7 +119,8 @@ public abstract class MPlayerView extends FrameLayout implements
 
     private void addTextureView() {
         mContainer.removeView(mTextureView);
-        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        LayoutParams params = new LayoutParams(surfaceWidth, surfaceHeight);
+        params.gravity = Gravity.CENTER;
         mContainer.addView(mTextureView, 0, params);
     }
 
@@ -131,7 +148,6 @@ public abstract class MPlayerView extends FrameLayout implements
             }
             mMediaPlayer.setSurface(surface);
 
-//            surface.release();
             mMediaPlayer.prepareAsync();
         }
     }
@@ -139,7 +155,6 @@ public abstract class MPlayerView extends FrameLayout implements
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-//        videoRenderer.onSurfaceChanged(width, height);
     }
 
     @Override
@@ -153,20 +168,17 @@ public abstract class MPlayerView extends FrameLayout implements
     }
 
     @Override
-    public void onSurfaceTextureAvailable(final SurfaceTexture surface, int width, int height) {
+    public void onSurfaceTextureAvailable(final SurfaceTexture surface, final int width, final int height) {
         Log.d(TAG, "onSurfaceTextureAvailable: ...");
-        surfaceWidth = width;
-        surfaceHeight = height;
 
         Thread th = new Thread(new Runnable() {
             @Override
             public void run() {
-
                 encoderSurface = new EncoderSurface(new Surface(surface));
                 encoderSurface.makeCurrent();
                 decoderSurface = new DecoderOutputSurface(new GlFilter(), filterList);
-                decoderSurface.setOutputVideoSize(new VideoSize(surfaceWidth, surfaceHeight));
-                decoderSurface.setInputResolution(new VideoSize(540, 960));
+                decoderSurface.setOutputVideoSize(new VideoSize(width, height));
+                decoderSurface.setInputResolution(new VideoSize(mVideoSize.mWidth, mVideoSize.mHeight));
                 decoderSurface.setupAll();
                 post(new Runnable() {
                     @Override
@@ -192,7 +204,6 @@ public abstract class MPlayerView extends FrameLayout implements
                     decoderSurface.awaitNewImage();
                 } catch (Exception ex) {
                     ex.printStackTrace();
-//                    throw ex;
                     return;
                 }
                 decoderSurface.drawImage(currentPostion * 1000 * 1000);

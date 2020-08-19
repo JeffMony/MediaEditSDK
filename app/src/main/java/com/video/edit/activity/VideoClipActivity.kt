@@ -188,7 +188,6 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
             Toast.makeText(this, "请更新videoPlayUrl变量为本地手机的视频文件地址", Toast.LENGTH_LONG).show()
         }
 
-
         mediaDuration = getVideoDuration(this, finalVideoPath)
         Log.d(TAG, "onProcessCompleted mediaDuration:$mediaDuration")
         endMillSec = if (mediaDuration > SdkConfig.maxSelection) {
@@ -361,7 +360,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
     private fun initPlayer() {
         if (SdkConfig.USE_EXOPLAYER) {
             player_view_mp.visibility = View.GONE
-            player_view_exo.visibility = View.VISIBLE
+            player_view_exo.visibility = View.GONE
             videoPlayer = VideoPlayerOfExoPlayer(player_view_exo)
         } else {
             player_view_mp.visibility = View.VISIBLE

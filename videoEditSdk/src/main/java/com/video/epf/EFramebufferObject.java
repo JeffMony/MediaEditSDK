@@ -20,29 +20,25 @@ import static android.opengl.GLES20.GL_TEXTURE_2D;
 import static android.opengl.GLES20.GL_TEXTURE_BINDING_2D;
 import static android.opengl.GLES20.GL_UNSIGNED_BYTE;
 
-/**
- * Created by sudamasayuki on 2017/05/16.
- */
-
 public class EFramebufferObject {
 
     private static final String TAG = "EFramebufferObject";
-    private int width;
-    private int height;
-    public int framebufferName;
-    private int renderbufferName;
-    private int texName;
+    private int mWidth;
+    private int mHeight;
+    public int mFramebufferName;
+    private int mRenderbufferName;
+    private int mTexName;
 
     public int getWidth() {
-        return width;
+        return mWidth;
     }
 
     public int getHeight() {
-        return height;
+        return mHeight;
     }
 
     public int getTexName() {
-        return texName;
+        return mTexName;
     }
 
     public void setup(final int width, final int height) {
@@ -69,27 +65,27 @@ public class EFramebufferObject {
         release();
 
         try {
-            this.width = width;
-            this.height = height;
+            this.mWidth = width;
+            this.mHeight = height;
 
             GLES20.glGenFramebuffers(args.length, args, 0);
-            framebufferName = args[0];
-            GLES20.glBindFramebuffer(GL_FRAMEBUFFER, framebufferName);
+            mFramebufferName = args[0];
+            GLES20.glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferName);
 
             GLES20.glGenRenderbuffers(args.length, args, 0);
-            renderbufferName = args[0];
-            GLES20.glBindRenderbuffer(GL_RENDERBUFFER, renderbufferName);
+            mRenderbufferName = args[0];
+            GLES20.glBindRenderbuffer(GL_RENDERBUFFER, mRenderbufferName);
             GLES20.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
-            GLES20.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferName);
+            GLES20.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mRenderbufferName);
 
             GLES20.glGenTextures(args.length, args, 0);
-            texName = args[0];  // 这个纹理作为framebuffer的颜色缓冲区(GL_COLOR_ATTACHMENT0), 也就是视频流输出
-            GLES20.glBindTexture(GL_TEXTURE_2D, texName);
+            mTexName = args[0];  // 这个纹理作为framebuffer的颜色缓冲区(GL_COLOR_ATTACHMENT0), 也就是视频流输出
+            GLES20.glBindTexture(GL_TEXTURE_2D, mTexName);
 
             EglUtil.setupSampler(GL_TEXTURE_2D, GL_LINEAR, GL_NEAREST);
 
             GLES20.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
-            GLES20.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texName, 0);
+            GLES20.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexName, 0);
 
             final int status = GLES20.glCheckFramebufferStatus(GL_FRAMEBUFFER);
             if (status != GL_FRAMEBUFFER_COMPLETE) {
@@ -107,19 +103,19 @@ public class EFramebufferObject {
 
     public void release() {
         final int[] args = new int[1];
-        args[0] = texName;
+        args[0] = mTexName;
         GLES20.glDeleteTextures(args.length, args, 0);
-        texName = 0;
-        args[0] = renderbufferName;
+        mTexName = 0;
+        args[0] = mRenderbufferName;
         GLES20.glDeleteRenderbuffers(args.length, args, 0);
-        renderbufferName = 0;
-        args[0] = framebufferName;
+        mRenderbufferName = 0;
+        args[0] = mFramebufferName;
         GLES20.glDeleteFramebuffers(args.length, args, 0);
-        framebufferName = 0;
+        mFramebufferName = 0;
     }
 
     public void enable() {
-        GLES20.glBindFramebuffer(GL_FRAMEBUFFER, framebufferName);
+        GLES20.glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferName);
     }
 
 

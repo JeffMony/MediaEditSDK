@@ -72,7 +72,6 @@ class ThumbExoPlayerView(context: Context?, attrs: AttributeSet?) : PlayerView(c
     }
 
     private fun startPlayAndCapture() {
-
         if (thumbnailMillSecList.size == 0) {
             return
         }

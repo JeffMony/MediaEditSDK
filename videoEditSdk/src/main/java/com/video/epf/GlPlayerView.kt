@@ -23,7 +23,6 @@ class GlPlayerView : MPlayerView {
         return renderer
     }
 
-
     fun setProgressListener(function: (Long) -> Unit) {
         listener = function
 

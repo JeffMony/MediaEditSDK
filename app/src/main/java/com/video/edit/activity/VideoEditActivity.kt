@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import com.video.compose.utils.LogUtils
 import kotlinx.android.synthetic.main.activity_video_edit.*
 
 import com.video.egl.GlFilterPeriod
@@ -27,7 +28,6 @@ import com.video.library.toTime
 import java.io.File
 
 class VideoEditActivity : AppCompatActivity() {
-
 
     companion object {
         const val TAG = "VideoEditActivity"
@@ -51,15 +51,12 @@ class VideoEditActivity : AppCompatActivity() {
     var effectTouching = false
     var effectStartTime = 0L
     var effectEndTime = 0L
-    //    var effectFliter: GlFilter? = null
     var effectFilterPeriod: GlFilterPeriod? = null
 
     var state = STATE_NORMAL
 
     lateinit var videoProcessConfig :com.video.egl.VideoProcessConfig
     lateinit var filterConfigList:MutableList<GlFilterConfig>
-
-//    var glFilterList = GlFilterList()
 
     var effectTouchListener = View.OnTouchListener { v, event ->
         var option = v.tag as BottomDialogFragment.Option
@@ -68,13 +65,11 @@ class VideoEditActivity : AppCompatActivity() {
             MotionEvent.ACTION_DOWN -> {
                 effectTouching = true
                 effectStartTime = currentPlayTime
-//                Log.d(TAG, "effectStartTime: $effectStartTime")
                 beginOneEffect(option)
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 effectTouching = false
                 effectEndTime = currentPlayTime
-//                Log.d(TAG, "effectEndTime: $effectEndTime")
                 endOneEffect()
             }
         }
@@ -94,7 +89,11 @@ class VideoEditActivity : AppCompatActivity() {
 
         mediaPath = intent.getStringExtra("video_path")
 
-        player_view_mp.setDataSource(mediaPath)
+        try {
+            player_view_mp.setDataSource(mediaPath)
+        } catch (e : Exception) {
+            LogUtils.e(TAG +", MediaMetaRetriever file failed.");
+        }
         player_view_mp.start()
 
         tv_filter.setOnClickListener { showFilterDialog() }
@@ -148,14 +147,12 @@ class VideoEditActivity : AppCompatActivity() {
         recyclerview.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-//                Log.d(TAG, "onScrolled  dx:" + dx)
                 val (position, itemLeft, scrollX) = recyclerView.getScollXDistance()
                 var total = itemWidth * adapter!!.itemCount
                 var rate = 1f * (scrollX + padding) / total
                 if (position == -1) {
                     rate = 1f
                 }
-//                Log.d(TAG, "onScrolled: position:$position, itemLeft:$itemLeft,  scrollX:$scrollX, total:$total, rate:$rate")
                 onPreview(rate)
             }
         })
@@ -196,7 +193,6 @@ class VideoEditActivity : AppCompatActivity() {
         var rate = diff * 1f / mediaDuration
         var total = itemWidth * (adapter?.itemCount ?: 0)
         var widthDiff = total * 1f * rate
-//        Log.d(TAG, "playing timeMs:$timeMs, rate:$rate, widthDiff:$widthDiff")
         recyclerview.scrollBy(widthDiff.toInt(), 0)
 
         lastTimeMs = timeMs
@@ -205,7 +201,6 @@ class VideoEditActivity : AppCompatActivity() {
 
     fun onPreview(rate: Float) {
         var timems = mediaDuration * rate
-//        Log.d(TAG, "onPreview  time:$timems")
         if (mIsTouching) {
             player_view_mp.seekTo(timems.toLong())
             lastTimeMs = timems.toLong()
@@ -219,20 +214,16 @@ class VideoEditActivity : AppCompatActivity() {
         Log.d(TAG, "beginOneEffect option:${option.mOptionName}  effectStartTime:$effectStartTime, filter:$filter")
 
         effectFilterPeriod = player_view_mp.addFiler(effectStartTime, mediaDuration, filter)
-//        effectFliter = filter
-
     }
 
     private fun endOneEffect() {
         Log.d(TAG, "endOneEffect effectEndTime:$effectEndTime")
         effectFilterPeriod!!.endTimeMs = effectEndTime
-//        glFilterList.putGlFilter(GlFilterPeriod(effectFilterPeriod!!.startTimeMs, effectEndTime, effectFilterPeriod!!.filter))
         filterConfigList.add(GlFilterConfig(effectFilterPeriod!!.filter.type, effectFilterPeriod!!.startTimeMs, effectEndTime))
     }
 
 
     private fun switchToEffectEdit() {
-//        showToast("特效还为开发完成")
         if (state == STATE_EFFECT) {
             state = STATE_NORMAL
             recyclerview.visibility = View.INVISIBLE
@@ -240,7 +231,6 @@ class VideoEditActivity : AppCompatActivity() {
             hs_effect_list.visibility = View.INVISIBLE
             return
         }
-//        player_view_mp.scale()
         recyclerview.visibility = View.VISIBLE
         iv_effect_framebar.visibility = View.VISIBLE
 
@@ -285,15 +275,12 @@ class VideoEditActivity : AppCompatActivity() {
             val filter = FilterConfigs.getFilterByName(option.mOptionName, applicationContext)
             Log.d(TAG, "selection:$selection, filter:$filter")
             player_view_mp.setFiler(0, mediaDuration, filter)
-//            glFilterList.putGlFilter(GlFilterPeriod(0, mediaDuration, filter))
             filterConfigList.add(GlFilterConfig(filter.type, 0, mediaDuration))
         }
         dialogFragment.show(supportFragmentManager, "filter_dialog")
     }
 
     private fun getSelection() = PreferenceUtils.getInt(this, "filter_selection", 0)
-
-
 }
 
 

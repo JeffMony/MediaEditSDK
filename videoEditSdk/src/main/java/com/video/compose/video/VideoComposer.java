@@ -1,13 +1,12 @@
-
 package com.video.compose.video;
 
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
-import android.util.Log;
 
 import com.video.compose.ComposeParams;
 import com.video.compose.Rotation;
+import com.video.compose.utils.LogUtils;
 import com.video.egl.DecoderOutputSurface;
 import com.video.egl.EncoderSurface;
 
@@ -147,15 +146,15 @@ public class VideoComposer {
     }
 
     private int drainExtractor() {
-        Log.d(TAG, "drainExtractor(): isExtractorEOS:"+mIsExtractorEOS);
+        LogUtils.d(TAG + ", drainExtractor(): isExtractorEOS:"+mIsExtractorEOS);
         if (mIsExtractorEOS) return DRAIN_STATE_NONE;
         int trackIndex = mMediaExtractor.getSampleTrackIndex();
-        Log.d(TAG, "drainExtractor(): trackIndex:"+trackIndex+", this.trackIndex:"+this.mTrackIndex);
+        LogUtils.d(TAG + ", drainExtractor(): trackIndex:"+trackIndex+", this.trackIndex:"+this.mTrackIndex);
         if (trackIndex >= 0 && trackIndex != this.mTrackIndex) {
             return DRAIN_STATE_NONE;
         }
         int result = mDecoder.dequeueInputBuffer(0);
-        Log.d(TAG, "drainExtractor(): decoder.dequeueInputBuffer result:" + result);
+        LogUtils.d(TAG + ", drainExtractor(): decoder.dequeueInputBuffer result:" + result);
         if (result < 0) return DRAIN_STATE_NONE;
         if (trackIndex < 0) {
             mIsExtractorEOS = true;
@@ -166,9 +165,9 @@ public class VideoComposer {
         boolean isKeyFrame = (mMediaExtractor.getSampleFlags() & MediaExtractor.SAMPLE_FLAG_SYNC) != 0;
 
         long sampleTime = mMediaExtractor.getSampleTime();
-        Log.d(TAG, "drainExtractor(): sampleTime:"+sampleTime +", endTimeMs:" + mEnd);
+        LogUtils.d(TAG + ", drainExtractor(): sampleTime:"+sampleTime +", endTimeMs:" + mEnd);
         if (sampleTime > mEnd * 1000) {
-            Log.e(TAG, "drainExtractor(): sampleTime:"+sampleTime+", reach the end time");
+            LogUtils.e(TAG + ", drainExtractor(): sampleTime:"+sampleTime+", reach the end time");
             mIsExtractorEOS = true;
             mMediaExtractor.unselectTrack(this.mTrackIndex);
             mDecoder.queueInputBuffer(result, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
@@ -183,7 +182,7 @@ public class VideoComposer {
     private int drainDecoder() {
         if (mIsDecoderEOS) return DRAIN_STATE_NONE;
         int result = mDecoder.dequeueOutputBuffer(mBufferInfo, 0);
-        Log.d(TAG+".drainDecoder", "drainDecoder: dequeueOutputBuffer, return:"+result);
+        LogUtils.d(TAG+", drainDecoder: dequeueOutputBuffer, return:"+result);
         switch (result) {
             case MediaCodec.INFO_TRY_AGAIN_LATER:
                 return DRAIN_STATE_NONE;
@@ -192,15 +191,15 @@ public class VideoComposer {
                 return DRAIN_STATE_SHOULD_RETRY_IMMEDIATELY;
         }
         if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-            Log.d(TAG+".drainDecoder", "drainDecoder: end of stream! bufferInfo.offset:"+mBufferInfo.offset+", size:"+mBufferInfo.size+",presentationTimeUs:"+mBufferInfo.presentationTimeUs);
+            LogUtils.d(TAG+", drainDecoder: end of stream! bufferInfo.offset:"+mBufferInfo.offset+", size:"+mBufferInfo.size+",presentationTimeUs:"+mBufferInfo.presentationTimeUs);
             mEncoder.signalEndOfInputStream();
             mIsDecoderEOS = true;
             mBufferInfo.size = 0;
         }
 
-        Log.d(TAG+".drainDecoder", "drainDecoder: bufferInfo.presentationTimeUs:"+mBufferInfo.presentationTimeUs +", endTimeMs:"+ mEnd);
+        LogUtils.d(TAG+", drainDecoder: bufferInfo.presentationTimeUs:"+mBufferInfo.presentationTimeUs +", endTimeMs:"+ mEnd);
         if (mBufferInfo.presentationTimeUs > mEnd * 1000) {
-            Log.w(TAG+".drainDecoder", "drainDecoder: reach the clip end ms! bufferInfo.offset:"+mBufferInfo.offset+", size:"+mBufferInfo.size+",presentationTimeUs:"+mBufferInfo.presentationTimeUs);
+            LogUtils.w(TAG+", drainDecoder: reach the clip end ms! bufferInfo.offset:"+mBufferInfo.offset+", size:"+mBufferInfo.size+",presentationTimeUs:"+mBufferInfo.presentationTimeUs);
             mEncoder.signalEndOfInputStream();
             mIsDecoderEOS = true;
             mBufferInfo.flags = mBufferInfo.flags | MediaCodec.BUFFER_FLAG_END_OF_STREAM;
@@ -213,7 +212,7 @@ public class VideoComposer {
         mDecoder.releaseOutputBuffer(result, doRender);
         if (doRender) {
             mDecoderSurface.awaitNewImage();
-            mDecoderSurface.drawImage(mBufferInfo.presentationTimeUs* 1000);
+            mDecoderSurface.drawImage(mBufferInfo.presentationTimeUs * 1000);
             mEncoderSurface.setPresentationTime(mBufferInfo.presentationTimeUs * 1000);
             mEncoderSurface.swapBuffers();
         }
@@ -223,7 +222,7 @@ public class VideoComposer {
     private int drainEncoder() {
         if (mIsEncoderEOS) return DRAIN_STATE_NONE;
         int result = mEncoder.dequeueOutputBuffer(mBufferInfo, 0);
-        Log.d(TAG+".drainEncoder", "drainEncoder: dequeueOutputBuffer() return:"+result);
+        LogUtils.d(TAG+", drainEncoder: dequeueOutputBuffer() return:"+result);
         switch (result) {
             case MediaCodec.INFO_TRY_AGAIN_LATER:
                 return DRAIN_STATE_NONE;
@@ -244,7 +243,7 @@ public class VideoComposer {
         }
 
         if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-            Log.d(TAG+".drainEncoder", "drainEncoder: reach the end@!");
+            LogUtils.d(TAG+", drainEncoder: reach the end@!");
             mIsEncoderEOS = true;
             mBufferInfo.set(0, 0, 0, mBufferInfo.flags);
         }
@@ -253,7 +252,7 @@ public class VideoComposer {
             mEncoder.releaseOutputBuffer(result, false);
             return DRAIN_STATE_SHOULD_RETRY_IMMEDIATELY;
         }
-        Log.d(TAG+".drainEncoder", "drainEncoder: writeSampleData time:"+mBufferInfo.presentationTimeUs);
+        LogUtils.d(TAG+", drainEncoder: writeSampleData time:"+mBufferInfo.presentationTimeUs);
         mMuxRender.writeSampleData(MuxRender.SampleType.VIDEO, mEncoderOutputBuffers[result], mBufferInfo);
         mWrittenPresentationTimeUs = mBufferInfo.presentationTimeUs;
         mEncoder.releaseOutputBuffer(result, false);

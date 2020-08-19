@@ -9,7 +9,7 @@ public class SdkConfig {
     public static final String DEFAULT_TEMP_VIDEO_LOCATION = "/storage/emulated/0/movies/process.mp4";
 
     public static int MSG_UPDATE = 1;
-    public static boolean USE_EXOPLAYER = false;
+    public static boolean USE_EXOPLAYER = true;
 
     // 对于长视频, 每隔3s截取一个缩略图
     public static int MAX_FRAME_INTERVAL_MS = 3 * 1000;
