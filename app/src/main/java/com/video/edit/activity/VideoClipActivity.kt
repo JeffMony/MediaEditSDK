@@ -13,7 +13,7 @@ import android.widget.Toast
 import com.video.epf.custfilter.GlFlashFliter
 import com.video.epf.custfilter.GlShakeFilter
 import com.video.epf.custfilter.GlSoulOutFilter
-import com.video.mp4compose.composer.Mp4Composer
+import com.video.compose.composer.Mp4Composer
 import com.video.egl.GlFilterList
 import com.video.egl.GlFilterPeriod
 import com.video.library.log
@@ -152,12 +152,14 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                             videoPlayer!!.enableFramePreviewMode()
                             tv_framepreviewmode.visibility = View.INVISIBLE
                         }
-
-
                     }
 
                     override fun onFailed(exception: Exception) {
                         Log.d(TAG, "onFailed()")
+                    }
+
+                    override fun onCanceled() {
+                        TODO("Not yet implemented")
                     }
                 })
                 .start()
@@ -401,8 +403,6 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                             showToast("裁剪成功!新文件已经存放在:" + outputPath)
                             finish()
                         }
-
-
                     }
 
                     override fun onFailed(exception: Exception) {
@@ -411,6 +411,10 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
                             hideShadow()
                             showToast("裁剪失败")
                         }
+                    }
+
+                    override fun onCanceled() {
+                        TODO("Not yet implemented")
                     }
                 })
                 .start()

@@ -5,12 +5,10 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
-import com.video.epf.custfilter.GlFlashFliter
-import com.video.epf.custfilter.GlShakeFilter
 import com.video.epf.filter.FilterType
 import com.video.egl.GlFilterList
 import com.video.egl.GlFilterPeriod
-import com.video.mp4compose.composer.Mp4Composer
+import com.video.compose.composer.Mp4Composer
 import com.video.egl.VideoProcessConfig
 import kotlinx.android.synthetic.main.video_process_activity_layout.*
 
@@ -48,7 +46,7 @@ class VideoProgressActivity : AppCompatActivity() {
         var mp4Composer = Mp4Composer(videoProcessConfig.srcMediaPath, videoProcessConfig.outMediaPath)
                 .frameRate(30)
                 .filterList(glFilterList)
-                .listener(object : Mp4Composer.Listener {
+                .listener(object : Mp4Composer.VideoComposeListener {
                     override fun onProgress(_p: Double) {
                         Log.d(TAG, "onProgress $_p")
                         progression = (100 * _p).toInt()

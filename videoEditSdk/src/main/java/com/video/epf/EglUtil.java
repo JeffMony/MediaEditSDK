@@ -7,7 +7,7 @@ import android.opengl.GLException;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-import com.video.mp4compose.utils.GLESUtils;
+import com.video.compose.utils.GLESUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

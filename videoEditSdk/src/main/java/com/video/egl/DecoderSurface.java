@@ -9,11 +9,11 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Surface;
 
-import com.video.mp4compose.FillMode;
-import com.video.mp4compose.FillModeCustomItem;
-import com.video.mp4compose.Rotation;
-import com.video.mp4compose.filter.GlComposeFilter;
-import com.video.mp4compose.utils.GLESUtils;
+import com.video.compose.FillMode;
+import com.video.compose.FillModeCustomItem;
+import com.video.compose.Rotation;
+import com.video.compose.filter.GlComposeFilter;
+import com.video.compose.utils.GLESUtils;
 
 // Refer : https://android.googlesource.com/platform/cts/+/lollipop-release/tests/tests/media/src/android/media/cts/OutputSurface.java
 

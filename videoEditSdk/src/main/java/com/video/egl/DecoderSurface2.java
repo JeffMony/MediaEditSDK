@@ -12,11 +12,11 @@ import android.view.Surface;
 
 import com.video.epf.EFramebufferObject;
 import com.video.epf.filter.GlFilter;
-import com.video.mp4compose.FillMode;
-import com.video.mp4compose.FillModeCustomItem;
-import com.video.mp4compose.Rotation;
-import com.video.mp4compose.filter.GlComposeFilter;
-import com.video.mp4compose.utils.GLESUtils;
+import com.video.compose.FillMode;
+import com.video.compose.FillModeCustomItem;
+import com.video.compose.Rotation;
+import com.video.compose.filter.GlComposeFilter;
+import com.video.compose.utils.GLESUtils;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;

@@ -10,10 +10,10 @@ import com.video.epf.EFramebufferObject;
 import com.video.epf.EglUtil;
 import com.video.epf.filter.GlFilter;
 import com.video.epf.filter.GlPreviewFilter;
-import com.video.mp4compose.FillMode;
-import com.video.mp4compose.FillModeCustomItem;
-import com.video.mp4compose.Rotation;
-import com.video.mp4compose.composer.FrameBufferObjectOutputSurface;
+import com.video.compose.FillMode;
+import com.video.compose.FillModeCustomItem;
+import com.video.compose.Rotation;
+import com.video.compose.composer.FrameBufferObjectOutputSurface;
 
 import java.util.Map;
 
