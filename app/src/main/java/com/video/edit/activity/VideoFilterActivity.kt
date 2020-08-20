@@ -23,8 +23,8 @@ import com.video.edit.ext.*
 import com.video.edit.view.BaseThumbnailAdapter
 import com.video.edit.view.BottomDialogFragment
 import com.video.edit.view.getScollXDistance
-import com.video.library.getVideoDuration
-import com.video.library.toTime
+import com.video.player.getVideoDuration
+import com.video.player.toTime
 import java.io.File
 
 class VideoFilterActivity : AppCompatActivity() {

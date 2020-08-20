@@ -1,4 +1,4 @@
-package com.video.library
+package com.video.player
 
 import android.animation.ValueAnimator
 import android.content.ContentResolver

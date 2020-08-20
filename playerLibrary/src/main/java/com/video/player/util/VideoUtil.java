@@ -1,4 +1,4 @@
-package com.video.library.util;
+package com.video.player.util;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -10,7 +10,6 @@ import android.media.MediaMuxer;
 import android.os.Build;
 import android.util.Log;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;

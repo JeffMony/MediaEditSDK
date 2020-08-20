@@ -9,9 +9,9 @@ import android.util.Log;
 
 import com.video.process.R;
 import com.video.process.preview.filter.GlFilter;
-import com.video.library.player.mp.TextureSurfaceRenderer2;
-import com.video.library.util.RawResourceReader;
-import com.video.library.util.ShaderHelper;
+import com.video.player.player.mp.TextureSurfaceRenderer2;
+import com.video.player.util.RawResourceReader;
+import com.video.player.util.ShaderHelper;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

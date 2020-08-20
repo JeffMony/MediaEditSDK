@@ -1,4 +1,4 @@
-package com.video.library.player
+package com.video.player.player
 
 import android.content.Context
 import android.util.Log
@@ -45,7 +45,7 @@ class VideoPlayerOfExoPlayer(val playerView: PlayerView) : VideoPlayer {
     }
 
     override fun setupPlayer(context: Context, mediaPath: String) {
-        exoPlayer = com.video.library.player.initPlayer(context, mediaPath, playerView!!, listener)
+        exoPlayer = com.video.player.player.initPlayer(context, mediaPath, playerView!!, listener)
         startPlayer()
     }
 

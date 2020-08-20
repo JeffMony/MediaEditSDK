@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.video.process.preview.filter.FilterType;
 import com.video.process.preview.filter.GlFilter;
-import com.video.library.util.GlUtil;
+import com.video.player.util.GlUtil;
 
 /**
  * 美肤滤镜

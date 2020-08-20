@@ -1,10 +1,9 @@
-package com.video.library.player
+package com.video.player.player
 
 import android.annotation.TargetApi
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Build
-import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 

@@ -1,4 +1,4 @@
-package com.video.library
+package com.video.player
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
@@ -39,7 +39,7 @@ class ThumbExoPlayerView(context: Context?, attrs: AttributeSet?) : PlayerView(c
 
     fun setDataSource(source: String, millsecsPerFrame: Int, thubnailCount: Int, callback: (String, Int) -> Boolean) {
         mediaPath = source
-        exoPlayer = com.video.library.player.initPlayer(context, mediaPath, this, listener)
+        exoPlayer = com.video.player.player.initPlayer(context, mediaPath, this, listener)
         exoPlayer?.volume = 0f
         exoPlayer!!.repeatMode = Player.REPEAT_MODE_OFF
         exoPlayer!!.playWhenReady = false

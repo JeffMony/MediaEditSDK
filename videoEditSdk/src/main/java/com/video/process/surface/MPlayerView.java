@@ -20,7 +20,7 @@ import com.video.process.utils.LogUtils;
 import com.video.process.utils.ScreenUtils;
 import com.video.process.utils.WorkThreadHandler;
 import com.video.process.preview.filter.GlFilter;
-import com.video.library.player.mp.TextureSurfaceRenderer2;
+import com.video.player.player.mp.TextureSurfaceRenderer2;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;

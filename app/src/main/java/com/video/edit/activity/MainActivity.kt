@@ -7,9 +7,9 @@ import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
-import com.video.library.log
-import com.video.library.VideoItem
-import com.video.library.getVideoItem
+import com.video.player.log
+import com.video.player.VideoItem
+import com.video.player.getVideoItem
 import kotlinx.android.synthetic.main.activity_main.*
 
 import com.video.edit.demo.R

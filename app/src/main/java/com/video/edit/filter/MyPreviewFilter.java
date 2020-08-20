@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.video.process.preview.filter.GlPreviewFilter;
 import com.video.edit.demo.R;
-import com.video.library.util.GlUtil;
+import com.video.player.util.GlUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

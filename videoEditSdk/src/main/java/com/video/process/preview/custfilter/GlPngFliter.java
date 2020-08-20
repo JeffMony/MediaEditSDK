@@ -4,7 +4,7 @@ import android.content.Context;
 import android.opengl.GLES30;
 
 import com.video.process.preview.filter.GlFilter;
-import com.video.library.util.GlUtil;
+import com.video.player.util.GlUtil;
 
 public class GlPngFliter extends GlFilter {
     private static final String FRAGMENT_SHADER = "" +

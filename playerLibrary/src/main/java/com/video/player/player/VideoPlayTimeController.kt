@@ -1,4 +1,4 @@
-package com.video.library.player
+package com.video.player.player
 
 import android.os.Handler
 

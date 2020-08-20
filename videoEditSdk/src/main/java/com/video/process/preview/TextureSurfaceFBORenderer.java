@@ -3,7 +3,7 @@ package com.video.process.preview;
 import android.opengl.GLES20;
 
 import com.video.process.preview.filter.GlFilter;
-import com.video.library.player.mp.TextureSurfaceRenderer;
+import com.video.player.player.mp.TextureSurfaceRenderer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 

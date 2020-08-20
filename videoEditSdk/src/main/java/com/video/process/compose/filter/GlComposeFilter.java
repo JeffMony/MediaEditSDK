@@ -5,7 +5,7 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 
 import com.video.process.utils.GLESUtils;
-import com.video.library.util.GlUtil;
+import com.video.player.util.GlUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

@@ -13,7 +13,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import com.video.edit.ext.SdkConfig
-import com.video.library.decodeFile
+import com.video.player.decodeFile
 import kotlinx.android.synthetic.main.activity_video_clip.view.*
 
 class ClipContainer : FrameLayout {

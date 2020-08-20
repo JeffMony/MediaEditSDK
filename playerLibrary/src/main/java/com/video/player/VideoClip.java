@@ -1,4 +1,4 @@
-package com.video.library;
+package com.video.player;
 
 import android.media.MediaCodec;
 import android.media.MediaExtractor;

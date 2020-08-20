@@ -4,7 +4,7 @@ import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import com.video.library.util.GlUtil;
+import com.video.player.util.GlUtil;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_FLOAT;

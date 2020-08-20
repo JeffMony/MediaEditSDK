@@ -1,4 +1,4 @@
-package com.video.library.player.mp;
+package com.video.player.player.mp;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;

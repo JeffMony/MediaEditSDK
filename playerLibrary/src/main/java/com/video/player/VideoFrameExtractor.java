@@ -1,4 +1,4 @@
-package com.video.library;
+package com.video.player;
 
 import android.content.Context;
 import android.graphics.Bitmap;

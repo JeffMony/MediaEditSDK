@@ -1,4 +1,4 @@
-package com.video.library.util;
+package com.video.player.util;
 
 
 import android.opengl.GLES20;

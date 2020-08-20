@@ -6,7 +6,7 @@ import android.os.Handler
 import android.util.AttributeSet
 
 import com.video.process.surface.MPlayerView
-import com.video.library.player.mp.TextureSurfaceRenderer2
+import com.video.player.player.mp.TextureSurfaceRenderer2
 
 class GlPlayerView : MPlayerView {
 
