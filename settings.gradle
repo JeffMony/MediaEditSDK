@@ -1,1 +1,1 @@
-include ':app', ':playerLibrary', ':videoEditSdk', ':filterLibrary'
+include ':app', ':playerLibrary', ':videoEditSdk'
