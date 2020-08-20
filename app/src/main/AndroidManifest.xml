@@ -36,6 +36,8 @@
         <activity android:name="com.video.edit.activity.VideoFilterActivity"></activity>
         <activity android:name="com.video.edit.activity.VideoAudioFilterActivity" ></activity>
         <activity android:name="com.video.edit.activity.VideoProgressActivity"></activity>
+        <activity android:name="com.video.edit.activity.VideoReverseEditActivity" ></activity>
+        <activity android:name="com.video.edit.activity.VideoWaterMaskActivity" ></activity>
         <activity android:name="com.video.edit.activity.CameraEffectActivity"></activity>
     </application>
 

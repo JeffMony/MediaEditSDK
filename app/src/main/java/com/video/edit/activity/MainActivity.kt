@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_PICK_CLIP_CODE = 1001
         const val REQUEST_PICK_EDIT_CODE = 1002
         const val REQUEST_PICK_AUDIO_CODE = 1003
+        const val REQUEST_PICK_VIDEO_REVERSE = 1004
+        const val REQUEST_PICK_VIDEO_WATERMASK = 1005
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +36,10 @@ class MainActivity : AppCompatActivity() {
 
         tv_local_video_audio.setOnClickListener { selectVideo(REQUEST_PICK_AUDIO_CODE) }
 
+        tv_local_video_reverse.setOnClickListener { selectVideo(REQUEST_PICK_VIDEO_REVERSE) }
+
+        tv_local_video_watermark.setOnClickListener { selectVideo(REQUEST_PICK_VIDEO_WATERMASK) }
+
         tv_camera_preview.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 val intent = Intent(this, CameraEffectActivity::class.java)
@@ -41,9 +47,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this@MainActivity, "目前摄像头预览滤镜效果只支持L以上版本", Toast.LENGTH_LONG).show()
             }
-
         }
-
 
     }
 
@@ -70,6 +74,8 @@ class MainActivity : AppCompatActivity() {
                     REQUEST_PICK_CLIP_CODE -> startActivity(this, VideoClipActivity::class.java)
                     REQUEST_PICK_EDIT_CODE -> startActivity(this, VideoFilterActivity::class.java)
                     REQUEST_PICK_AUDIO_CODE -> startActivity(this, VideoAudioFilterActivity::class.java)
+                    REQUEST_PICK_VIDEO_REVERSE -> startActivity(this, VideoReverseEditActivity::class.java)
+                    REQUEST_PICK_VIDEO_WATERMASK -> startActivity(this, VideoWaterMaskActivity::class.java)
                 }
             }
         }
