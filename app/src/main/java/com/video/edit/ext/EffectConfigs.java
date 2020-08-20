@@ -4,15 +4,15 @@ import android.content.Context;
 
 import com.video.edit.demo.R;
 import com.video.edit.view.BottomDialogFragment;
-import com.video.egl.GLImageComplexionBeautyFilter;
-import com.video.epf.custfilter.Gl4SplitFilter;
-import com.video.epf.custfilter.GlFlashFliter;
-import com.video.epf.custfilter.GlHuanJueFliter;
-import com.video.epf.custfilter.GlItchFilter;
-import com.video.epf.custfilter.GlScaleFilter;
-import com.video.epf.custfilter.GlShakeFilter;
-import com.video.epf.custfilter.GlSoulOutFilter;
-import com.video.epf.filter.GlFilter;
+import com.video.process.surface.GLImageComplexionBeautyFilter;
+import com.video.process.preview.custfilter.Gl4SplitFilter;
+import com.video.process.preview.custfilter.GlFlashFliter;
+import com.video.process.preview.custfilter.GlHuanJueFliter;
+import com.video.process.preview.custfilter.GlItchFilter;
+import com.video.process.preview.custfilter.GlScaleFilter;
+import com.video.process.preview.custfilter.GlShakeFilter;
+import com.video.process.preview.custfilter.GlSoulOutFilter;
+import com.video.process.preview.filter.GlFilter;
 
 import java.util.ArrayList;
 import java.util.List;

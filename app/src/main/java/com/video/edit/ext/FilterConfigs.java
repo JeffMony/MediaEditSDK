@@ -4,9 +4,9 @@ import android.content.Context;
 
 import com.video.edit.demo.R;
 import com.video.edit.view.BottomDialogFragment;
-import com.video.egl.GLImageComplexionBeautyFilter;
-import com.video.epf.custfilter.GlPngFliter;
-import com.video.epf.filter.GlFilter;
+import com.video.process.surface.GLImageComplexionBeautyFilter;
+import com.video.process.preview.custfilter.GlPngFliter;
+import com.video.process.preview.filter.GlFilter;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.video.compose.utils.LogUtils;
+import com.video.process.utils.LogUtils;
 import com.video.edit.demo.R;
 import com.video.library.player.VideoPlayer;
 import com.video.library.player.VideoPlayerOfExoPlayer;

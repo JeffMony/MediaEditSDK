@@ -5,13 +5,13 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
-import com.video.compose.ComposeParams
-import com.video.compose.VideoCustomException
-import com.video.epf.filter.FilterType
-import com.video.egl.GlFilterList
-import com.video.egl.GlFilterPeriod
-import com.video.compose.video.Mp4Composer
-import com.video.egl.VideoProcessConfig
+import com.video.process.compose.ComposeParams
+import com.video.process.compose.VideoCustomException
+import com.video.process.preview.filter.FilterType
+import com.video.process.surface.GlFilterList
+import com.video.process.surface.GlFilterPeriod
+import com.video.process.compose.video.Mp4Composer
+import com.video.process.surface.VideoProcessConfig
 import kotlinx.android.synthetic.main.video_process_activity_layout.*
 
 import com.video.edit.demo.R

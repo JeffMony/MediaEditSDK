@@ -11,12 +11,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import com.video.compose.utils.LogUtils
 import kotlinx.android.synthetic.main.activity_video_edit.*
 
-import com.video.egl.GlFilterPeriod
-import com.video.egl.GlFilterConfig
-import com.video.egl.VideoProcessConfig
+import com.video.process.utils.LogUtils
+import com.video.process.surface.GlFilterPeriod
+import com.video.process.surface.GlFilterConfig
+import com.video.process.surface.VideoProcessConfig
 
 import com.video.edit.demo.R
 import com.video.edit.ext.*
@@ -55,7 +55,7 @@ class VideoFilterActivity : AppCompatActivity() {
 
     var state = STATE_NORMAL
 
-    lateinit var videoProcessConfig :com.video.egl.VideoProcessConfig
+    lateinit var videoProcessConfig :com.video.process.surface.VideoProcessConfig
     lateinit var filterConfigList:MutableList<GlFilterConfig>
 
     var effectTouchListener = View.OnTouchListener { v, event ->

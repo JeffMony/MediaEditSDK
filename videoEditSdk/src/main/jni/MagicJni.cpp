@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 JNIEXPORT void JNICALL
-Java_com_video_egl_MagicJni_glReadPixels(
+Java_com_video_process_egl_MagicJni_glReadPixels(
         JNIEnv *env, jclass cls, jint x, jint y, jint width, jint height,
         jint format, jint type) {
     glReadPixels(x, y, width, height, format, type, 0);

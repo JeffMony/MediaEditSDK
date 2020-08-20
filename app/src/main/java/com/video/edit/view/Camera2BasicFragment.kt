@@ -29,7 +29,7 @@ import android.view.LayoutInflater
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
-import com.video.epf.EPlayerRenderer
+import com.video.process.preview.EPlayerRenderer
 import com.video.edit.filter.MyPreviewFilter
 import com.video.edit.filter.MyRenderer
 import com.video.edit.filter.ShaderUtil
