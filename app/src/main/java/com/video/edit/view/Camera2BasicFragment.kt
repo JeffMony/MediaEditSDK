@@ -43,7 +43,7 @@ import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
 import com.video.edit.demo.R;
-import com.video.edit.activity.VideoEditActivity
+import com.video.edit.activity.VideoFilterActivity
 import com.video.edit.ext.FilterConfigs
 import com.video.edit.ext.PreferenceUtils
 
@@ -211,7 +211,7 @@ class Camera2BasicFragment : androidx.fragment.app.Fragment(), ActivityCompat.On
                 "选择滤镜", FilterConfigs.createFilterOptions())
         dialogFragment.setSelectionCallback { select, option ->
             val filter = FilterConfigs.getFilterByName(option.mOptionName, requireContext())
-            Log.d(VideoEditActivity.TAG, "selection:$select, filter:$filter")
+            Log.d(VideoFilterActivity.TAG, "selection:$select, filter:$filter")
             eRenderer.setGlFilter(filter)
         }
         dialogFragment.show(childFragmentManager, "filter_dialog")

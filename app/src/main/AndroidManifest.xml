@@ -33,7 +33,8 @@
         </activity>
         <activity android:name="com.video.edit.activity.DecodeActivity" />
         <activity android:name="com.video.edit.activity.VideoClipActivity"></activity>
-        <activity android:name="com.video.edit.activity.VideoEditActivity"></activity>
+        <activity android:name="com.video.edit.activity.VideoFilterActivity"></activity>
+        <activity android:name="com.video.edit.activity.VideoAudioFilterActivity" ></activity>
         <activity android:name="com.video.edit.activity.VideoProgressActivity"></activity>
         <activity android:name="com.video.edit.activity.CameraEffectActivity"></activity>
     </application>

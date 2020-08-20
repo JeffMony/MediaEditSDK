@@ -27,7 +27,7 @@ import com.video.library.getVideoDuration
 import com.video.library.toTime
 import java.io.File
 
-class VideoEditActivity : AppCompatActivity() {
+class VideoFilterActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "VideoEditActivity"

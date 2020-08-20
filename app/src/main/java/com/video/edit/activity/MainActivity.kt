@@ -20,18 +20,19 @@ class MainActivity : AppCompatActivity() {
         const val PERMISSION_REQUEST_CODE = 1000
         const val REQUEST_PICK_CLIP_CODE = 1001
         const val REQUEST_PICK_EDIT_CODE = 1002
+        const val REQUEST_PICK_AUDIO_CODE = 1003
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         // 裁剪视频
         tv_start_video_clip.setOnClickListener { selectVideo(REQUEST_PICK_CLIP_CODE) }
 
         // 编辑视频(特效 滤镜)
-        tv_local_video_edit.setOnClickListener { selectVideo(REQUEST_PICK_EDIT_CODE) }
+        tv_local_video_filter.setOnClickListener { selectVideo(REQUEST_PICK_EDIT_CODE) }
 
+        tv_local_video_audio.setOnClickListener { selectVideo(REQUEST_PICK_AUDIO_CODE) }
 
         tv_camera_preview.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -67,11 +68,9 @@ class MainActivity : AppCompatActivity() {
                 log("video title:$title, duration:${durationSec}, size:$size, path:$path")
                 when (requestCode) {
                     REQUEST_PICK_CLIP_CODE -> startActivity(this, VideoClipActivity::class.java)
-                    REQUEST_PICK_EDIT_CODE -> startActivity(this, VideoEditActivity::class.java)
-                    else -> {
-                    }
+                    REQUEST_PICK_EDIT_CODE -> startActivity(this, VideoFilterActivity::class.java)
+                    REQUEST_PICK_AUDIO_CODE -> startActivity(this, VideoAudioFilterActivity::class.java)
                 }
-
             }
         }
 

@@ -115,11 +115,7 @@
             android:text="特效"
             android:textColor="#ffffff"
             android:textSize="13sp" />
-
-
     </LinearLayout>
-
-
 
     <HorizontalScrollView
         android:id="@+id/hs_effect_list"

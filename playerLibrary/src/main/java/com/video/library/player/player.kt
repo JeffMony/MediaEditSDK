@@ -17,8 +17,6 @@ import com.google.android.exoplayer2.PlaybackParameters
 
 
 
-
-
 fun initPlayer(context: Context, videoUrl:String, playerView: PlayerView,
                listener: Player.EventListener ):SimpleExoPlayer {
     var TAG ="initPlayer"
@@ -35,10 +33,6 @@ fun initPlayer(context: Context, videoUrl:String, playerView: PlayerView,
 
     player!!.repeatMode = Player.REPEAT_MODE_ALL
     player!!.playWhenReady = true
-
-
-//    var mVideoSource = ExtractorMediaSource.Factory(DefaultDataSourceFactory(this, "spx")).createMediaSource(Uri.parse(videoUrl)!!)
-//    player.prepare(mVideoSource)
 
     var mVideoSource = ExtractorMediaSource.Factory(defaultSourceFactory).createMediaSource(Uri.parse(videoUrl)!!)
 
