@@ -26,4 +26,7 @@ public class SdkConfig {
     public static File getVideoDir(Context context) {
         return new File(context.getExternalFilesDir("Video"), "EditDir");
     }
+
+    public static final String FILTER_DIALOG = "filter_dialog";
+    public static final String MUSIC_DIALOG = "music_dialog";
 }

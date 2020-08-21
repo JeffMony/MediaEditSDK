@@ -21,14 +21,14 @@ public class EffectConfigs {
 
     public static List<BottomDialogFragment.Option> createEffectOptions() {
         List<BottomDialogFragment.Option> result = new ArrayList<>();
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_beauty_no, "无特效", 0));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_langman, "灵魂出窍", 1));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_rixi, "幻觉", 2));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_qingliang, "闪电", 3));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_langman, "毛刺", 4));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_langman, "缩放", 5));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_langman, "抖动", 6));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_langman, "四分镜", 7));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "无特效", 0));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "灵魂出窍", 1));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "幻觉", 2));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "闪电", 3));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "毛刺", 4));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "缩放", 5));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "抖动", 6));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "四分镜", 7));
         return result;
     }
 

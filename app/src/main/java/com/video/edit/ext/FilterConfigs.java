@@ -15,17 +15,17 @@ public class FilterConfigs {
 
     public static List<BottomDialogFragment.Option> createFilterOptions() {
         List<BottomDialogFragment.Option> result = new ArrayList<>();
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_beauty_no, "无", 0));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_beauty_white, "美颜", 1));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_beauty_white, "美白", 2));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_langman, "浪漫", 3));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_qinxin, "清新", 4));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_weimei, "唯美", 5));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_fennen, "粉嫩", 6));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_huaijiu, "怀旧", 7));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_landiao, "蓝调", 8));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_qingliang, "清凉", 9));
-        result.add(new BottomDialogFragment.Option(R.drawable.ic_filter_rixi, "日系", 10));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "无", 0));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "美颜", 1));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "美白", 2));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "浪漫", 3));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "清新", 4));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "唯美", 5));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "粉嫩", 6));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "怀旧", 7));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "蓝调", 8));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "清凉", 9));
+        result.add(new BottomDialogFragment.Option(R.drawable.filter_daqiang, "日系", 10));
         return result;
     }
 

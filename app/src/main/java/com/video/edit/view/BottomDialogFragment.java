@@ -140,7 +140,7 @@ public class BottomDialogFragment extends DialogFragment {
             beautyCircleView.setVisibility(View.VISIBLE);
             Option option = (Option) v.getTag();
             int selection = option.mIndex;
-            PreferenceUtils.putInt(getContext(), "filter_selection", selection);
+            PreferenceUtils.putInt(getContext(), PreferenceUtils.FILTER_SELECTION_KEY, selection);
             int childCount = mContainerLayout.getChildCount();
             String name = "";
             for (int i = 0; i < childCount; i++) {

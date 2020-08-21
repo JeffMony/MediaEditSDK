@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 public class PreferenceUtils {
     private static final String NAME = "litedo";
 
+    public static final String FILTER_SELECTION_KEY = "filter_selection";
+    public static final String MUSIC_SELECTION_KEY = "music_selection";
+
     public static void putInt(Context context, String key, int value) {
         if (context == null) return;
         SharedPreferences preferences = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);

@@ -205,9 +205,7 @@ class VideoFilterActivity : AppCompatActivity() {
             player_view_mp.seekTo(timems.toLong())
             lastTimeMs = timems.toLong()
         }
-
     }
-
 
     private fun beginOneEffect(option: BottomDialogFragment.Option) {
         val filter = EffectConfigs.getEffectFilterByName(option.mOptionName, applicationContext)
@@ -277,10 +275,10 @@ class VideoFilterActivity : AppCompatActivity() {
             player_view_mp.setFiler(0, mediaDuration, filter)
             filterConfigList.add(GlFilterConfig(filter.type, 0, mediaDuration))
         }
-        dialogFragment.show(supportFragmentManager, "filter_dialog")
+        dialogFragment.show(supportFragmentManager, SdkConfig.FILTER_DIALOG)
     }
 
-    private fun getSelection() = PreferenceUtils.getInt(this, "filter_selection", 0)
+    private fun getSelection() = PreferenceUtils.getInt(this, PreferenceUtils.FILTER_SELECTION_KEY, 0)
 }
 
 
