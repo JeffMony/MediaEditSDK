@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.video.process.model.ProcessParams;
 import com.video.process.model.VideoSize;
 import com.video.process.utils.LogUtils;
+import com.video.process.utils.MediaUtils;
 import com.video.process.utils.WorkThreadHandler;
 import com.video.process.preview.filter.GlFilter;
 import com.video.process.model.FillMode;
@@ -71,7 +72,7 @@ public class Mp4Composer {
                     return;
                 }
                 final int videoRotate = getVideoRotation(fd);
-                final VideoSize inputVideoSize = getVideoSize(fd);
+                final VideoSize inputVideoSize = MediaUtils.getVideoSize(fd);
                 mProcessParams.setInputVideoSize(inputVideoSize);
 
                 Mp4ComposerEngine engine = new Mp4ComposerEngine();
@@ -183,15 +184,6 @@ public class Mp4Composer {
         final int bitrate = (int) (0.25 * 30 * width * height);
         LogUtils.i(TAG + ", bitrate=" + bitrate);
         return bitrate;
-    }
-
-    private VideoSize getVideoSize(FileDescriptor fd) {
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(fd);
-        int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-        int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-        retriever.release();
-        return new VideoSize(width, height);
     }
 
 }

@@ -9,8 +9,8 @@ public class ProcessParams {
     public String mInputVideoPath;         //输入的源文件路径
     public String mInputAudioPath;         //输入的音频文件的路径
     public String mOutputVideoPath;        //生成文件的路径
-    public VideoSize mOutputVideoSize;       //生成视频文件大小
-    public VideoSize mInputVideoSize;        //源视频文件大小
+    public VideoSize mOutputVideoSize;     //生成视频文件大小
+    public VideoSize mInputVideoSize;      //源视频文件大小
     public VideoRange mVideoRange;         //裁减的文件时间范围
     public int mBitRate;                   //视频的码率
     public int mFrameRate;                 //视频的帧率
@@ -27,6 +27,10 @@ public class ProcessParams {
     public ProcessParams(@NonNull String inputVideoPath, @NonNull String outputVideoPath) {
         mInputVideoPath = inputVideoPath;
         mOutputVideoPath = outputVideoPath;
+    }
+
+    public void setInputAudioPath(@NonNull String inputAudioPath) {
+        mInputAudioPath = inputAudioPath;
     }
 
     public void setOutputVideoSize(VideoSize size) {
