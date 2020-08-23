@@ -80,7 +80,7 @@ public class Mp4ComposerEngine {
             throw new VideoCustomException(VideoCustomException.MEDIA_EXTRACTOR_DATASOURCE_FAILED, e);
         }
         try {
-            mMediaMuxer = new MediaMuxer(processParams.mDestPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+            mMediaMuxer = new MediaMuxer(processParams.mOutputVideoPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (Exception e) {
             if (mediaRetriever != null) {
                 mediaRetriever.release();
@@ -88,7 +88,7 @@ public class Mp4ComposerEngine {
             releaseMediaResources();
             throw new VideoCustomException(VideoCustomException.MEDIA_MUXER_INSTANCE_FAILED, e);
         }
-        MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", processParams.mDestVideoSize.mWidth, processParams.mDestVideoSize.mHeight);
+        MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", processParams.mOutputVideoSize.mWidth, processParams.mOutputVideoSize.mHeight);
         videoOutputFormat.setInteger(MediaFormat.KEY_BIT_RATE, processParams.mBitRate);
         videoOutputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, processParams.mFrameRate);
         videoOutputFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);

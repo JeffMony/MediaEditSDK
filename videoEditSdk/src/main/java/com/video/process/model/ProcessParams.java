@@ -6,33 +6,34 @@ import com.video.process.surface.GlFilterList;
 import com.video.process.preview.filter.GlFilter;
 
 public class ProcessParams {
-    public String mSrcPath;         //源文件路径
-    public String mDestPath;        //生成文件的路径
-    public VideoSize mDestVideoSize; //生成视频文件大小
-    public VideoSize mSrcVideoSize;  //源视频文件大小
-    public VideoRange mVideoRange;  //裁减的文件时间范围
-    public int mBitRate;            //视频的码率
-    public int mFrameRate;          //视频的帧率
-    public boolean mIsMute;         //是否静音
-    public boolean mFlipVertical;   //垂直翻转
-    public boolean mFlipHorizontal; //水平翻转
-    public int mRotateDegree;       //旋转角度
-    public int mTimeScale;          //裁减的视频间隔
+    public String mInputVideoPath;         //输入的源文件路径
+    public String mInputAudioPath;         //输入的音频文件的路径
+    public String mOutputVideoPath;        //生成文件的路径
+    public VideoSize mOutputVideoSize;       //生成视频文件大小
+    public VideoSize mInputVideoSize;        //源视频文件大小
+    public VideoRange mVideoRange;         //裁减的文件时间范围
+    public int mBitRate;                   //视频的码率
+    public int mFrameRate;                 //视频的帧率
+    public boolean mIsMute;                //是否静音
+    public boolean mFlipVertical;          //垂直翻转
+    public boolean mFlipHorizontal;        //水平翻转
+    public int mRotateDegree;              //旋转角度
+    public int mTimeScale;                 //裁减的视频间隔
     public FillMode mFillMode;
     public CustomFillMode mCustomFillMode;
     public GlFilter mFilter;
     public GlFilterList mFilterList;
 
-    public ProcessParams(@NonNull String srcPath, @NonNull String destPath) {
-        mSrcPath = srcPath;
-        mDestPath = destPath;
+    public ProcessParams(@NonNull String inputVideoPath, @NonNull String outputVideoPath) {
+        mInputVideoPath = inputVideoPath;
+        mOutputVideoPath = outputVideoPath;
     }
 
-    public void setDestVideoSize(VideoSize size) {
-        mDestVideoSize = size;
+    public void setOutputVideoSize(VideoSize size) {
+        mOutputVideoSize = size;
     }
 
-    public void setSrcVideoSize(VideoSize size) { mSrcVideoSize = size; }
+    public void setInputVideoSize(VideoSize size) { mInputVideoSize = size; }
 
     public void setVideoRange(VideoRange range) {
         mVideoRange = range;

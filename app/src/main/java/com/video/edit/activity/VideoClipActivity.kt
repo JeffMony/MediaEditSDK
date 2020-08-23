@@ -390,7 +390,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
         var composeParams = ProcessParams(videoPathInput, outputPath)
         composeParams.setFrameRate(8)
         composeParams.setFilterList(glFilterList)
-        composeParams.setDestVideoSize(VideoSize(540, 960))
+        composeParams.setOutputVideoSize(VideoSize(540, 960))
         composeParams.setVideoRange(VideoRange(startMillSec, endMillSec))
         var mp4Composer = Mp4Composer(composeParams)
         mp4Composer.listener(object : Mp4Composer.VideoComposeListener {

@@ -76,8 +76,8 @@ public class VideoComposer {
 
         mDecoderSurface = new DecoderOutputSurface(processParams.mFilter, processParams.mFilterList);
         mDecoderSurface.setRotation(Rotation.fromInt(processParams.mRotateDegree));
-        mDecoderSurface.setOutputVideoSize(processParams.mDestVideoSize);
-        mDecoderSurface.setInputResolution(processParams.mSrcVideoSize);
+        mDecoderSurface.setOutputVideoSize(processParams.mOutputVideoSize);
+        mDecoderSurface.setInputResolution(processParams.mInputVideoSize);
         mDecoderSurface.setFillMode(processParams.mFillMode);
         mDecoderSurface.setFillModeCustomItem(processParams.mCustomFillMode);
         mDecoderSurface.setFlipHorizontal(processParams.mFlipHorizontal);

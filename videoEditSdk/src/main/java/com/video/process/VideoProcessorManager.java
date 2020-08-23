@@ -1,5 +1,9 @@
 package com.video.process;
 
+import androidx.annotation.NonNull;
+
+import com.video.process.model.ProcessParams;
+
 public class VideoProcessorManager {
 
     private static VideoProcessorManager sInstance = null;
@@ -17,5 +21,8 @@ public class VideoProcessorManager {
         return sInstance;
     }
 
-    
+    public void addAudioFilter(@NonNull ProcessParams params) {
+
+    }
+
 }
