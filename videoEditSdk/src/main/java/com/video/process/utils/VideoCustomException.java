@@ -1,4 +1,4 @@
-package com.video.process.compose;
+package com.video.process.utils;
 
 public class VideoCustomException extends Exception {
 

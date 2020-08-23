@@ -4,14 +4,14 @@ import android.media.MediaMetadataRetriever;
 
 import androidx.annotation.NonNull;
 
-import com.video.process.compose.ComposeParams;
-import com.video.process.compose.VideoSize;
+import com.video.process.model.ProcessParams;
+import com.video.process.model.VideoSize;
 import com.video.process.utils.LogUtils;
 import com.video.process.utils.WorkThreadHandler;
 import com.video.process.preview.filter.GlFilter;
-import com.video.process.compose.FillMode;
-import com.video.process.compose.Rotation;
-import com.video.process.compose.VideoCustomException;
+import com.video.process.model.FillMode;
+import com.video.process.model.Rotation;
+import com.video.process.utils.VideoCustomException;
 import com.video.process.compose.filter.IResolutionFilter;
 
 import java.io.File;
@@ -22,11 +22,11 @@ public class Mp4Composer {
 
     private final static String TAG = Mp4Composer.class.getSimpleName();
 
-    private ComposeParams mComposeParams;
+    private ProcessParams mProcessParams;
     private VideoComposeListener mComposeListener;
 
-    public Mp4Composer(@NonNull ComposeParams params) {
-        mComposeParams = params;
+    public Mp4Composer(@NonNull ProcessParams params) {
+        mProcessParams = params;
     }
 
     public Mp4Composer listener(@NonNull VideoComposeListener listener) {
@@ -38,11 +38,11 @@ public class Mp4Composer {
         WorkThreadHandler.submitRunnableTask(new Runnable() {
             @Override
             public void run() {
-                File outputFile = new File(mComposeParams.mDestPath);
+                File outputFile = new File(mProcessParams.mDestPath);
                 if (outputFile.exists()) {
                     outputFile.delete();
                 }
-                final File srcFile = new File(mComposeParams.mSrcPath);
+                final File srcFile = new File(mProcessParams.mSrcPath);
                 final FileInputStream fileInputStream;
                 try {
                     fileInputStream = new FileInputStream(srcFile);
@@ -72,7 +72,7 @@ public class Mp4Composer {
                 }
                 final int videoRotate = getVideoRotation(fd);
                 final VideoSize srcVideoSize = getVideoSize(fd);
-                mComposeParams.setSrcVideoSize(srcVideoSize);
+                mProcessParams.setSrcVideoSize(srcVideoSize);
 
                 Mp4ComposerEngine engine = new Mp4ComposerEngine();
                 engine.setProgressCallback(new Mp4ComposerEngine.ComposeProgressCallback() {
@@ -98,49 +98,49 @@ public class Mp4Composer {
                     }
                 });
                 engine.setDataSource(fd);
-                if (mComposeParams.mFilter == null) {
-                    mComposeParams.setFilter(new GlFilter());
+                if (mProcessParams.mFilter == null) {
+                    mProcessParams.setFilter(new GlFilter());
                 }
 
-                if (mComposeParams.mFillMode == null) {
-                    mComposeParams.setFillMode(FillMode.PRESERVE_ASPECT_FIT);
+                if (mProcessParams.mFillMode == null) {
+                    mProcessParams.setFillMode(FillMode.PRESERVE_ASPECT_FIT);
                 }
 
-                if (mComposeParams.mCustomFillMode != null) {
-                    mComposeParams.setFillMode(FillMode.CUSTOM);
+                if (mProcessParams.mCustomFillMode != null) {
+                    mProcessParams.setFillMode(FillMode.CUSTOM);
                 }
 
-                if (mComposeParams.mDestVideoSize == null) {
-                    if (mComposeParams.mFillMode == FillMode.CUSTOM) {
-                        mComposeParams.setDestVideoSize(srcVideoSize);
+                if (mProcessParams.mDestVideoSize == null) {
+                    if (mProcessParams.mFillMode == FillMode.CUSTOM) {
+                        mProcessParams.setDestVideoSize(srcVideoSize);
                     } else {
-                        Rotation rotate = Rotation.fromInt(mComposeParams.mRotateDegree + videoRotate);
+                        Rotation rotate = Rotation.fromInt(mProcessParams.mRotateDegree + videoRotate);
                         if (rotate == Rotation.ROTATION_90 || rotate == Rotation.ROTATION_270) {
-                            mComposeParams.setDestVideoSize(new VideoSize(srcVideoSize.mHeight, srcVideoSize.mWidth));
+                            mProcessParams.setDestVideoSize(new VideoSize(srcVideoSize.mHeight, srcVideoSize.mWidth));
                         } else {
-                            mComposeParams.setDestVideoSize(srcVideoSize);
+                            mProcessParams.setDestVideoSize(srcVideoSize);
                         }
-                        mComposeParams.setRotateDegree(rotate.getRotation());
+                        mProcessParams.setRotateDegree(rotate.getRotation());
                     }
                 }
-                if (mComposeParams.mFilter instanceof IResolutionFilter) {
-                    ((IResolutionFilter) mComposeParams.mFilter).setResolution(mComposeParams.mDestVideoSize);
+                if (mProcessParams.mFilter instanceof IResolutionFilter) {
+                    ((IResolutionFilter) mProcessParams.mFilter).setResolution(mProcessParams.mDestVideoSize);
                 }
 
-                if (mComposeParams.mTimeScale < 2) {
-                    mComposeParams.setTimeScale(1);
+                if (mProcessParams.mTimeScale < 2) {
+                    mProcessParams.setTimeScale(1);
                 }
 
-                LogUtils.d(TAG + ", rotation = " + (mComposeParams.mRotateDegree + videoRotate));
+                LogUtils.d(TAG + ", rotation = " + (mProcessParams.mRotateDegree + videoRotate));
                 LogUtils.d(TAG + ", inputResolution width = " + srcVideoSize.mWidth + " height = " + srcVideoSize.mHeight);
-                LogUtils.d(TAG + ", outputResolution width = " + mComposeParams.mDestVideoSize.mWidth + " height = " + mComposeParams.mDestVideoSize.mHeight);
-                LogUtils.d(TAG + ", fillMode = " + mComposeParams.mFillMode);
+                LogUtils.d(TAG + ", outputResolution width = " + mProcessParams.mDestVideoSize.mWidth + " height = " + mProcessParams.mDestVideoSize.mHeight);
+                LogUtils.d(TAG + ", fillMode = " + mProcessParams.mFillMode);
 
                 try {
-                    if (mComposeParams.mBitRate < 0) {
-                        mComposeParams.setBitRate(calcBitRate(mComposeParams.mDestVideoSize.mWidth, mComposeParams.mDestVideoSize.mHeight));
+                    if (mProcessParams.mBitRate < 0) {
+                        mProcessParams.setBitRate(calcBitRate(mProcessParams.mDestVideoSize.mWidth, mProcessParams.mDestVideoSize.mHeight));
                     }
-                    engine.compose(mComposeParams);
+                    engine.compose(mProcessParams);
 
                 } catch (VideoCustomException e) {
                     e.printStackTrace();

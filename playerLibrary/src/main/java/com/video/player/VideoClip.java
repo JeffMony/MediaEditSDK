@@ -171,6 +171,4 @@ public class VideoClip {
         mMediaExtractor = null;
         return true;
     }
-
-
 }

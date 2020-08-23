@@ -1,11 +1,11 @@
-package com.video.process.compose;
+package com.video.process.model;
 
 import androidx.annotation.NonNull;
 
 import com.video.process.surface.GlFilterList;
 import com.video.process.preview.filter.GlFilter;
 
-public class ComposeParams {
+public class ProcessParams {
     public String mSrcPath;         //源文件路径
     public String mDestPath;        //生成文件的路径
     public VideoSize mDestVideoSize; //生成视频文件大小
@@ -23,7 +23,7 @@ public class ComposeParams {
     public GlFilter mFilter;
     public GlFilterList mFilterList;
 
-    public ComposeParams(@NonNull String srcPath, @NonNull String destPath) {
+    public ProcessParams(@NonNull String srcPath, @NonNull String destPath) {
         mSrcPath = srcPath;
         mDestPath = destPath;
     }

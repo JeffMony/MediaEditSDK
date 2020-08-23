@@ -1,4 +1,4 @@
-package com.video.process.compose;
+package com.video.process.model;
 
 /**
  * Created by sudamasayuki on 2018/01/01.

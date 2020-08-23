@@ -6,12 +6,12 @@ import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
 
-import com.video.process.compose.ComposeParams;
-import com.video.process.compose.VideoRange;
+import com.video.process.model.ProcessParams;
+import com.video.process.model.VideoRange;
 import com.video.process.compose.audio.AudioComposer;
 import com.video.process.compose.audio.IAudioComposer;
 import com.video.process.compose.audio.RemixAudioComposer;
-import com.video.process.compose.VideoCustomException;
+import com.video.process.utils.VideoCustomException;
 
 import java.io.FileDescriptor;
 
@@ -41,14 +41,14 @@ public class Mp4ComposerEngine {
         mProgressCallback = progressCallback;
     }
 
-    public void compose(ComposeParams composeParams) throws VideoCustomException {
+    public void compose(ProcessParams processParams) throws VideoCustomException {
         MediaMetadataRetriever mediaRetriever = new MediaMetadataRetriever();
         mediaRetriever.setDataSource(mInputFd);
         long duration = Long.parseLong(mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-        VideoRange range = composeParams.mVideoRange;
+        VideoRange range = processParams.mVideoRange;
         if (range == null) {
             range = new VideoRange(0, duration);
-            composeParams.setVideoRange(range);
+            processParams.setVideoRange(range);
         }
         if (range.mStart < 0) {
             range.mStart = 0;
@@ -66,7 +66,7 @@ public class Mp4ComposerEngine {
                 throw new VideoCustomException(VideoCustomException.CLIP_VIDEO_OUT_OF_RANGE, new Throwable());
             }
         }
-        composeParams.setVideoRange(range);
+        processParams.setVideoRange(range);
         mComposeDuration = range.mEnd - range.mStart;
 
         mMediaExtractor = new MediaExtractor();
@@ -80,7 +80,7 @@ public class Mp4ComposerEngine {
             throw new VideoCustomException(VideoCustomException.MEDIA_EXTRACTOR_DATASOURCE_FAILED, e);
         }
         try {
-            mMediaMuxer = new MediaMuxer(composeParams.mDestPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+            mMediaMuxer = new MediaMuxer(processParams.mDestPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (Exception e) {
             if (mediaRetriever != null) {
                 mediaRetriever.release();
@@ -88,9 +88,9 @@ public class Mp4ComposerEngine {
             releaseMediaResources();
             throw new VideoCustomException(VideoCustomException.MEDIA_MUXER_INSTANCE_FAILED, e);
         }
-        MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", composeParams.mDestVideoSize.mWidth, composeParams.mDestVideoSize.mHeight);
-        videoOutputFormat.setInteger(MediaFormat.KEY_BIT_RATE, composeParams.mBitRate);
-        videoOutputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, composeParams.mFrameRate);
+        MediaFormat videoOutputFormat = MediaFormat.createVideoFormat("video/avc", processParams.mDestVideoSize.mWidth, processParams.mDestVideoSize.mHeight);
+        videoOutputFormat.setInteger(MediaFormat.KEY_BIT_RATE, processParams.mBitRate);
+        videoOutputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, processParams.mFrameRate);
         videoOutputFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
         videoOutputFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
 
@@ -117,17 +117,17 @@ public class Mp4ComposerEngine {
             throw new VideoCustomException(VideoCustomException.MEDIA_HAS_NO_VIDEO, new Throwable());
         }
         MuxRender muxRender = new MuxRender(mMediaMuxer);
-        mVideoComposer = new VideoComposer(mMediaExtractor, videoTrackIndex, videoOutputFormat, muxRender, composeParams.mTimeScale);
-        mVideoComposer.setUp(composeParams);
+        mVideoComposer = new VideoComposer(mMediaExtractor, videoTrackIndex, videoOutputFormat, muxRender, processParams.mTimeScale);
+        mVideoComposer.setUp(processParams);
         mMediaExtractor.selectTrack(videoTrackIndex);
-        mVideoComposer.setClipRange(composeParams.mVideoRange.mStart, composeParams.mVideoRange.mEnd);
+        mVideoComposer.setClipRange(processParams.mVideoRange.mStart, processParams.mVideoRange.mEnd);
 
-        if (audioTrackIndex != -1 && !composeParams.mIsMute) {
-            if (composeParams.mTimeScale < 2) {
+        if (audioTrackIndex != -1 && !processParams.mIsMute) {
+            if (processParams.mTimeScale < 2) {
                 mAudioComposer = new AudioComposer(mMediaExtractor, audioTrackIndex, muxRender);
-                ((AudioComposer) mAudioComposer).setClipRange(composeParams.mVideoRange.mStart, composeParams.mVideoRange.mEnd);
+                ((AudioComposer) mAudioComposer).setClipRange(processParams.mVideoRange.mStart, processParams.mVideoRange.mEnd);
             } else {
-                mAudioComposer = new RemixAudioComposer(mMediaExtractor, audioTrackIndex, mMediaExtractor.getTrackFormat(audioTrackIndex), muxRender, composeParams.mTimeScale);
+                mAudioComposer = new RemixAudioComposer(mMediaExtractor, audioTrackIndex, mMediaExtractor.getTrackFormat(audioTrackIndex), muxRender, processParams.mTimeScale);
             }
             mAudioComposer.setup();
             mMediaExtractor.selectTrack(audioTrackIndex);

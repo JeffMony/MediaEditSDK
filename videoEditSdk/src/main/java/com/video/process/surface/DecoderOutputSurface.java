@@ -5,15 +5,15 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.view.Surface;
 
-import com.video.process.compose.VideoSize;
+import com.video.process.model.VideoSize;
 import com.video.process.utils.LogUtils;
 import com.video.process.preview.EFramebufferObject;
 import com.video.process.preview.EglUtil;
 import com.video.process.preview.filter.GlFilter;
 import com.video.process.preview.filter.GlPreviewFilter;
-import com.video.process.compose.FillMode;
-import com.video.process.compose.CustomFillMode;
-import com.video.process.compose.Rotation;
+import com.video.process.model.FillMode;
+import com.video.process.model.CustomFillMode;
+import com.video.process.model.Rotation;
 import com.video.process.compose.video.FrameBufferObjectOutputSurface;
 
 import java.util.Map;

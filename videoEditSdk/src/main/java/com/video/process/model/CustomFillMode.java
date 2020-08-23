@@ -1,4 +1,4 @@
-package com.video.process.compose;
+package com.video.process.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

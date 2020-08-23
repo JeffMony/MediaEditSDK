@@ -15,7 +15,7 @@ import android.view.TextureView;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.video.process.compose.VideoSize;
+import com.video.process.model.VideoSize;
 import com.video.process.utils.LogUtils;
 import com.video.process.utils.ScreenUtils;
 import com.video.process.utils.WorkThreadHandler;

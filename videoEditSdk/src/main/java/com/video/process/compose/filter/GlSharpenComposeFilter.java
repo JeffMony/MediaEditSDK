@@ -2,7 +2,7 @@ package com.video.process.compose.filter;
 
 import android.opengl.GLES20;
 
-import com.video.process.compose.VideoSize;
+import com.video.process.model.VideoSize;
 
 /**
  * Created by sudamasayuki on 2018/01/07.

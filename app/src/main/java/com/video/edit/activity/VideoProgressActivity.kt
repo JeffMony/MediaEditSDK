@@ -5,8 +5,8 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
-import com.video.process.compose.ComposeParams
-import com.video.process.compose.VideoCustomException
+import com.video.process.model.ProcessParams
+import com.video.process.utils.VideoCustomException
 import com.video.process.preview.filter.FilterType
 import com.video.process.surface.GlFilterList
 import com.video.process.surface.GlFilterPeriod
@@ -45,7 +45,7 @@ class VideoProgressActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         var s = System.currentTimeMillis();
-        var composeParams = ComposeParams(videoProcessConfig.srcMediaPath, videoProcessConfig.outMediaPath)
+        var composeParams = ProcessParams(videoProcessConfig.srcMediaPath, videoProcessConfig.outMediaPath)
         composeParams.setFrameRate(30)
         composeParams.setFilterList(glFilterList)
         var mp4Composer = Mp4Composer(composeParams)

@@ -9,10 +9,10 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Surface;
 
-import com.video.process.compose.FillMode;
-import com.video.process.compose.CustomFillMode;
-import com.video.process.compose.Rotation;
-import com.video.process.compose.VideoSize;
+import com.video.process.model.FillMode;
+import com.video.process.model.CustomFillMode;
+import com.video.process.model.Rotation;
+import com.video.process.model.VideoSize;
 import com.video.process.compose.filter.GlComposeFilter;
 import com.video.process.utils.GLESUtils;
 

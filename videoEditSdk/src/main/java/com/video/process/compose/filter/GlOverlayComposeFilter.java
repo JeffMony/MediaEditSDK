@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
-import com.video.process.compose.VideoSize;
+import com.video.process.model.VideoSize;
 import com.video.process.utils.GLESUtils;
 
 /**

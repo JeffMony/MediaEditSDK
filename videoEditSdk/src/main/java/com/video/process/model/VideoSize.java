@@ -1,4 +1,4 @@
-package com.video.process.compose;
+package com.video.process.model;
 
 public class VideoSize {
     public int mWidth;

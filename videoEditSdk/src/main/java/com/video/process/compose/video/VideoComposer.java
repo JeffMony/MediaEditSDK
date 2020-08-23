@@ -4,8 +4,8 @@ import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 
-import com.video.process.compose.ComposeParams;
-import com.video.process.compose.Rotation;
+import com.video.process.model.ProcessParams;
+import com.video.process.model.Rotation;
 import com.video.process.utils.LogUtils;
 import com.video.process.surface.DecoderOutputSurface;
 import com.video.process.surface.EncoderSurface;
@@ -52,7 +52,7 @@ public class VideoComposer {
         this.mTimeScale = timeScale;
     }
 
-    public void setUp(ComposeParams composeParams) {
+    public void setUp(ProcessParams processParams) {
         mMediaExtractor.selectTrack(mTrackIndex);
         try {
             mEncoder = MediaCodec.createEncoderByType(mOutputFormat.getString(MediaFormat.KEY_MIME));
@@ -74,14 +74,14 @@ public class VideoComposer {
             inputFormat.setInteger("rotation-degrees", 0);
         }
 
-        mDecoderSurface = new DecoderOutputSurface(composeParams.mFilter, composeParams.mFilterList);
-        mDecoderSurface.setRotation(Rotation.fromInt(composeParams.mRotateDegree));
-        mDecoderSurface.setOutputVideoSize(composeParams.mDestVideoSize);
-        mDecoderSurface.setInputResolution(composeParams.mSrcVideoSize);
-        mDecoderSurface.setFillMode(composeParams.mFillMode);
-        mDecoderSurface.setFillModeCustomItem(composeParams.mCustomFillMode);
-        mDecoderSurface.setFlipHorizontal(composeParams.mFlipHorizontal);
-        mDecoderSurface.setFlipVertical(composeParams.mFlipVertical);
+        mDecoderSurface = new DecoderOutputSurface(processParams.mFilter, processParams.mFilterList);
+        mDecoderSurface.setRotation(Rotation.fromInt(processParams.mRotateDegree));
+        mDecoderSurface.setOutputVideoSize(processParams.mDestVideoSize);
+        mDecoderSurface.setInputResolution(processParams.mSrcVideoSize);
+        mDecoderSurface.setFillMode(processParams.mFillMode);
+        mDecoderSurface.setFillModeCustomItem(processParams.mCustomFillMode);
+        mDecoderSurface.setFlipHorizontal(processParams.mFlipHorizontal);
+        mDecoderSurface.setFlipVertical(processParams.mFlipVertical);
         mDecoderSurface.setupAll();
         try {
             mDecoder = MediaCodec.createDecoderByType(inputFormat.getString(MediaFormat.KEY_MIME));

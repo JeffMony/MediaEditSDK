@@ -10,10 +10,10 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.SeekBar
 import android.widget.Toast
-import com.video.process.compose.ComposeParams
-import com.video.process.compose.VideoCustomException
-import com.video.process.compose.VideoRange
-import com.video.process.compose.VideoSize
+import com.video.process.model.ProcessParams
+import com.video.process.utils.VideoCustomException
+import com.video.process.model.VideoRange
+import com.video.process.model.VideoSize
 import com.video.process.preview.custfilter.GlFlashFliter
 import com.video.process.preview.custfilter.GlShakeFilter
 import com.video.process.preview.custfilter.GlSoulOutFilter
@@ -138,7 +138,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
 
     private fun startProcess() {
         outputPath = saveDir + File.separator + System.currentTimeMillis() + ".mp4"
-        var composeParams = ComposeParams(videoPathInput, outputPath)
+        var composeParams = ProcessParams(videoPathInput, outputPath)
         composeParams.setFrameRate(5)
         var mp4Composer = Mp4Composer(composeParams)
         mp4Composer.listener(object : Mp4Composer.VideoComposeListener {
@@ -387,7 +387,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
         glFilterList.putGlFilter(GlFilterPeriod(2000, 4000, GlFlashFliter(this)))
         glFilterList.putGlFilter(GlFilterPeriod(4000, 6000, GlShakeFilter(this)))
         outputPath = saveDir + File.separator + System.currentTimeMillis() + ".mp4";
-        var composeParams = ComposeParams(videoPathInput, outputPath)
+        var composeParams = ProcessParams(videoPathInput, outputPath)
         composeParams.setFrameRate(8)
         composeParams.setFilterList(glFilterList)
         composeParams.setDestVideoSize(VideoSize(540, 960))
