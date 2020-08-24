@@ -17,10 +17,10 @@ public class MusicConfigs {
                 new BottomDialogFragment.Option(R.drawable.filter_daqiang, "天空", 4)});
     }
 
-    public static String getMusicByType(String type) {
-        switch (type) {
+    public static String getMusicByType(String option) {
+        switch (option) {
             case "故乡":
-                return "country.mp3";
+                return "country.aac";
             case "天空":
                 return "sky_music.mp3";
             case "婚礼":

@@ -3,7 +3,7 @@ package com.video.process.utils;
 import android.util.Log;
 
 public class LogUtils {
-    private static final String TAG = "Video-Compose";
+    private static final String TAG = "VideoEdit";
     private static final boolean VERBOSE = false;
     private static final boolean DEBUG = false;
     private static final boolean INFO = true;
