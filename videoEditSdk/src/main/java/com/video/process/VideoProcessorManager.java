@@ -1,21 +1,27 @@
 package com.video.process;
 
 import android.content.Context;
+import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.video.process.exception.VideoProcessException;
+import com.video.process.listener.IVideoProcessListener;
 import com.video.process.model.ProcessParams;
 import com.video.process.model.TrackType;
 import com.video.process.model.VideoRange;
 import com.video.process.utils.LogUtils;
 import com.video.process.utils.MediaUtils;
-import com.video.process.utils.VideoCustomException;
 import com.video.process.utils.WorkThreadHandler;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class VideoProcessorManager {
@@ -39,6 +45,117 @@ public class VideoProcessorManager {
     public void initContext(@NonNull Context context) {
         mContext = context;
     }
+
+    /**
+     * 反转视频
+     * @param inputPath
+     * @param outputPath
+     * @param shouldReverseAudio
+     * @param listener
+     */
+    public void reverseVideo(String inputPath, String outputPath, boolean shouldReverseAudio, IVideoProcessListener listener) {
+        if (TextUtils.isEmpty(inputPath) || TextUtils.isEmpty(outputPath)) {
+            listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_INPUT_OR_OUTPUT_PATH, VideoProcessException.ERR_INPUT_OR_OUTPUT_PATH));
+            return;
+        }
+        MediaExtractor extractor = new MediaExtractor();
+        try {
+            extractor.setDataSource(inputPath);
+        } catch (Exception e) {
+            listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_EXTRACTOR_SET_DATASOURCE, VideoProcessException.ERR_EXTRACTOR_SET_DATASOURCE));
+            MediaUtils.closeExtractor(extractor);
+            return;
+        }
+        int videoTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.VIDEO);
+        if (videoTrackIndex == MediaUtils.ERR_NO_TRACK_INDEX) {
+            listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_NO_VIDEO_TRACK, VideoProcessException.ERR_NO_VIDEO_TRACK));
+            MediaUtils.closeExtractor(extractor);
+            return;
+        }
+        extractor.selectTrack(videoTrackIndex);
+        int keyFrameCount = 0;
+        int frameCount = 0;
+        List<Long> frameTimeStamps = new ArrayList<>();
+        while(true) {
+            int flags = extractor.getSampleFlags();
+            if (flags > 0 && (flags & MediaExtractor.SAMPLE_FLAG_SYNC) != 0) {
+                keyFrameCount++;
+            }
+            long sampleTime = extractor.getSampleTime();
+            if (sampleTime < 0) {
+                break;
+            }
+            frameTimeStamps.add(sampleTime);
+            frameCount++;
+            extractor.advance();
+        }
+        MediaUtils.closeExtractor(extractor);
+
+        //如果视频中都是关键帧
+        if (frameCount == keyFrameCount || frameCount == keyFrameCount + 1) {
+            directReverseVideo(inputPath, outputPath, shouldReverseAudio, frameTimeStamps, listener);
+        }
+    }
+
+    private void directReverseVideo(String inputPath, String outputPath, boolean shouldReverseAudio, List<Long> frameTimeStamps, IVideoProcessListener listener) {
+        int duration = MediaUtils.getDuration(inputPath);
+        if (duration == -1) {
+            listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_INPUT_VIDEO_NO_DURATION, VideoProcessException.ERR_INPUT_VIDEO_NO_DURATION));
+            return;
+        }
+        MediaExtractor extractor = new MediaExtractor();
+        try {
+            extractor.setDataSource(inputPath);
+        } catch (Exception e) {
+            listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_EXTRACTOR_SET_DATASOURCE, VideoProcessException.ERR_EXTRACTOR_SET_DATASOURCE));
+            MediaUtils.closeExtractor(extractor);
+            return;
+        }
+        int videoTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.VIDEO);
+        int audioTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.AUDIO);
+
+        if (videoTrackIndex == MediaUtils.ERR_NO_TRACK_INDEX) {
+            listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_NO_VIDEO_TRACK, VideoProcessException.ERR_NO_VIDEO_TRACK));
+            MediaUtils.closeExtractor(extractor);
+            return;
+        }
+        if (audioTrackIndex == MediaUtils.ERR_NO_TRACK_INDEX) {
+            listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_NO_AUDIO_TRACK, VideoProcessException.ERR_NO_AUDIO_TRACK));
+            MediaUtils.closeExtractor(extractor);
+            return;
+        }
+
+        MediaMuxer muxer = null;
+        try {
+            muxer = new MediaMuxer(outputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+        } catch (Exception e) {
+            listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_MEDIAMUXER_CREATE_FAILED, VideoProcessException.ERR_MEDIAMUXER_CREATE_FAILED));
+            MediaUtils.closeExtractor(extractor);
+            MediaUtils.closeMuxer(muxer);
+            return;
+        }
+        extractor.selectTrack(videoTrackIndex);
+        MediaFormat videoFormat = extractor.getTrackFormat(videoTrackIndex);
+
+        int videoDuration = videoFormat.getInteger(MediaFormat.KEY_DURATION);
+        int audioDuration = 0;
+        int videoMuxerIndex = muxer.addTrack(videoFormat);
+        int audioMuxerIndex = 0;
+        if (shouldReverseAudio) {
+            MediaFormat audioFormat = extractor.getTrackFormat(audioTrackIndex);
+            audioDuration = audioFormat.getInteger(MediaFormat.KEY_DURATION);
+            audioMuxerIndex = muxer.addTrack(audioFormat);
+        }
+        muxer.start();
+
+        int maxBufferSize = videoFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(maxBufferSize);
+
+        MediaUtils.seekToLastFrame(extractor, videoTrackIndex, duration);
+        MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+
+    }
+
 
     public void replaceAudioTrack(@NonNull final ProcessParams params) {
         WorkThreadHandler.submitRunnableTask(new Runnable() {

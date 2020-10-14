@@ -16,15 +16,17 @@ import java.io.FileDescriptor;
 
 public class MediaUtils {
 
-    public static long getDuration(@NonNull String inputPath) {
+    public static final int ERR_NO_TRACK_INDEX = -5;
+
+    public static int getDuration(@NonNull String inputPath) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        long duration = -1L;
+        int duration = -1;
         try {
             retriever.setDataSource(inputPath);
             String durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            duration = TextUtils.isEmpty(durationStr) ? -1L : Long.parseLong(durationStr);
+            duration = TextUtils.isEmpty(durationStr) ? -1 : Integer.parseInt(durationStr);
         } catch (Exception e) {
-            return -1L;
+            return -1;
         } finally {
             if (retriever != null) {
                 retriever.release();
@@ -64,7 +66,7 @@ public class MediaUtils {
                 return i;
             }
         }
-        return -5;
+        return ERR_NO_TRACK_INDEX;
     }
 
     public static int getRotation(MediaExtractor extractor) {
@@ -82,6 +84,19 @@ public class MediaUtils {
             return format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
         } else {
             return 100 * 1000;
+        }
+    }
+
+    public static void seekToLastFrame(MediaExtractor extractor, int trackIndex, int duration) {
+        int seekToDuration = duration * 1000;
+        if (extractor.getSampleTrackIndex() != trackIndex) {
+            extractor.selectTrack(trackIndex);
+        }
+        extractor.seekTo(seekToDuration, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+        while (seekToDuration > 0 &&
+                extractor.getSampleTrackIndex() != trackIndex) {
+            seekToDuration -= 10 * 1000;
+            extractor.seekTo(seekToDuration, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
         }
     }
 
