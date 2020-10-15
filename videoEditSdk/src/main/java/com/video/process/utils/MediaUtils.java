@@ -18,6 +18,10 @@ import java.util.List;
 
 public class MediaUtils {
 
+    public static final int DEFAULT_I_FRAME_INTERVAL = 1;
+    public static final int DEFAULT_CHANNEL_COUNT = 1;
+    public static final int DEFAULT_MAX_BUFFER_SIZE = 100 * 1024;
+    public static final int DEFAULT_AAC_BITRATE = 192 * 1000;
     public static final float VIDEO_WEIGHT = 0.8f;
     public static final float AUDIO_WEIGHT = (1 - VIDEO_WEIGHT);
     public static final int ERR_NO_TRACK_INDEX = -5;
@@ -87,7 +91,7 @@ public class MediaUtils {
         if (format.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
             return format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
         } else {
-            return 100 * 1000;
+            return DEFAULT_MAX_BUFFER_SIZE;
         }
     }
 
@@ -119,6 +123,26 @@ public class MediaUtils {
         return frameTimeStamps;
     }
 
+    public static int getAudioBitrate(MediaFormat format) {
+        if (format.containsKey(MediaFormat.KEY_BIT_RATE)) {
+            return format.getInteger(MediaFormat.KEY_BIT_RATE);
+        } else {
+            return DEFAULT_AAC_BITRATE;
+        }
+    }
+
+    public static int getChannelCount(MediaFormat format) {
+        if (format.containsKey(MediaFormat.KEY_CHANNEL_COUNT)) {
+            return format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+        } else {
+            return DEFAULT_CHANNEL_COUNT;
+        }
+    }
+
+    public static int getSampleRate(MediaFormat format) {
+        return format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+    }
+
     public static void closeExtractor(MediaExtractor extractor) {
         if (extractor != null) {
             extractor.release();
@@ -127,6 +151,7 @@ public class MediaUtils {
 
     public static void closeMuxer(MediaMuxer muxer) {
         if (muxer != null) {
+            muxer.stop();
             muxer.release();
         }
     }
