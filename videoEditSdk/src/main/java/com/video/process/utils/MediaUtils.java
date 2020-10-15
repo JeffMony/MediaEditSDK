@@ -13,9 +13,13 @@ import com.video.process.model.VideoSize;
 
 import java.io.Closeable;
 import java.io.FileDescriptor;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MediaUtils {
 
+    public static final float VIDEO_WEIGHT = 0.8f;
+    public static final float AUDIO_WEIGHT = (1 - VIDEO_WEIGHT);
     public static final int ERR_NO_TRACK_INDEX = -5;
 
     public static int getDuration(@NonNull String inputPath) {
@@ -87,6 +91,7 @@ public class MediaUtils {
         }
     }
 
+    //找到最后一个关键帧
     public static void seekToLastFrame(MediaExtractor extractor, int trackIndex, int duration) {
         int seekToDuration = duration * 1000;
         if (extractor.getSampleTrackIndex() != trackIndex) {
@@ -98,6 +103,20 @@ public class MediaUtils {
             seekToDuration -= 10 * 1000;
             extractor.seekTo(seekToDuration, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
         }
+    }
+
+    //获取特定轨道的帧数
+    public static List<Long> getFrameTimeStamps(MediaExtractor extractor) {
+        List<Long> frameTimeStamps = new ArrayList<>();
+        while(true) {
+            long sampleTime = extractor.getSampleTime();
+            if (sampleTime < 0) {
+                break;
+            }
+            frameTimeStamps.add(sampleTime);
+            extractor.advance();
+        }
+        return frameTimeStamps;
     }
 
     public static void closeExtractor(MediaExtractor extractor) {

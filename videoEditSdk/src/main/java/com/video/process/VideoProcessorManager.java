@@ -53,7 +53,7 @@ public class VideoProcessorManager {
      * @param shouldReverseAudio
      * @param listener
      */
-    public void reverseVideo(String inputPath, String outputPath, boolean shouldReverseAudio, IVideoProcessListener listener) {
+    public void reverseVideo(String inputPath, String outputPath, boolean shouldReverseAudio, @NonNull IVideoProcessListener listener) {
         if (TextUtils.isEmpty(inputPath) || TextUtils.isEmpty(outputPath)) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_INPUT_OR_OUTPUT_PATH, VideoProcessException.ERR_INPUT_OR_OUTPUT_PATH));
             return;
@@ -97,7 +97,13 @@ public class VideoProcessorManager {
         }
     }
 
-    private void directReverseVideo(String inputPath, String outputPath, boolean shouldReverseAudio, List<Long> frameTimeStamps, IVideoProcessListener listener) {
+    //直接转换完全关键帧的视频
+    private void directReverseVideo(String inputPath, String outputPath, boolean shouldReverseAudio, List<Long> frameTimeStamps, @NonNull IVideoProcessListener listener) {
+        if (frameTimeStamps == null || frameTimeStamps.size() <= 0) {
+            listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_INPUT_VIDEO_NO_KEYFRAME, VideoProcessException.ERR_INPUT_VIDEO_NO_KEYFRAME));
+            return;
+        }
+
         int duration = MediaUtils.getDuration(inputPath);
         if (duration == -1) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_INPUT_VIDEO_NO_DURATION, VideoProcessException.ERR_INPUT_VIDEO_NO_DURATION));
@@ -114,11 +120,14 @@ public class VideoProcessorManager {
         int videoTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.VIDEO);
         int audioTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.AUDIO);
 
+        //判断是否存在视频轨道
         if (videoTrackIndex == MediaUtils.ERR_NO_TRACK_INDEX) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_NO_VIDEO_TRACK, VideoProcessException.ERR_NO_VIDEO_TRACK));
             MediaUtils.closeExtractor(extractor);
             return;
         }
+
+        //判断是否存在音频轨道
         if (audioTrackIndex == MediaUtils.ERR_NO_TRACK_INDEX) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_NO_AUDIO_TRACK, VideoProcessException.ERR_NO_AUDIO_TRACK));
             MediaUtils.closeExtractor(extractor);
@@ -152,8 +161,65 @@ public class VideoProcessorManager {
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(maxBufferSize);
 
         MediaUtils.seekToLastFrame(extractor, videoTrackIndex, duration);
-        MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+        MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
 
+        long lastFrameTime = -1;
+
+        //处理视频
+        for (int index = frameTimeStamps.size() - 1; index >= 0; index--) {
+            extractor.seekTo(frameTimeStamps.get(index), MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            long sampleTime = extractor.getSampleTime();
+            if (lastFrameTime == -1) {
+                lastFrameTime = sampleTime;
+            }
+            bufferInfo.presentationTimeUs = lastFrameTime - sampleTime;
+            bufferInfo.size = extractor.readSampleData(byteBuffer, 0);
+            bufferInfo.flags = extractor.getSampleFlags();
+
+            if (bufferInfo.size < 0) {
+                break;
+            }
+
+            muxer.writeSampleData(videoMuxerIndex, byteBuffer, bufferInfo);
+            float videoProcessProgress = bufferInfo.presentationTimeUs * 1.0f / videoDuration;
+            videoProcessProgress = (videoProcessProgress - 1.0f) > 0.00001 ? 1.0f : videoProcessProgress;
+            videoProcessProgress *= MediaUtils.VIDEO_WEIGHT;
+            listener.onVideoReverseProgress(videoProcessProgress);
+        }
+
+
+        //处理音频
+        extractor.unselectTrack(videoTrackIndex);
+        extractor.selectTrack(audioTrackIndex);
+
+        //需要反转音频轨道
+        if (shouldReverseAudio) {
+            List<Long> audioFrameTimeStamps = MediaUtils.getFrameTimeStamps(extractor);
+            lastFrameTime = -1;
+
+            for (int index = audioFrameTimeStamps.size() - 1; index >= 0; index--) {
+                extractor.seekTo(audioFrameTimeStamps.get(index), MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+                long sampleTime = extractor.getSampleTime();
+                if (lastFrameTime == -1) {
+                    lastFrameTime = sampleTime;
+                }
+                bufferInfo.presentationTimeUs = lastFrameTime - sampleTime;
+                bufferInfo.size = extractor.readSampleData(byteBuffer, 0);
+                bufferInfo.flags = extractor.getSampleFlags();
+
+                if (bufferInfo.size < 0) {
+                    break;
+                }
+                muxer.writeSampleData(audioMuxerIndex, byteBuffer, bufferInfo);
+
+                float audioProcessProgress = bufferInfo.presentationTimeUs * 1.0f / audioDuration;
+                audioProcessProgress = (audioProcessProgress - 1.0f) > 0.00001 ? 1.0f : audioProcessProgress;
+                audioProcessProgress = audioProcessProgress * MediaUtils.AUDIO_WEIGHT + MediaUtils.VIDEO_WEIGHT;
+                listener.onVideoReverseProgress(audioProcessProgress);
+            }
+        } else {
+            //不需要反转音频轨道
+        }
     }
 
 

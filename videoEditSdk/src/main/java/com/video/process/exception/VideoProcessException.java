@@ -20,6 +20,9 @@ public class VideoProcessException {
     public static final int ERR_MEDIAMUXER_CREATE_FAILED = 105;
     public static final String ERR_STR_MEDIAMUXER_CREATE_FAILED = "Create MediaMuxer failed";
 
+    public static final int ERR_INPUT_VIDEO_NO_KEYFRAME = 106;
+    public static final String ERR_STR_INPUT_VIDEO_NO_KEYFRAME = "Input video has no key frame";
+
 
     private String mErrStr;
     private int mErrorCode;
