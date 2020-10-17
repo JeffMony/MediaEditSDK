@@ -1,0 +1,70 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "/Users/jeffmony/sources/MediaEditSDK",
+      "sdkFolder": "/Users/jeffmony/Library/Android/sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates",
+      "gradleModulePathName": ":soundtouchLib",
+      "moduleRootFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib",
+      "makeFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "/Users/jeffmony/sources/MediaEditSDK/.cxx",
+      "cxxFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx",
+      "ndkFolder": "/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669",
+      "ndkVersion": "21.0.6113669",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [],
+    "cFlagList": [],
+    "cppFlagsList": [
+      "-fexceptions"
+    ],
+    "variantName": "release",
+    "soFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/release/lib",
+    "objFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/release/obj",
+    "jsonFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release",
+    "gradleBuildOutputFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/release",
+    "isDebuggableEnabled": false,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A"
+    ],
+    "buildTargetSet": []
+  },
+  "abi": "ARM64_V8A",
+  "abiPlatformVersion": 19,
+  "cxxBuildFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a",
+  "jsonFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a/android_gradle_build.json",
+  "gradleBuildOutputFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/release/arm64-v8a",
+  "objFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/release/obj/arm64-v8a",
+  "buildCommandFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a/build_command.txt",
+  "buildOutputFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a/build_output.txt",
+  "modelOutputFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a/build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/release/arm64-v8a/CMakeLists.txt",
+    "toolchainWrapperFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/release/arm64-v8a/android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/release/arm64-v8a/build_generation_state.json",
+    "cacheKeyFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/release/arm64-v8a/compiler_cache_key.json",
+    "compilerCacheUseFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/release/arm64-v8a/compiler_cache_use.json",
+    "compilerCacheWriteFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/release/arm64-v8a/compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/release/arm64-v8a/compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a/json_generation_record.json",
+  "compileCommandsJsonFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a/compile_commands.json"
+}

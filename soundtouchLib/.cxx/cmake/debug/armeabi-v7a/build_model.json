@@ -1,0 +1,70 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "/Users/jeffmony/sources/MediaEditSDK",
+      "sdkFolder": "/Users/jeffmony/Library/Android/sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates",
+      "gradleModulePathName": ":soundtouchLib",
+      "moduleRootFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib",
+      "makeFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "/Users/jeffmony/sources/MediaEditSDK/.cxx",
+      "cxxFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx",
+      "ndkFolder": "/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669",
+      "ndkVersion": "21.0.6113669",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [],
+    "cFlagList": [],
+    "cppFlagsList": [
+      "-fexceptions"
+    ],
+    "variantName": "debug",
+    "soFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/debug/lib",
+    "objFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/debug/obj",
+    "jsonFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug",
+    "gradleBuildOutputFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/debug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A"
+    ],
+    "buildTargetSet": []
+  },
+  "abi": "ARMEABI_V7A",
+  "abiPlatformVersion": 19,
+  "cxxBuildFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/armeabi-v7a",
+  "jsonFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/armeabi-v7a/android_gradle_build.json",
+  "gradleBuildOutputFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/debug/armeabi-v7a",
+  "objFolder": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/debug/obj/armeabi-v7a",
+  "buildCommandFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/armeabi-v7a/build_command.txt",
+  "buildOutputFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/armeabi-v7a/build_output.txt",
+  "modelOutputFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/armeabi-v7a/build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/debug/armeabi-v7a/CMakeLists.txt",
+    "toolchainWrapperFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/debug/armeabi-v7a/android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/debug/armeabi-v7a/build_generation_state.json",
+    "cacheKeyFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/debug/armeabi-v7a/compiler_cache_key.json",
+    "compilerCacheUseFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/debug/armeabi-v7a/compiler_cache_use.json",
+    "compilerCacheWriteFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/debug/armeabi-v7a/compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cxx/debug/armeabi-v7a/compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/armeabi-v7a/json_generation_record.json",
+  "compileCommandsJsonFile": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/armeabi-v7a/compile_commands.json"
+}

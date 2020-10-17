@@ -1,0 +1,19 @@
+{
+  "buildFiles": [
+    "/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669/build/cmake/platforms.cmake",
+    "/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669/build/cmake/android.toolchain.cmake",
+    "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/Users/jeffmony/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a\" clean"
+  ],
+  "buildTargetsCommand": "/Users/jeffmony/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "soundtouch-Release-arm64-v8a": {
+      "artifactName": "soundtouch",
+      "buildCommand": "/Users/jeffmony/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a\" soundtouch",
+      "abi": "arm64-v8a",
+      "output": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/release/obj/arm64-v8a/libsoundtouch.so"
+    }
+  }
+}

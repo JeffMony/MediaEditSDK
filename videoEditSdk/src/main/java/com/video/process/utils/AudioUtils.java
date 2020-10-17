@@ -12,6 +12,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.jeffmony.soundtouch.SoundTouch;
 import com.video.process.compose.audio.Pcm2Wav;
 import com.video.process.model.TrackType;
 

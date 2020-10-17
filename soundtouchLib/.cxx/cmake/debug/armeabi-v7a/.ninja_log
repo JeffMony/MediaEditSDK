@@ -1,0 +1,18 @@
+# ninja log v5
+3	774	1602951966	CMakeFiles/soundtouch.dir/soundtouch/mmx_optimized.cpp.o	ffe2445f684f509c
+1	776	1602951966	CMakeFiles/soundtouch.dir/soundtouch/cpu_detect_x86.cpp.o	a32f3b8074408638
+1	800	1602951966	CMakeFiles/soundtouch.dir/soundtouch/InterpolateCubic.cpp.o	7ec20f795e000d94
+2	802	1602951966	CMakeFiles/soundtouch.dir/soundtouch/InterpolateShannon.cpp.o	cc51135e74b47328
+2	812	1602951966	CMakeFiles/soundtouch.dir/soundtouch/InterpolateLinear.cpp.o	5d784b9a49850e0d
+1	815	1602951966	CMakeFiles/soundtouch.dir/soundtouch/FIRFilter.cpp.o	e2d3c81843cc9882
+0	817	1602951966	CMakeFiles/soundtouch.dir/soundtouch/AAFilter.cpp.o	178536cd89c0d0b5
+1	826	1602951966	CMakeFiles/soundtouch.dir/soundtouch/FIFOSampleBuffer.cpp.o	ab65c8c3fb4cdb3d
+0	901	1602951966	CMakeFiles/soundtouch.dir/soundtouch-jni.cpp.o	386c86df86c84d0d
+775	933	1602951966	CMakeFiles/soundtouch.dir/soundtouch/PeakFinder.cpp.o	4c7a21f1a47e870e
+0	1002	1602951966	CMakeFiles/soundtouch.dir/soundtouch/BPMDetect.cpp.o	cfa88e7a7de9b2f2
+802	1229	1602951966	CMakeFiles/soundtouch.dir/soundtouch/sse_optimized.cpp.o	14d586994d2168f3
+776	1240	1602951966	CMakeFiles/soundtouch.dir/soundtouch/RateTransposer.cpp.o	31066da8afac52bc
+800	1247	1602951966	CMakeFiles/soundtouch.dir/soundtouch/SoundTouch.cpp.o	4bb6c4c03496fdfa
+813	1251	1602951966	CMakeFiles/soundtouch.dir/soundtouch/TDStretch.cpp.o	fccd0a82596a0ce1
+815	1604	1602951967	CMakeFiles/soundtouch.dir/soundtouch/WavFile.cpp.o	e5fa69757da544a0
+1604	1781	1602951967	/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/debug/obj/armeabi-v7a/libsoundtouch.so	e1cf0ced6b6de959

@@ -1,0 +1,18 @@
+ninja: Entering directory `/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/release/arm64-v8a'
+[1/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/mmx_optimized.cpp.o
+[2/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/cpu_detect_x86.cpp.o
+[3/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/InterpolateShannon.cpp.o
+[4/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/AAFilter.cpp.o
+[5/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/FIFOSampleBuffer.cpp.o
+[6/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/InterpolateCubic.cpp.o
+[7/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/InterpolateLinear.cpp.o
+[8/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/FIRFilter.cpp.o
+[9/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch-jni.cpp.o
+[10/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/PeakFinder.cpp.o
+[11/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/BPMDetect.cpp.o
+[12/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/sse_optimized.cpp.o
+[13/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/RateTransposer.cpp.o
+[14/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/SoundTouch.cpp.o
+[15/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/TDStretch.cpp.o
+[16/17] Building CXX object CMakeFiles/soundtouch.dir/soundtouch/WavFile.cpp.o
+[17/17] Linking CXX shared library /Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/release/obj/arm64-v8a/libsoundtouch.so
