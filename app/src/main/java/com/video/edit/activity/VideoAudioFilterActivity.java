@@ -22,15 +22,12 @@ import com.video.process.utils.LogUtils;
 import com.video.edit.demo.R;
 import com.video.player.player.VideoPlayer;
 import com.video.player.player.VideoPlayerOfExoPlayer;
-import com.video.process.utils.MediaUtils;
-import com.video.process.utils.WorkThreadHandler;
+import com.video.process.utils.VideoUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.util.concurrent.Executors;
 
 public class VideoAudioFilterActivity extends AppCompatActivity {
 
@@ -111,11 +108,11 @@ public class VideoAudioFilterActivity extends AppCompatActivity {
         } catch (Exception e) {
             throw e;
         } finally {
-            MediaUtils.close(fis);
-            MediaUtils.close(fos);
-            MediaUtils.close(assetFileDescriptor);
-            MediaUtils.close(from);
-            MediaUtils.close(to);
+            VideoUtils.close(fis);
+            VideoUtils.close(fos);
+            VideoUtils.close(assetFileDescriptor);
+            VideoUtils.close(from);
+            VideoUtils.close(to);
         }
     }
 

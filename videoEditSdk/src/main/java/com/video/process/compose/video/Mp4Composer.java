@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import com.video.process.model.ProcessParams;
 import com.video.process.model.VideoSize;
 import com.video.process.utils.LogUtils;
-import com.video.process.utils.MediaUtils;
+import com.video.process.utils.VideoUtils;
 import com.video.process.utils.WorkThreadHandler;
 import com.video.process.preview.filter.GlFilter;
 import com.video.process.model.FillMode;
@@ -72,7 +72,7 @@ public class Mp4Composer {
                     return;
                 }
                 final int videoRotate = getVideoRotation(fd);
-                final VideoSize inputVideoSize = MediaUtils.getVideoSize(fd);
+                final VideoSize inputVideoSize = VideoUtils.getVideoSize(fd);
                 mProcessParams.setInputVideoSize(inputVideoSize);
 
                 Mp4ComposerEngine engine = new Mp4ComposerEngine();

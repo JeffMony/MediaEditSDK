@@ -1,4 +1,4 @@
-package com.video.process.surface;
+package com.video.process.preview.filter;
 
 import com.video.process.preview.filter.FilterType;
 

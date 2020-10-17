@@ -17,8 +17,9 @@ import com.video.process.listener.IVideoReverseListener;
 import com.video.process.model.ProcessParams;
 import com.video.process.model.TrackType;
 import com.video.process.model.VideoRange;
+import com.video.process.utils.AudioUtils;
 import com.video.process.utils.LogUtils;
-import com.video.process.utils.MediaUtils;
+import com.video.process.utils.VideoUtils;
 import com.video.process.utils.WorkThreadHandler;
 
 import java.io.File;
@@ -155,17 +156,7 @@ public class VideoProcessorManager {
             processorBuilder.mBitrate = inputBitrate;
         }
         if (processorBuilder.mIFrameInterval == -100) {
-            processorBuilder.mIFrameInterval = MediaUtils.DEFAULT_I_FRAME_INTERVAL;
-        }
-
-        int resultWidth = processorBuilder.mOutputWidth == 0 ? inputWidth : processorBuilder.mOutputWidth;
-        int resultHeight = processorBuilder.mOutputHeight == 0 ? inputHeight : processorBuilder.mOutputHeight;
-        resultWidth = resultWidth % 2 == 0 ? resultWidth : resultWidth + 1;
-        resultHeight = resultHeight % 2 == 0 ? resultHeight : resultHeight + 1;
-        if (inputRotation == 90 || inputRotation == 270) {
-            int temp = resultHeight;
-            resultHeight = resultWidth;
-            resultWidth = temp;
+            processorBuilder.mIFrameInterval = VideoUtils.DEFAULT_I_FRAME_INTERVAL;
         }
 
         MediaExtractor extractor = new MediaExtractor();
@@ -173,29 +164,30 @@ public class VideoProcessorManager {
             extractor.setDataSource(processorBuilder.mInputPath);
         } catch (Exception e) {
             processorBuilder.mProcessorListener.onVideoProcessorFailed(new VideoProcessException(VideoProcessException.ERR_STR_EXTRACTOR_SET_DATASOURCE, VideoProcessException.ERR_EXTRACTOR_SET_DATASOURCE));
-            MediaUtils.closeExtractor(extractor);
+            VideoUtils.closeExtractor(extractor);
             return;
         }
-        int videoTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.VIDEO);
-        int audioTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.AUDIO);
+        int videoTrackIndex = VideoUtils.getTrackIndex(extractor, TrackType.VIDEO);
+        int audioTrackIndex = VideoUtils.getTrackIndex(extractor, TrackType.AUDIO);
         MediaMuxer muxer = null;
         try {
             muxer = new MediaMuxer(processorBuilder.mOutputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (Exception e) {
             processorBuilder.mProcessorListener.onVideoProcessorFailed(new VideoProcessException(VideoProcessException.ERR_STR_MEDIAMUXER_CREATE_FAILED, VideoProcessException.ERR_MEDIAMUXER_CREATE_FAILED));
-            MediaUtils.closeExtractor(extractor);
-            MediaUtils.closeMuxer(muxer);
+            VideoUtils.closeExtractor(extractor);
+            VideoUtils.closeMuxer(muxer);
             return;
         }
 
         int muxerAudioIndex = 0;
-        if (audioTrackIndex != MediaUtils.ERR_NO_TRACK_INDEX) {
+        int audioEndTimeStamp = processorBuilder.mEndTimeStamp;
+        if (audioTrackIndex != VideoUtils.ERR_NO_TRACK_INDEX) {
             MediaFormat audioFormat = extractor.getTrackFormat(audioTrackIndex);
             String audioMimeType = MediaFormat.MIMETYPE_AUDIO_AAC;
-            int bitrate = MediaUtils.getAudioBitrate(audioFormat);
-            int channelCount = MediaUtils.getChannelCount(audioFormat);
-            int sampleRate = MediaUtils.getSampleRate(audioFormat);
-            int maxBufferSize = MediaUtils.getAudioMaxBufferSize(audioFormat);
+            int bitrate = AudioUtils.getAudioBitrate(audioFormat);
+            int channelCount = AudioUtils.getChannelCount(audioFormat);
+            int sampleRate = VideoUtils.getSampleRate(audioFormat);
+            int maxBufferSize = AudioUtils.getAudioMaxBufferSize(audioFormat);
 
             MediaFormat audioEncodeFormat = MediaFormat.createAudioFormat(audioMimeType, sampleRate, channelCount);
             audioEncodeFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
@@ -214,9 +206,46 @@ public class VideoProcessorManager {
                     audioEncodeFormat.setLong(MediaFormat.KEY_DURATION, duration);
                 }
             } else {
-                
+                long videoDurationUs = inputDuration * 1000;
+                long audioDurationUs = audioFormat.getLong(MediaFormat.KEY_DURATION);
+
+                if (processorBuilder.mStartTimeStamp != -1 || processorBuilder.mEndTimeStamp != -1 || processorBuilder.mSpeed != 0) {
+                    if (processorBuilder.mStartTimeStamp != -1 && processorBuilder.mEndTimeStamp != -1) {
+                        videoDurationUs = (processorBuilder.mEndTimeStamp - processorBuilder.mStartTimeStamp) * 1000;
+                    }
+                    if (processorBuilder.mSpeed != 0) {
+                        videoDurationUs /= processorBuilder.mSpeed;
+                    }
+                    long newDurationUs = videoDurationUs < audioDurationUs ? videoDurationUs : audioDurationUs;
+                    audioEncodeFormat.setLong(MediaFormat.KEY_DURATION, newDurationUs);
+                    audioEndTimeStamp = (processorBuilder.mStartTimeStamp == -1 ? 0 : processorBuilder.mStartTimeStamp) + (int)(newDurationUs / 1000);
+                }
             }
+
+            AudioUtils.checkCsd(audioFormat, MediaCodecInfo.CodecProfileLevel.AACObjectLC, sampleRate, channelCount);
+
+            muxerAudioIndex = muxer.addTrack(audioEncodeFormat);
         }
+        extractor.selectTrack(videoTrackIndex);
+
+        int resultWidth = processorBuilder.mOutputWidth == 0 ? inputWidth : processorBuilder.mOutputWidth;
+        int resultHeight = processorBuilder.mOutputHeight == 0 ? inputHeight : processorBuilder.mOutputHeight;
+        resultWidth = resultWidth % 2 == 0 ? resultWidth : resultWidth + 1;
+        resultHeight = resultHeight % 2 == 0 ? resultHeight : resultHeight + 1;
+        if (inputRotation == 90 || inputRotation == 270) {
+            int temp = resultHeight;
+            resultHeight = resultWidth;
+            resultWidth = temp;
+        }
+
+        if (processorBuilder.mStartTimeStamp != -1) {
+            extractor.seekTo(processorBuilder.mStartTimeStamp * 1000, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+        } else {
+            extractor.seekTo(0, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+        }
+
+
+
 
 
     }
@@ -238,13 +267,13 @@ public class VideoProcessorManager {
             extractor.setDataSource(inputPath);
         } catch (Exception e) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_EXTRACTOR_SET_DATASOURCE, VideoProcessException.ERR_EXTRACTOR_SET_DATASOURCE));
-            MediaUtils.closeExtractor(extractor);
+            VideoUtils.closeExtractor(extractor);
             return;
         }
-        int videoTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.VIDEO);
-        if (videoTrackIndex == MediaUtils.ERR_NO_TRACK_INDEX) {
+        int videoTrackIndex = VideoUtils.getTrackIndex(extractor, TrackType.VIDEO);
+        if (videoTrackIndex == VideoUtils.ERR_NO_TRACK_INDEX) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_NO_VIDEO_TRACK, VideoProcessException.ERR_NO_VIDEO_TRACK));
-            MediaUtils.closeExtractor(extractor);
+            VideoUtils.closeExtractor(extractor);
             return;
         }
         extractor.selectTrack(videoTrackIndex);
@@ -264,7 +293,7 @@ public class VideoProcessorManager {
             frameCount++;
             extractor.advance();
         }
-        MediaUtils.closeExtractor(extractor);
+        VideoUtils.closeExtractor(extractor);
 
         //如果视频中都是关键帧
         if (frameCount == keyFrameCount || frameCount == keyFrameCount + 1) {
@@ -281,7 +310,7 @@ public class VideoProcessorManager {
             return;
         }
 
-        int duration = MediaUtils.getDuration(inputPath);
+        int duration = VideoUtils.getDuration(inputPath);
         if (duration == -1) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_INPUT_VIDEO_NO_DURATION, VideoProcessException.ERR_INPUT_VIDEO_NO_DURATION));
             return;
@@ -291,23 +320,23 @@ public class VideoProcessorManager {
             extractor.setDataSource(inputPath);
         } catch (Exception e) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_EXTRACTOR_SET_DATASOURCE, VideoProcessException.ERR_EXTRACTOR_SET_DATASOURCE));
-            MediaUtils.closeExtractor(extractor);
+            VideoUtils.closeExtractor(extractor);
             return;
         }
-        int videoTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.VIDEO);
-        int audioTrackIndex = MediaUtils.getTrackIndex(extractor, TrackType.AUDIO);
+        int videoTrackIndex = VideoUtils.getTrackIndex(extractor, TrackType.VIDEO);
+        int audioTrackIndex = VideoUtils.getTrackIndex(extractor, TrackType.AUDIO);
 
         //判断是否存在视频轨道
-        if (videoTrackIndex == MediaUtils.ERR_NO_TRACK_INDEX) {
+        if (videoTrackIndex == VideoUtils.ERR_NO_TRACK_INDEX) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_NO_VIDEO_TRACK, VideoProcessException.ERR_NO_VIDEO_TRACK));
-            MediaUtils.closeExtractor(extractor);
+            VideoUtils.closeExtractor(extractor);
             return;
         }
 
         //判断是否存在音频轨道
-        if (audioTrackIndex == MediaUtils.ERR_NO_TRACK_INDEX) {
+        if (audioTrackIndex == VideoUtils.ERR_NO_TRACK_INDEX) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_NO_AUDIO_TRACK, VideoProcessException.ERR_NO_AUDIO_TRACK));
-            MediaUtils.closeExtractor(extractor);
+            VideoUtils.closeExtractor(extractor);
             return;
         }
 
@@ -316,8 +345,8 @@ public class VideoProcessorManager {
             muxer = new MediaMuxer(outputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (Exception e) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_MEDIAMUXER_CREATE_FAILED, VideoProcessException.ERR_MEDIAMUXER_CREATE_FAILED));
-            MediaUtils.closeExtractor(extractor);
-            MediaUtils.closeMuxer(muxer);
+            VideoUtils.closeExtractor(extractor);
+            VideoUtils.closeMuxer(muxer);
             return;
         }
         extractor.selectTrack(videoTrackIndex);
@@ -337,7 +366,7 @@ public class VideoProcessorManager {
         int maxBufferSize = videoFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(maxBufferSize);
 
-        MediaUtils.seekToLastFrame(extractor, videoTrackIndex, duration);
+        VideoUtils.seekToLastFrame(extractor, videoTrackIndex, duration);
         MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
 
         long lastFrameTime = -1;
@@ -360,7 +389,7 @@ public class VideoProcessorManager {
             muxer.writeSampleData(videoMuxerIndex, byteBuffer, bufferInfo);
             float videoProcessProgress = bufferInfo.presentationTimeUs * 1.0f / videoDuration;
             videoProcessProgress = (videoProcessProgress - 1.0f) > 0.00001 ? 1.0f : videoProcessProgress;
-            videoProcessProgress *= MediaUtils.VIDEO_WEIGHT;
+            videoProcessProgress *= VideoUtils.VIDEO_WEIGHT;
             listener.onVideoReverseProgress(videoProcessProgress);
         }
 
@@ -371,7 +400,7 @@ public class VideoProcessorManager {
 
         //需要反转音频轨道
         if (shouldReverseAudio) {
-            List<Long> audioFrameTimeStamps = MediaUtils.getFrameTimeStamps(extractor);
+            List<Long> audioFrameTimeStamps = VideoUtils.getFrameTimeStamps(extractor);
             lastFrameTime = -1;
 
             for (int index = audioFrameTimeStamps.size() - 1; index >= 0; index--) {
@@ -391,7 +420,7 @@ public class VideoProcessorManager {
 
                 float audioProcessProgress = bufferInfo.presentationTimeUs * 1.0f / audioDuration;
                 audioProcessProgress = (audioProcessProgress - 1.0f) > 0.00001 ? 1.0f : audioProcessProgress;
-                audioProcessProgress = audioProcessProgress * MediaUtils.AUDIO_WEIGHT + MediaUtils.VIDEO_WEIGHT;
+                audioProcessProgress = audioProcessProgress * VideoUtils.AUDIO_WEIGHT + VideoUtils.VIDEO_WEIGHT;
                 listener.onVideoReverseProgress(audioProcessProgress);
             }
         } else {
@@ -412,7 +441,7 @@ public class VideoProcessorManager {
                 if (listener != null) {
                     float audioProcessProgress = bufferInfo.presentationTimeUs * 1.0f / audioDuration;
                     audioProcessProgress = (audioProcessProgress - 1.0f) > 0.00001 ? 1.0f : audioProcessProgress;
-                    audioProcessProgress = audioProcessProgress * MediaUtils.AUDIO_WEIGHT + MediaUtils.VIDEO_WEIGHT;
+                    audioProcessProgress = audioProcessProgress * VideoUtils.AUDIO_WEIGHT + VideoUtils.VIDEO_WEIGHT;
                     listener.onVideoReverseProgress(audioProcessProgress);
                 }
                 extractor.advance();
@@ -420,8 +449,8 @@ public class VideoProcessorManager {
         }
 
         listener.onVideoReverseProgress(1.0f);
-        MediaUtils.closeExtractor(extractor);
-        MediaUtils.closeMuxer(muxer);
+        VideoUtils.closeExtractor(extractor);
+        VideoUtils.closeMuxer(muxer);
     }
 
 
@@ -441,21 +470,21 @@ public class VideoProcessorManager {
             inputVideoExtractor.setDataSource(params.mInputVideoPath);
         } catch (Exception e) {
             LogUtils.w("addAudioFilter failed, input video path MediaExtractor failed");
-            MediaUtils.closeExtractor(inputVideoExtractor);
+            VideoUtils.closeExtractor(inputVideoExtractor);
             return;
         }
-        int srcInputAudioIndex = MediaUtils.getTrackIndex(inputVideoExtractor, TrackType.AUDIO);
+        int srcInputAudioIndex = VideoUtils.getTrackIndex(inputVideoExtractor, TrackType.AUDIO);
         if (srcInputAudioIndex == -5) {
             LogUtils.w("addAudioFilter failed, input video has no audio track");
-            MediaUtils.closeExtractor(inputVideoExtractor);
+            VideoUtils.closeExtractor(inputVideoExtractor);
             return;
         }
 
         //2.抽取输入视频的视频轨道
-        int srcInputVideoIndex = MediaUtils.getTrackIndex(inputVideoExtractor, TrackType.VIDEO);
+        int srcInputVideoIndex = VideoUtils.getTrackIndex(inputVideoExtractor, TrackType.VIDEO);
         if (srcInputVideoIndex == -5) {
             LogUtils.w("addAudioFilter failed, input video has no video track");
-            MediaUtils.closeExtractor(inputVideoExtractor);
+            VideoUtils.closeExtractor(inputVideoExtractor);
             return;
         }
 
@@ -465,15 +494,15 @@ public class VideoProcessorManager {
             inputAudioExtractor.setDataSource(params.mInputAudioPath);
         } catch (Exception e) {
             LogUtils.w("addAudioFilter failed, input audio path MediaExtractor failed");
-            MediaUtils.closeExtractor(inputVideoExtractor);
-            MediaUtils.closeExtractor(inputAudioExtractor);
+            VideoUtils.closeExtractor(inputVideoExtractor);
+            VideoUtils.closeExtractor(inputAudioExtractor);
             return;
         }
-        int destInputAudioIndex = MediaUtils.getTrackIndex(inputAudioExtractor, TrackType.AUDIO);
+        int destInputAudioIndex = VideoUtils.getTrackIndex(inputAudioExtractor, TrackType.AUDIO);
         if (destInputAudioIndex == -5) {
             LogUtils.w("addAudioFilter failed, input audio has no audio track");
-            MediaUtils.closeExtractor(inputVideoExtractor);
-            MediaUtils.closeExtractor(inputAudioExtractor);
+            VideoUtils.closeExtractor(inputVideoExtractor);
+            VideoUtils.closeExtractor(inputAudioExtractor);
             return;
         }
 
@@ -482,14 +511,14 @@ public class VideoProcessorManager {
         try {
             mediaMuxer = new MediaMuxer(params.mOutputVideoPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (Exception e) {
-            MediaUtils.closeExtractor(inputVideoExtractor);
-            MediaUtils.closeExtractor(inputAudioExtractor);
-            MediaUtils.closeMuxer(mediaMuxer);
+            VideoUtils.closeExtractor(inputVideoExtractor);
+            VideoUtils.closeExtractor(inputAudioExtractor);
+            VideoUtils.closeMuxer(mediaMuxer);
             return;
         }
 
-        MediaFormat srcInputVideoFormat = MediaUtils.getFormat(inputVideoExtractor, srcInputVideoIndex);
-        int rotation = MediaUtils.getRotation(inputVideoExtractor);
+        MediaFormat srcInputVideoFormat = VideoUtils.getFormat(inputVideoExtractor, srcInputVideoIndex);
+        int rotation = VideoUtils.getRotation(inputVideoExtractor);
         mediaMuxer.setOrientationHint(rotation);
         int muxerVideoTrackIndex = mediaMuxer.addTrack(srcInputVideoFormat);
 
@@ -501,12 +530,12 @@ public class VideoProcessorManager {
         //inputAudioFile 输入的音频转化为pcm
         File inputAudioFile = new File(cacheDir, "audio_" + timeStamp + ".pcm");
 
-        long inputVideoDuration = MediaUtils.getDuration(params.mInputVideoPath);
+        long inputVideoDuration = VideoUtils.getDuration(params.mInputVideoPath);
         if (inputVideoDuration == -1) {
             LogUtils.i("addAudioFilter failed, Input invalid video path");
             return;
         }
-        long inputAudioDuration = MediaUtils.getDuration(params.mInputAudioPath);
+        long inputAudioDuration = VideoUtils.getDuration(params.mInputAudioPath);
         if (inputAudioDuration == -1) {
             LogUtils.i("addAudioFilter failed, Input invalid audio path");
             return;

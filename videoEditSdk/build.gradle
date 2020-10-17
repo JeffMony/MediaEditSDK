@@ -41,6 +41,7 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation project(path: ':playerLibrary')
+    implementation project(path: ':soundtouchLib')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {

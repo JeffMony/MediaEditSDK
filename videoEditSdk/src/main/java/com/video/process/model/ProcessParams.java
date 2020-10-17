@@ -2,7 +2,7 @@ package com.video.process.model;
 
 import androidx.annotation.NonNull;
 
-import com.video.process.surface.GlFilterList;
+import com.video.process.preview.filter.GlFilterList;
 import com.video.process.preview.filter.GlFilter;
 
 public class ProcessParams {

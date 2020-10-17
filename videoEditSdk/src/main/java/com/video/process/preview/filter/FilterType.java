@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.video.process.preview.custfilter.*;
-import com.video.process.surface.GLImageComplexionBeautyFilter;
+import com.video.process.preview.custfilter.GLImageComplexionBeautyFilter;
 
 import java.io.IOException;
 import java.io.InputStream;

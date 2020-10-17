@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.video.process.model.VideoSize;
+import com.video.process.preview.filter.GlFilterList;
+import com.video.process.preview.filter.GlFilterPeriod;
 import com.video.process.utils.LogUtils;
 import com.video.process.utils.ScreenUtils;
 import com.video.process.utils.WorkThreadHandler;

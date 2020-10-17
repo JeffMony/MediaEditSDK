@@ -16,9 +16,21 @@ public class LogUtils {
         }
     }
 
+    public static void v(String tag, String msg) {
+        if (VERBOSE) {
+            Log.v(tag, msg);
+        }
+    }
+
     public static void d(String msg) {
         if (DEBUG) {
             Log.d(TAG, msg);
+        }
+    }
+
+    public static void d(String tag, String msg) {
+        if (DEBUG) {
+            Log.d(tag, msg);
         }
     }
 
@@ -28,15 +40,33 @@ public class LogUtils {
         }
     }
 
+    public static void i(String tag, String msg) {
+        if (INFO) {
+            Log.i(tag, msg);
+        }
+    }
+
     public static void w(String msg) {
         if (WARIN) {
             Log.w(TAG, msg);
         }
     }
 
+    public static void w(String tag, String msg) {
+        if (WARIN) {
+            Log.w(tag, msg);
+        }
+    }
+
     public static void e(String msg) {
         if (ERROR) {
             Log.e(TAG, msg);
+        }
+    }
+
+    public static void e(String tag, String msg) {
+        if (ERROR) {
+            Log.e(tag, msg);
         }
     }
 }

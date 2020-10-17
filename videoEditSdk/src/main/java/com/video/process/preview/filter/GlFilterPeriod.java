@@ -1,6 +1,4 @@
-package com.video.process.surface;
-
-import com.video.process.preview.filter.GlFilter;
+package com.video.process.preview.filter;
 
 import java.io.Serializable;
 

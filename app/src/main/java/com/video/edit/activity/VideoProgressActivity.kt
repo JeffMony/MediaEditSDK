@@ -8,8 +8,8 @@ import android.widget.Toast
 import com.video.process.model.ProcessParams
 import com.video.process.utils.VideoCustomException
 import com.video.process.preview.filter.FilterType
-import com.video.process.surface.GlFilterList
-import com.video.process.surface.GlFilterPeriod
+import com.video.process.preview.filter.GlFilterList
+import com.video.process.preview.filter.GlFilterPeriod
 import com.video.process.compose.video.Mp4Composer
 import com.video.process.surface.VideoProcessConfig
 import kotlinx.android.synthetic.main.video_process_activity_layout.*

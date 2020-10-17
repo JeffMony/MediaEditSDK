@@ -1,4 +1,4 @@
-package com.video.process.surface;
+package com.video.process.preview.custfilter;
 
 import android.content.Context;
 import android.opengl.GLES30;

@@ -18,8 +18,8 @@ import com.video.process.preview.custfilter.GlFlashFliter
 import com.video.process.preview.custfilter.GlShakeFilter
 import com.video.process.preview.custfilter.GlSoulOutFilter
 import com.video.process.compose.video.Mp4Composer
-import com.video.process.surface.GlFilterList
-import com.video.process.surface.GlFilterPeriod
+import com.video.process.preview.filter.GlFilterList
+import com.video.process.preview.filter.GlFilterPeriod
 import com.video.player.log
 import com.video.player.player.VideoPlayTimeController
 import com.video.player.player.VideoPlayer

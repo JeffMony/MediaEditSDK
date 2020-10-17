@@ -1,12 +1,16 @@
 package com.video.process.utils;
 
+import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.video.process.model.TrackType;
 import com.video.process.model.VideoSize;
@@ -16,12 +20,11 @@ import java.io.FileDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MediaUtils {
+public class VideoUtils {
+
+    private static final String TAG = "VideoUtils";
 
     public static final int DEFAULT_I_FRAME_INTERVAL = 1;
-    public static final int DEFAULT_CHANNEL_COUNT = 1;
-    public static final int DEFAULT_MAX_BUFFER_SIZE = 100 * 1024;
-    public static final int DEFAULT_AAC_BITRATE = 192 * 1000;
     public static final float VIDEO_WEIGHT = 0.8f;
     public static final float AUDIO_WEIGHT = (1 - VIDEO_WEIGHT);
     public static final int ERR_NO_TRACK_INDEX = -5;
@@ -87,14 +90,6 @@ public class MediaUtils {
         return extractor.getTrackFormat(trackIndex);
     }
 
-    public static int getAudioMaxBufferSize(@NonNull MediaFormat format) {
-        if (format.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
-            return format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
-        } else {
-            return DEFAULT_MAX_BUFFER_SIZE;
-        }
-    }
-
     //找到最后一个关键帧
     public static void seekToLastFrame(MediaExtractor extractor, int trackIndex, int duration) {
         int seekToDuration = duration * 1000;
@@ -123,24 +118,42 @@ public class MediaUtils {
         return frameTimeStamps;
     }
 
-    public static int getAudioBitrate(MediaFormat format) {
-        if (format.containsKey(MediaFormat.KEY_BIT_RATE)) {
-            return format.getInteger(MediaFormat.KEY_BIT_RATE);
-        } else {
-            return DEFAULT_AAC_BITRATE;
-        }
-    }
-
-    public static int getChannelCount(MediaFormat format) {
-        if (format.containsKey(MediaFormat.KEY_CHANNEL_COUNT)) {
-            return format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
-        } else {
-            return DEFAULT_CHANNEL_COUNT;
-        }
-    }
-
     public static int getSampleRate(MediaFormat format) {
         return format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+    }
+
+    public static boolean trySetProfileAndLevel(MediaCodec codec, String mime,
+                                                MediaFormat format,
+                                                int profile, int level) {
+        MediaCodecInfo codecInfo = codec.getCodecInfo();
+        MediaCodecInfo.CodecCapabilities capabilities = codecInfo.getCapabilitiesForType(mime);
+        MediaCodecInfo.CodecProfileLevel[] profileLevels = capabilities.profileLevels;
+        if (profileLevels == null) {
+            return false;
+        }
+        for (MediaCodecInfo.CodecProfileLevel itemLevel : profileLevels) {
+            if (itemLevel.profile == profile) {
+                if (itemLevel.level == level) {
+                    format.setInteger(MediaFormat.KEY_PROFILE, profile);
+                    format.setInteger(MediaFormat.KEY_LEVEL, level);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public static int getMaxSupportBitrate(MediaCodec codec, String mime) {
+        try {
+            MediaCodecInfo codecInfo = codec.getCodecInfo();
+            MediaCodecInfo.CodecCapabilities capabilities = codecInfo.getCapabilitiesForType(mime);
+            Integer maxBitrate = capabilities.getVideoCapabilities().getBitrateRange().getUpper();
+            return maxBitrate;
+        } catch (Exception e) {
+            LogUtils.e(TAG, e.getMessage());
+            return -1;
+        }
     }
 
     public static void closeExtractor(MediaExtractor extractor) {

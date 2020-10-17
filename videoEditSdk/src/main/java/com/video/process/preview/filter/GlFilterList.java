@@ -1,9 +1,8 @@
-package com.video.process.surface;
+package com.video.process.preview.filter;
 
 import android.util.Log;
 
 import com.video.process.preview.EFramebufferObject;
-import com.video.process.preview.filter.GlFilter;
 
 import org.jetbrains.annotations.NotNull;
 

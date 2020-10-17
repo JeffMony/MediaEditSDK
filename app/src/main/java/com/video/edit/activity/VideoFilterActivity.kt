@@ -14,8 +14,8 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_video_edit.*
 
 import com.video.process.utils.LogUtils
-import com.video.process.surface.GlFilterPeriod
-import com.video.process.surface.GlFilterConfig
+import com.video.process.preview.filter.GlFilterPeriod
+import com.video.process.preview.filter.GlFilterConfig
 import com.video.process.surface.VideoProcessConfig
 
 import com.video.edit.demo.R

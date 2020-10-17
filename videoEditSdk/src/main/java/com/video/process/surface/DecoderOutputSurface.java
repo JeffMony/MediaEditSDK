@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 import android.view.Surface;
 
 import com.video.process.model.VideoSize;
+import com.video.process.preview.filter.GlFilterList;
 import com.video.process.utils.LogUtils;
 import com.video.process.preview.EFramebufferObject;
 import com.video.process.preview.EglUtil;

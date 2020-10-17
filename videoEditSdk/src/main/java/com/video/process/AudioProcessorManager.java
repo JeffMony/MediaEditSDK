@@ -7,7 +7,7 @@ import android.media.MediaMuxer;
 
 import com.video.process.model.TrackType;
 import com.video.process.utils.LogUtils;
-import com.video.process.utils.MediaUtils;
+import com.video.process.utils.VideoUtils;
 
 import java.nio.ByteBuffer;
 
@@ -35,10 +35,10 @@ public class AudioProcessorManager {
             LogUtils.w("decodeToPCM failed, input path is invalid");
             return;
         }
-        int audioTrackIndex = MediaUtils.getTrackIndex(inputExtractor, TrackType.AUDIO);
+        int audioTrackIndex = VideoUtils.getTrackIndex(inputExtractor, TrackType.AUDIO);
         if (audioTrackIndex == -5) {
             LogUtils.w("decodeToPCM failed, input path has no audio track");
-            MediaUtils.closeExtractor(inputExtractor);
+            VideoUtils.closeExtractor(inputExtractor);
             return;
         }
         inputExtractor.selectTrack(audioTrackIndex);
@@ -51,7 +51,7 @@ public class AudioProcessorManager {
             decoder = MediaCodec.createDecoderByType(audioFormat.getString(MediaFormat.KEY_MIME));
         } catch (Exception e) {
             LogUtils.w("decodeToPCM failed, create decode type failed, mime type = " + audioFormat.getString(MediaFormat.KEY_MIME));
-            MediaUtils.closeExtractor(inputExtractor);
+            VideoUtils.closeExtractor(inputExtractor);
             return;
         }
         decoder.configure(audioFormat, null, null, 0);
@@ -86,7 +86,7 @@ public class AudioProcessorManager {
             inputVideoExtractor.setDataSource(inputVideoPath);
         } catch (Exception e) {
             LogUtils.w("replaceAudioTrack failed, input video path is invaild");
-            MediaUtils.closeExtractor(inputVideoExtractor);
+            VideoUtils.closeExtractor(inputVideoExtractor);
             return;
         }
         MediaExtractor inputAudioExtractor = new MediaExtractor();
@@ -94,12 +94,12 @@ public class AudioProcessorManager {
             inputAudioExtractor.setDataSource(inputAudioPath);
         } catch (Exception e) {
             LogUtils.w("replaceAudioTrack failed, input audio path is invaild");
-            MediaUtils.closeExtractor(inputVideoExtractor);
-            MediaUtils.closeExtractor(inputAudioExtractor);
+            VideoUtils.closeExtractor(inputVideoExtractor);
+            VideoUtils.closeExtractor(inputAudioExtractor);
             return;
         }
-        int inputVideoTrack = MediaUtils.getTrackIndex(inputVideoExtractor, TrackType.VIDEO);
-        int inputAudioTrack = MediaUtils.getTrackIndex(inputAudioExtractor, TrackType.AUDIO);
+        int inputVideoTrack = VideoUtils.getTrackIndex(inputVideoExtractor, TrackType.VIDEO);
+        int inputAudioTrack = VideoUtils.getTrackIndex(inputAudioExtractor, TrackType.AUDIO);
         LogUtils.i("inputVideoTrack="+inputVideoTrack+", inputAudioTrack="+inputAudioTrack);
         MediaFormat inputVideoFormat = inputVideoExtractor.getTrackFormat(inputVideoTrack);
         MediaFormat inputAudioFormat = inputAudioExtractor.getTrackFormat(inputAudioTrack);
@@ -111,8 +111,8 @@ public class AudioProcessorManager {
             mediaMuxer = new MediaMuxer(outputVideoPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (Exception e) {
             LogUtils.w("replaceAudioTrack failed, mediaMuxer create failed");
-            MediaUtils.closeExtractor(inputVideoExtractor);
-            MediaUtils.closeExtractor(inputAudioExtractor);
+            VideoUtils.closeExtractor(inputVideoExtractor);
+            VideoUtils.closeExtractor(inputAudioExtractor);
             return;
         }
         int muxerVideoTrack = mediaMuxer.addTrack(inputVideoFormat);
@@ -146,7 +146,7 @@ public class AudioProcessorManager {
         //写音频轨道
         int sampleRate = inputAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         int aacFrameTimeUs = 1024 * 1000 * 1000 / sampleRate;
-        maxBufferSize = MediaUtils.getAudioMaxBufferSize(inputAudioFormat);
+        maxBufferSize = VideoUtils.getAudioMaxBufferSize(inputAudioFormat);
         ByteBuffer audioBuffer = ByteBuffer.allocateDirect(maxBufferSize);
         long lastAudioTimeUs = 0;
         long baseAudioTimeUs = 0;

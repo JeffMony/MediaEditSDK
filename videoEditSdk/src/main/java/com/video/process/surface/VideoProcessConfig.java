@@ -1,5 +1,7 @@
 package com.video.process.surface;
 
+import com.video.process.preview.filter.GlFilterConfig;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

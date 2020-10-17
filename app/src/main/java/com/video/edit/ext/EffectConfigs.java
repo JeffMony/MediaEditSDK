@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.video.edit.demo.R;
 import com.video.edit.view.BottomDialogFragment;
-import com.video.process.surface.GLImageComplexionBeautyFilter;
+import com.video.process.preview.custfilter.GLImageComplexionBeautyFilter;
 import com.video.process.preview.custfilter.Gl4SplitFilter;
 import com.video.process.preview.custfilter.GlFlashFliter;
 import com.video.process.preview.custfilter.GlHuanJueFliter;
