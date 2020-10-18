@@ -296,6 +296,7 @@ public class VideoProcessorManager {
      * @param shouldReverseAudio
      * @param listener
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void reverseVideo(String inputPath, String outputPath, boolean shouldReverseAudio, @NonNull IVideoReverseListener listener) {
         if (TextUtils.isEmpty(inputPath) || TextUtils.isEmpty(outputPath)) {
             listener.onVideoReverseFailed(new VideoProcessException(VideoProcessException.ERR_STR_INPUT_OR_OUTPUT_PATH, VideoProcessException.ERR_INPUT_OR_OUTPUT_PATH));
@@ -338,7 +339,31 @@ public class VideoProcessorManager {
         if (frameCount == keyFrameCount || frameCount == keyFrameCount + 1) {
             directReverseVideo(inputPath, outputPath, shouldReverseAudio, frameTimeStamps, listener);
         } else {
+            float bitrateMultiple = (frameCount - keyFrameCount) / (float)keyFrameCount + 1;
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(inputPath);
+            int inputBitrate = Integer.parseInt(retriever.extractMetadata(
+                    MediaMetadataRetriever.METADATA_KEY_BITRATE));
+            int duration = Integer.parseInt(retriever.extractMetadata(
+                    MediaMetadataRetriever.METADATA_KEY_DURATION));
+            new ProcessorBuilder(mContext).
+                    setInputPath(inputPath).
+                    setOutputPath(outputPath).
+                    setBitrate((int) (inputBitrate * bitrateMultiple)).
+                    setIFrameInterval(0).process();
 
+            directReverseVideo(inputPath, outputPath, shouldReverseAudio, null, null);
+
+
+            int inputIFrameInterval = (int)(keyFrameCount / (duration / 1000f));
+            inputIFrameInterval = inputIFrameInterval == 0 ? 1 : inputIFrameInterval;
+            new ProcessorBuilder(mContext).
+                    setInputPath(inputPath).
+                    setOutputPath(outputPath).
+                    setBitrate((int) (inputBitrate * bitrateMultiple)).
+                    setIFrameInterval(inputIFrameInterval).process();
+
+            VideoUtils.closeExtractor(extractor);
 
 
         }
