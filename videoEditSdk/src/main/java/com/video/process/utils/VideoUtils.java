@@ -156,6 +156,33 @@ public class VideoUtils {
         }
     }
 
+    public static int getFrameRate(MediaExtractor extractor) {
+        MediaFormat videoFormat = extractor.getTrackFormat(TrackType.VIDEO);
+        if (videoFormat.containsKey(MediaFormat.KEY_FRAME_RATE)) {
+            return videoFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
+        }
+        return -1;
+    }
+
+    public static int getMeanFrameRate(MediaExtractor extractor, int videoTrackIndex) {
+        extractor.selectTrack(videoTrackIndex);
+        long lastFrameTimeUs = 0;
+        int frameCount = 0;
+        while (true) {
+            long sampleTime = extractor.getSampleTime();
+            if (sampleTime < 0) {
+                break;
+            } else {
+                lastFrameTimeUs = sampleTime;
+            }
+            frameCount++;
+            extractor.advance();
+        }
+        extractor.unselectTrack(videoTrackIndex);
+
+        return (int)(frameCount * 1.0f / lastFrameTimeUs / 1000 / 1000);
+    }
+
     public static void closeExtractor(MediaExtractor extractor) {
         if (extractor != null) {
             extractor.release();

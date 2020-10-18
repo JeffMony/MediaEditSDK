@@ -4,15 +4,20 @@ import android.content.Context;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
+import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
+
 import com.video.process.model.TrackType;
+import com.video.process.utils.AudioUtils;
 import com.video.process.utils.VideoUtils;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class AudioProcessorThread extends Thread {
 
     private String mInputPath;
@@ -44,6 +49,14 @@ public class AudioProcessorThread extends Thread {
     @Override
     public void run() {
         super.run();
+        try {
+            doProcessAudio();
+        } catch (Exception e) {
+            mException = e;
+        } finally {
+            VideoUtils.closeExtractor(mExtractor);
+
+        }
     }
 
     private void doProcessAudio() throws Exception {
@@ -66,9 +79,11 @@ public class AudioProcessorThread extends Thread {
         int endTimeUs = (mEndTime == -1) ? audioDurationUs : mEndTime * 1000;
 
         if (TextUtils.equals(inputMimeType, outputMimeType)) {
-
+            AudioUtils.writeAudioTrackDecode(
+                    mContext, mExtractor, mMuxer, mMuxerAudioIndex, startTimeUs,
+                    endTimeUs, mSpeed == null ? 1f : mSpeed);
         } else {
-
+            AudioUtils.writeAudioTrack(mExtractor, mMuxer, mMuxerAudioIndex, startTimeUs, endTimeUs, 0);
         }
 
     }

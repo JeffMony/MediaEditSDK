@@ -132,8 +132,8 @@ public class AudioUtils {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static void writeAudioTrackDecode(
             Context context, MediaExtractor extractor, MediaMuxer mediaMuxer,
-            int muxerAudioIndex, Integer startTimeUs, Integer endTimeUs,
-            @NonNull Float speed)
+            int muxerAudioIndex, int startTimeUs, int endTimeUs,
+            float speed)
             throws Exception {
         int audioTrackIndex = VideoUtils.getTrackIndex(extractor, TrackType.AUDIO);
         extractor.selectTrack(audioTrackIndex);
@@ -169,7 +169,7 @@ public class AudioUtils {
                         } else if (sampleTimeUs < startTimeUs) {
                             extractor.advance();
                             continue;
-                        } else if (endTimeUs != null && sampleTimeUs > endTimeUs) {
+                        } else if (endTimeUs != -1 && sampleTimeUs > endTimeUs) {
                             eof = true;
                         }
 

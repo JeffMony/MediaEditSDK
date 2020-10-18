@@ -7,9 +7,11 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.video.process.exception.VideoProcessException;
 import com.video.process.listener.IVideoProcessorListener;
@@ -17,6 +19,9 @@ import com.video.process.listener.IVideoReverseListener;
 import com.video.process.model.ProcessParams;
 import com.video.process.model.TrackType;
 import com.video.process.model.VideoRange;
+import com.video.process.thread.AudioProcessorThread;
+import com.video.process.thread.VideoDecodeThread;
+import com.video.process.thread.VideoEncodeThread;
 import com.video.process.utils.AudioUtils;
 import com.video.process.utils.LogUtils;
 import com.video.process.utils.VideoUtils;
@@ -27,6 +32,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VideoProcessorManager {
 
@@ -135,6 +141,7 @@ public class VideoProcessorManager {
             return this;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void process() {
             doProcessVideo(mContext, this);
         }
@@ -142,6 +149,7 @@ public class VideoProcessorManager {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private static void doProcessVideo(@NonNull Context context, @NonNull ProcessorBuilder processorBuilder) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(processorBuilder.mInputPath);
@@ -223,7 +231,6 @@ public class VideoProcessorManager {
             }
 
             AudioUtils.checkCsd(audioFormat, MediaCodecInfo.CodecProfileLevel.AACObjectLC, sampleRate, channelCount);
-
             muxerAudioIndex = muxer.addTrack(audioEncodeFormat);
         }
         extractor.selectTrack(videoTrackIndex);
@@ -244,8 +251,40 @@ public class VideoProcessorManager {
             extractor.seekTo(0, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
         }
 
+        AtomicBoolean decodeFinished = new AtomicBoolean(false);
+        CountDownLatch muxerLatch = new CountDownLatch(1);
+        VideoEncodeThread encodeThread = new VideoEncodeThread(extractor, muxer, processorBuilder.mBitrate,
+                resultWidth, resultHeight, processorBuilder.mIFrameInterval, processorBuilder.mFrameRate,
+                videoTrackIndex, decodeFinished, muxerLatch);
+
+        int srcFrameRate = VideoUtils.getFrameRate(extractor);
+        if (srcFrameRate == -1) {
+            srcFrameRate = VideoUtils.getMeanFrameRate(extractor, videoTrackIndex);
+            extractor.selectTrack(videoTrackIndex);
+        }
+        VideoDecodeThread decodeThread = new VideoDecodeThread(extractor, processorBuilder.mStartTimeStamp,
+                processorBuilder.mEndTimeStamp, srcFrameRate, processorBuilder.mFrameRate, processorBuilder.mSpeed,
+                processorBuilder.mShouldDropFrame, videoTrackIndex, decodeFinished, encodeThread);
+
+        AudioProcessorThread audioProcessorThread = new AudioProcessorThread(processorBuilder.mContext, processorBuilder.mInputPath,
+                muxer, processorBuilder.mStartTimeStamp, processorBuilder.mEndTimeStamp, processorBuilder.mShouldChangedAudioSpeed ? processorBuilder.mSpeed: 1,
+                muxerAudioIndex, muxerLatch);
 
 
+        decodeThread.start();
+        encodeThread.start();
+        audioProcessorThread.start();
+
+        try {
+            decodeThread.join();
+            encodeThread.join();
+            audioProcessorThread.join();
+        } catch (Exception e) {
+            LogUtils.w("Process Thread run failed, exception = " + e.getMessage());
+        } finally {
+            VideoUtils.closeExtractor(extractor);
+            VideoUtils.closeMuxer(muxer);
+        }
 
 
     }
@@ -299,6 +338,8 @@ public class VideoProcessorManager {
         if (frameCount == keyFrameCount || frameCount == keyFrameCount + 1) {
             directReverseVideo(inputPath, outputPath, shouldReverseAudio, frameTimeStamps, listener);
         } else {
+
+
 
         }
     }
