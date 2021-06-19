@@ -1,113 +1,113 @@
 {
   "stringTable": {
-    "0": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/arm64-v8a",
-    "1": "--target=aarch64-none-linux-android21 --gcc-toolchain=/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Dsoundtouch_EXPORTS -I/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/./soundtouch -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fexceptions -O0 -fno-limit-debug-info -fPIC"
+    "0": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/arm64-v8a",
+    "1": "--target=aarch64-none-linux-android21 --gcc-toolchain=/home/jeffmony/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/jeffmony/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Dsoundtouch_EXPORTS -I/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/./soundtouch -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fexceptions -O0 -fno-limit-debug-info -fPIC"
   },
   "buildFiles": [
-    "/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669/build/cmake/platforms.cmake",
-    "/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669/build/cmake/android.toolchain.cmake",
-    "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/CMakeLists.txt"
+    "/home/jeffmony/Android/Sdk/ndk/21.1.6352462/build/cmake/platforms.cmake",
+    "/home/jeffmony/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+    "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/CMakeLists.txt"
   ],
   "cleanCommands": [
-    "/Users/jeffmony/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/arm64-v8a\" clean"
+    "/home/jeffmony/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/arm64-v8a\" clean"
   ],
-  "buildTargetsCommand": "/Users/jeffmony/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "buildTargetsCommand": "/home/jeffmony/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
   "libraries": {
     "soundtouch-Debug-arm64-v8a": {
-      "buildCommand": "/Users/jeffmony/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/arm64-v8a\" soundtouch",
+      "buildCommand": "/home/jeffmony/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/arm64-v8a\" soundtouch",
       "buildType": "debug",
-      "toolchain": "3009197294",
+      "toolchain": "2651903797",
       "abi": "arm64-v8a",
       "artifactName": "soundtouch",
       "files": [
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch-jni.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch-jni.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/AAFilter.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/AAFilter.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/BPMDetect.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/BPMDetect.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/cpu_detect_x86.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/cpu_detect_x86.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/FIFOSampleBuffer.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/FIFOSampleBuffer.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/FIRFilter.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/FIRFilter.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/InterpolateCubic.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/InterpolateCubic.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/InterpolateLinear.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/InterpolateLinear.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/InterpolateShannon.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/InterpolateShannon.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/mmx_optimized.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/mmx_optimized.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/PeakFinder.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/PeakFinder.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/RateTransposer.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/RateTransposer.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/SoundTouch.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/SoundTouch.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/sse_optimized.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/sse_optimized.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/TDStretch.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/TDStretch.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/WavFile.cpp",
+          "src": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/src/main/cpp/soundtouch/WavFile.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         }
       ],
       "headers": [],
-      "output": "/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/build/intermediates/cmake/debug/obj/arm64-v8a/libsoundtouch.so"
+      "output": "/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/build/intermediates/cmake/debug/obj/arm64-v8a/libsoundtouch.so"
     }
   },
   "toolchains": {
-    "3009197294": {
-      "cppCompilerExecutable": "/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+    "2651903797": {
+      "cppCompilerExecutable": "/home/jeffmony/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
     }
   },
   "cFileExtensions": [],

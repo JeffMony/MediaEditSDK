@@ -1,5 +1,5 @@
 {
-  "ndkFolder": "/Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669",
+  "ndkFolder": "/home/jeffmony/Android/Sdk/ndk/21.1.6352462",
   "messages": [
     {
       "level": "INFO",
@@ -15,23 +15,27 @@
     },
     {
       "level": "INFO",
-      "message": "sdkFolder is /Users/jeffmony/Library/Android/sdk"
+      "message": "sdkFolder is /home/jeffmony/Android/Sdk"
     },
     {
       "level": "INFO",
-      "message": "Considering /Users/jeffmony/Library/Android/sdk/ndk-bundle in SDK ndk-bundle folder"
+      "message": "Considering /home/jeffmony/Android/Sdk/ndk-bundle in SDK ndk-bundle folder"
     },
     {
       "level": "INFO",
-      "message": "Considering /Users/jeffmony/Library/Android/sdk/ndk/20.0.5594570 in SDK ndk folder"
+      "message": "Considering /home/jeffmony/Android/Sdk/ndk/20.0.5594570 in SDK ndk folder"
     },
     {
       "level": "INFO",
-      "message": "Considering /Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669 in SDK ndk folder"
+      "message": "Considering /home/jeffmony/Android/Sdk/ndk/21.1.6352462 in SDK ndk folder"
     },
     {
       "level": "INFO",
-      "message": "No user requested version, choosing /Users/jeffmony/Library/Android/sdk/ndk/21.0.6113669 which is version 21.0.6113669"
+      "message": "Considering /home/jeffmony/Android/Sdk/ndk/21.0.6113669 in SDK ndk folder"
+    },
+    {
+      "level": "INFO",
+      "message": "No user requested version, choosing /home/jeffmony/Android/Sdk/ndk/21.1.6352462 which is version 21.1.6352462"
     }
   ]
 }

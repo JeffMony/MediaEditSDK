@@ -146,7 +146,7 @@ public class AudioProcessorManager {
         //写音频轨道
         int sampleRate = inputAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         int aacFrameTimeUs = 1024 * 1000 * 1000 / sampleRate;
-        maxBufferSize = VideoUtils.getAudioMaxBufferSize(inputAudioFormat);
+//        maxBufferSize = VideoUtils.getAudioMaxBufferSize(inputAudioFormat);
         ByteBuffer audioBuffer = ByteBuffer.allocateDirect(maxBufferSize);
         long lastAudioTimeUs = 0;
         long baseAudioTimeUs = 0;

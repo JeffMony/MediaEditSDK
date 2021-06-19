@@ -1,7 +1,7 @@
-Executable : /Users/jeffmony/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja
+Executable : /home/jeffmony/Android/Sdk/cmake/3.10.2.4988404/bin/ninja
 arguments : 
 -C
-/Users/jeffmony/sources/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/armeabi-v7a
+/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/armeabi-v7a
 soundtouch
 jvmArgs : 
 
