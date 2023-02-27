@@ -19,7 +19,7 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        soundtouch-jni.cpp
+        audio_jni.cpp
         soundtouch/AAFilter.cpp
         soundtouch/BPMDetect.cpp
         soundtouch/cpu_detect_x86.cpp

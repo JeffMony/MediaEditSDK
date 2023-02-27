@@ -1,4 +1,4 @@
-package com.jeffmony.soundtouch;
+package com.jeffmony.audioeffect;
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -11,7 +11,7 @@ package com.jeffmony.soundtouch;
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-public final class SoundTouch
+public final class AudioProcess
 {
     // Load the native library upon startup
     static {
@@ -20,52 +20,52 @@ public final class SoundTouch
 
     // Native interface function that returns SoundTouch version string.
     // This invokes the native c++ routine defined in "soundtouch-jni.cpp".
-    public native final static String getVersionString();
+    public native static String getVersionString();
 
-    private native final void setTempo(long handle, float tempo);
+    private native void setTempo(long handle, float tempo);
 
-    private native final void setPitchSemiTones(long handle, float pitch);
+    private native void setPitchSemiTones(long handle, float pitch);
 
-    private native final void setSpeed(long handle, float speed);
+    private native void setSpeed(long handle, float speed);
 
-    private native final int processFile(long handle, String inputFile, String outputFile);
+    private native int processFile(long handle, String inputFile, String outputFile);
 
-    public native final static String getErrorString();
+    public native static String getErrorString();
 
-    private native final static long newInstance();
+    private native static long newInstance();
 
-    private native final void deleteInstance(long handle);
+    private native void deleteInstance(long handle);
 
-    long handle = 0;
+    private long mId = 0;
 
-    public SoundTouch() {
-        handle = newInstance();
+    public AudioProcess() {
+        mId = newInstance();
     }
 
 
     public void close() {
-        deleteInstance(handle);
-        handle = 0;
+        deleteInstance(mId);
+        mId = 0;
     }
 
 
     public void setTempo(float tempo) {
-        setTempo(handle, tempo);
+        setTempo(mId, tempo);
     }
 
 
     public void setPitchSemiTones(float pitch) {
-        setPitchSemiTones(handle, pitch);
+        setPitchSemiTones(mId, pitch);
     }
 
 
     public void setSpeed(float speed) {
-        setSpeed(handle, speed);
+        setSpeed(mId, speed);
     }
 
 
     public int processFile(String inputFile, String outputFile) {
-        return processFile(handle, inputFile, outputFile);
+        return processFile(mId, inputFile, outputFile);
     }
 
 }

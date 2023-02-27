@@ -18,8 +18,7 @@ using namespace std;
 #include "./soundtouch/SoundTouch.h"
 #include "./soundtouch/WavFile.h"
 
-#define LOGV(...)   __android_log_print((int)ANDROID_LOG_INFO, "SOUNDTOUCH", __VA_ARGS__)
-//#define LOGV(...)
+#define LOGV(...)   __android_log_print((int)ANDROID_LOG_INFO, "audio_effect", __VA_ARGS__)
 
 
 // String for keeping possible c++ exception error messages. Notice that this isn't
@@ -147,8 +146,9 @@ static void _processFile(SoundTouch *pSoundTouch, const char *inFileName, const 
     } while (nSamples != 0);
 }
 
-extern "C" DLL_PUBLIC jstring Java_com_jeffmony_soundtouch_SoundTouch_getVersionString(JNIEnv *env, jobject thiz)
-{
+extern "C" DLL_PUBLIC jstring Java_com_jeffmony_audioeffect_AudioProcess_getVersionString(
+    JNIEnv *env,
+    jclass clazz) {
     const char *verStr;
 
     LOGV("JNI call SoundTouch.getVersionString");
@@ -173,77 +173,83 @@ extern "C" DLL_PUBLIC jstring Java_com_jeffmony_soundtouch_SoundTouch_getVersion
 
 
 
-extern "C" DLL_PUBLIC jlong Java_com_jeffmony_soundtouch_SoundTouch_newInstance(JNIEnv *env, jobject thiz)
-{
+extern "C" DLL_PUBLIC jlong Java_com_jeffmony_audioeffect_AudioProcess_newInstance(
+    JNIEnv *env,
+    jclass clazz) {
 	return (jlong)(new SoundTouch());
 }
 
 
-extern "C" DLL_PUBLIC void Java_com_jeffmony_soundtouch_SoundTouch_deleteInstance(JNIEnv *env, jobject thiz, jlong handle)
-{
-	SoundTouch *ptr = (SoundTouch*)handle;
+extern "C" DLL_PUBLIC void Java_com_jeffmony_audioeffect_AudioProcess_deleteInstance(
+    JNIEnv *env,
+    jobject object, jlong id) {
+	SoundTouch *ptr = (SoundTouch *) id;
 	delete ptr;
 }
 
 
-extern "C" DLL_PUBLIC void Java_com_jeffmony_soundtouch_SoundTouch_setTempo(JNIEnv *env, jobject thiz, jlong handle, jfloat tempo)
-{
-	SoundTouch *ptr = (SoundTouch*)handle;
+extern "C" DLL_PUBLIC void Java_com_jeffmony_audioeffect_AudioProcess_setTempo(
+    JNIEnv *env,
+    jobject object,
+    jlong id,
+    jfloat tempo) {
+	SoundTouch *ptr = (SoundTouch *) id;
 	ptr->setTempo(tempo);
 }
 
 
-extern "C" DLL_PUBLIC void Java_com_jeffmony_soundtouch_SoundTouch_setPitchSemiTones(JNIEnv *env, jobject thiz, jlong handle, jfloat pitch)
-{
-	SoundTouch *ptr = (SoundTouch*)handle;
+extern "C" DLL_PUBLIC void Java_com_jeffmony_audioeffect_AudioProcess_setPitchSemiTones(
+    JNIEnv *env,
+    jobject object,
+    jlong id,
+    jfloat pitch) {
+	SoundTouch *ptr = (SoundTouch *) id;
 	ptr->setPitchSemiTones(pitch);
 }
 
 
-extern "C" DLL_PUBLIC void Java_com_jeffmony_soundtouch_SoundTouch_setSpeed(JNIEnv *env, jobject thiz, jlong handle, jfloat speed)
-{
-	SoundTouch *ptr = (SoundTouch*)handle;
+extern "C" DLL_PUBLIC void Java_com_jeffmony_audioeffect_AudioProcess_setSpeed(
+    JNIEnv *env,
+    jobject object,
+    jlong id,
+    jfloat speed) {
+	SoundTouch *ptr = (SoundTouch *) id;
 	ptr->setRate(speed);
 }
 
 
-extern "C" DLL_PUBLIC jstring Java_com_jeffmony_soundtouch_SoundTouch_getErrorString(JNIEnv *env, jobject thiz)
-{
+extern "C" DLL_PUBLIC jstring Java_com_jeffmony_audioeffect_AudioProcess_getErrorString(
+    JNIEnv *env,
+    jclass clazz) {
 	jstring result = env->NewStringUTF(_errMsg.c_str());
 	_errMsg.clear();
-
 	return result;
 }
 
 
-extern "C" DLL_PUBLIC int Java_com_jeffmony_soundtouch_SoundTouch_processFile(JNIEnv *env, jobject thiz, jlong handle, jstring jinputFile, jstring joutputFile)
-{
-	SoundTouch *ptr = (SoundTouch*)handle;
+extern "C" DLL_PUBLIC int Java_com_jeffmony_audioeffect_AudioProcess_processFile(
+    JNIEnv *env,
+    jobject object,
+    jlong id,
+    jstring j_input_file,
+    jstring j_output_file) {
+	SoundTouch *ptr = (SoundTouch *) id;
 
-	const char *inputFile = env->GetStringUTFChars(jinputFile, 0);
-	const char *outputFile = env->GetStringUTFChars(joutputFile, 0);
+	const char *input_file = env->GetStringUTFChars(j_input_file, 0);
+	const char *output_file = env->GetStringUTFChars(j_output_file, 0);
 
-	LOGV("JNI process file %s", inputFile);
+	LOGV("JNI process file %s", input_file);
 
-    /// gomp_tls storage bug workaround - see comments in _init_threading() function!
-    if (_init_threading(true)) return -1;
-
-	try
-	{
-		_processFile(ptr, inputFile, outputFile);
-	}
-	catch (const runtime_error &e)
-    {
+	try {
+		_processFile(ptr, input_file, output_file);
+	} catch (const runtime_error &e) {
 		const char *err = e.what();
         // An exception occurred during processing, return the error message
     	LOGV("JNI exception in SoundTouch::processFile: %s", err);
         _setErrmsg(err);
         return -1;
     }
-
-
-	env->ReleaseStringUTFChars(jinputFile, inputFile);
-	env->ReleaseStringUTFChars(joutputFile, outputFile);
-
+	env->ReleaseStringUTFChars(j_input_file, input_file);
+	env->ReleaseStringUTFChars(j_output_file, output_file);
 	return 0;
 }

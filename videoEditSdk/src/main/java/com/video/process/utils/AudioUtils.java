@@ -12,7 +12,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.jeffmony.soundtouch.SoundTouch;
+import com.jeffmony.audioeffect.AudioProcess;
 import com.video.process.compose.audio.Pcm2Wav;
 import com.video.process.model.TrackType;
 
@@ -238,10 +238,10 @@ public class AudioUtils {
         LogUtils.i(TAG,"start process pcm speed");
         File outFile =
                 new File(context.getCacheDir(), pcmFile.getName() + ".outpcm");
-        SoundTouch soundTouch = new SoundTouch();
-        soundTouch.setTempo(speed);
+        AudioProcess audioProcess = new AudioProcess();
+        audioProcess.setTempo(speed);
 
-        int res = soundTouch.processFile(wavFile.getAbsolutePath(), outFile.getAbsolutePath());
+        int res = audioProcess.processFile(wavFile.getAbsolutePath(), outFile.getAbsolutePath());
         if (res < 0) {
             pcmFile.delete();
             wavFile.delete();
