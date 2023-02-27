@@ -25,7 +25,7 @@ fun getVideoItem(contentResolver: ContentResolver, data: Intent): VideoItem? {
      * 第三个参数 selectionArgs ： 查询条件的参数，相当于 ？。
      * 第四个参数 sortOrder ： 结果排序。
      */
-    var cursor = contentResolver.query(uri, null, null, null, null);
+    var cursor = uri?.let { contentResolver.query(it, null, null, null, null) }
     if (cursor != null) {
         if (cursor.moveToFirst()) {
             // 视频ID:MediaStore.Audio.Media._ID

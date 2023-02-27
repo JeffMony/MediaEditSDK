@@ -77,7 +77,7 @@ class VideoFilterActivity : AppCompatActivity() {
     }
 
     var handler = object : Handler() {
-        override fun handleMessage(msg: Message?) {
+        override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
         }
     }
@@ -87,7 +87,7 @@ class VideoFilterActivity : AppCompatActivity() {
         saveDir = SdkConfig.getVideoDir(this).absolutePath
         setContentView(R.layout.activity_video_edit)
 
-        mediaPath = intent.getStringExtra("video_path")
+        mediaPath = intent.getStringExtra("video_path").toString()
 
         try {
             player_view_mp.setDataSource(mediaPath)

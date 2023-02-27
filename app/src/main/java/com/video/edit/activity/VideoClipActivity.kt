@@ -51,7 +51,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
     var videoPlayer: VideoPlayer? = null
 
     var handler = object : Handler() {
-        override fun handleMessage(msg: Message?) {
+        override fun handleMessage(msg: Message) {
             updatePlayPosition()
         }
     }
@@ -70,7 +70,7 @@ class VideoClipActivity : AppCompatActivity(), ClipContainer.Callback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_clip)
         saveDir = SdkConfig.getVideoDir(this).absolutePath
-        videoPathInput = intent.getStringExtra("video_path")
+        videoPathInput = intent.getStringExtra("video_path").toString()
         Log.d(TAG, "onCreate videoPathInput:$videoPathInput")
 
         initPlayer()

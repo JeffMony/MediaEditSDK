@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VideoEditSDKDemo</string>
+    <string name="app_name">JeffVideoEditor</string>
 	<string name="picture">Picture</string>
     <string name="description_info">Info</string>
     <string name="request_permission">This sample needs camera permission.</string>

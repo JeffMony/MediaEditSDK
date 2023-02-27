@@ -29,15 +29,15 @@ class VideoPlayerOfMediaPlayer(val surfaceView: SurfaceView) : VideoPlayer {
             mediaPlayer!!.setDisplay(surfaceHolder)
         }
         holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+            }
+
+            override fun surfaceCreated(holder: SurfaceHolder) {
+            }
+
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
                 mediaPlayer!!.setDisplay(holder)
                 surfaceHolder = holder
-            }
-
-            override fun surfaceDestroyed(holder: SurfaceHolder?) {
-            }
-
-            override fun surfaceCreated(holder: SurfaceHolder?) {
             }
 
         })

@@ -81,7 +81,7 @@ class ThumbExoPlayerView(context: Context?, attrs: AttributeSet?) : PlayerView(c
             exoPlayer?.playWhenReady = false
             val bitmap = textureView.bitmap
             bitmap?.run {
-                var fileName = context.externalCacheDir.absolutePath+"thumbnail_" + bitmapIndex
+                var fileName = context.externalCacheDir!!.absolutePath+"thumbnail_" + bitmapIndex
                 writeToFile(bitmap, fileName)
                 callback?.invoke(fileName, bitmapIndex++)
                 thumbnailMillSecList.removeAt(0)
