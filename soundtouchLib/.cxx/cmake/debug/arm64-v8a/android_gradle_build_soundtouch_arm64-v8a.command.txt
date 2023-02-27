@@ -1,7 +1,0 @@
-Executable : /home/jeffmony/Android/Sdk/cmake/3.10.2.4988404/bin/ninja
-arguments : 
--C
-/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/.cxx/cmake/debug/arm64-v8a
-soundtouch
-jvmArgs : 
-

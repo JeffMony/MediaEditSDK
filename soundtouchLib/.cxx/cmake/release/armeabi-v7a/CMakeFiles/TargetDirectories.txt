@@ -1,3 +1,0 @@
-/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/.cxx/cmake/release/armeabi-v7a/CMakeFiles/rebuild_cache.dir
-/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/.cxx/cmake/release/armeabi-v7a/CMakeFiles/edit_cache.dir
-/home/jeffmony/videosdk/MediaEditSDK/soundtouchLib/.cxx/cmake/release/armeabi-v7a/CMakeFiles/soundtouch.dir

@@ -1,2 +1,2 @@
-include ':soundtouchLib'
+include ':audiolibrary'
 include ':app', ':playerLibrary', ':videoEditSdk'
